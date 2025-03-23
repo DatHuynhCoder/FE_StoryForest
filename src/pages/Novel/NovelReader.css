@@ -1,0 +1,10 @@
+.sticky-top {
+    position: -webkit-sticky;
+    /* For Safari */
+    position: sticky;
+    top: 0;
+    background-color: #f0dcbd;
+    /* Same as the background color of the parent div */
+    z-index: 1000;
+    /* Ensure it stays on top */
+}
