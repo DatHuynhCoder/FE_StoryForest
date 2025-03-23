@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router";
 //import Pages
 import Login from './pages/Login_Signup/Login.jsx';
 import Signup from './pages/Login_Signup/Signup.jsx';
+import Profile from './pages/Profile/Profile.jsx';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -13,6 +14,7 @@ createRoot(document.getElementById('root')).render(
       <Route path="/home" element={<App />} />
       <Route path="/" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/profile" element={<Profile />} />
     </Routes>
   </BrowserRouter>
 )
