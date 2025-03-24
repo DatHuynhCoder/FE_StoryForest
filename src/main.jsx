@@ -26,10 +26,7 @@ createRoot(document.getElementById('root')).render(
       <Route path="/manga" element={<MangaReader />} />
       <Route path="/book" element={<BookDetails />} />
       <Route path="/novel" element={<NovelReader />} />
-      {/* <Route path="/search-result" element={<SearchResults/>}/>
-      <Route path="/filter-result" element={<FilteredBook/>}/>
-      <Route path="/author-result" element={<AuthorBook/>}/> */}
-      <Route path='/test' element={<ResultPage/>}/>
+      <Route path='/result' element={<ResultPage/>}/>
     </Routes>
   </BrowserRouter>
 )
