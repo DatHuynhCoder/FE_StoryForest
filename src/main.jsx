@@ -12,6 +12,8 @@ import BookDetails from './pages/Details/BookDetails.jsx';
 import MangaReader from './pages/Manga/MangaReader.jsx';
 // novel pages
 import NovelReader from './pages/Novel/NovelReader.jsx';
+//search result pages
+import ResultPage from './pages/SearchResult/ResultPage.jsx';
 
 
 createRoot(document.getElementById('root')).render(
@@ -24,6 +26,7 @@ createRoot(document.getElementById('root')).render(
       <Route path="/manga" element={<MangaReader />} />
       <Route path="/book" element={<BookDetails />} />
       <Route path="/novel" element={<NovelReader />} />
+      <Route path='/result' element={<ResultPage/>}/>
     </Routes>
   </BrowserRouter>
 )

@@ -1,0 +1,135 @@
+/* 🟢 Tiêu đề "Kết quả tìm kiếm" */
+.container-result-title {
+    /* Định dạng flexbox để căn giữa */
+    display: inline-flex;
+    margin: 20px 20px 0px;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Biểu tượng nhỏ bên cạnh tiêu đề */
+.icon-result {
+    height: 30px;
+    width: 30px;
+    margin-right: 10px;
+}
+
+/* Nội dung tiêu đề "Kết quả tìm kiếm" */
+.title-result {
+    font-weight: 500;
+    color: #095533;
+    font-size: 20px;
+}
+
+/* 🟢 Khu vực danh sách sách */
+.container-result-books {
+    /* Bố cục và màu nền */
+    padding: 30px 50px;
+    margin: 10px 20px 20px;
+    background-color:#B3D8A8;
+    border-radius: 20px;
+}
+
+/* Dùng Grid để sắp xếp sách thành nhiều cột */
+.grid-books {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); /* 6 cột */
+    gap: 20px; /* Khoảng cách giữa các sách */
+}
+
+/* Mỗi item sách */
+.item-book {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+/* Hiệu ứng khi hover vào sách */
+.item-book:hover {
+    background-color: #1c8c5a;
+    color: white;
+    transition: 0.3s ease-in-out; /* Hiệu ứng chuyển đổi mượt */
+}
+
+/* Ảnh bìa sách */
+.book-image {
+    border-radius: 20px;
+    margin-bottom: 5px;
+}
+
+/* Tên sách */
+.book-name {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* 🟢 Phân trang */
+.container-result-pagination {
+    /* Căn giữa thanh phân trang */
+    height: 40px;
+    margin: 20px 0px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Mỗi ô số trang */
+.item-page-index {
+    display: inline-flex;
+    height: 100%;
+    aspect-ratio: 1/1; /* Tạo hình tròn */
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border-radius: 100px;
+    margin: 0px 10px;
+    background-color: #B3D8A8;
+    cursor: pointer; /* Hiển thị con trỏ khi hover */
+    transition: 0.3s;
+}
+
+/* Trang đang được chọn */
+.item-page-index.active {
+    background-color: #095533;
+    color: white;
+}
+
+/* Icon mũi tên quay ngược cho nút "Trang trước" */
+.back-page-index {
+    rotate: 180deg;
+}
+
+/* 🟢 Responsive cho màn hình nhỏ */
+@media (max-width: 768px) {
+    /* Giảm kích thước khung danh sách sách */
+    .container-result-books {
+        width: 90%;
+        padding: 10px;
+    }
+
+    /* Chỉnh lại lưới sách thành 2 cột khi màn hình nhỏ */
+    .grid-books {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+    }
+
+    /* Điều chỉnh kích thước thanh phân trang */
+    .container-result-pagination {
+        height: 30px;
+        display: flex;
+        justify-self: center;
+    }
+
+    /* Giảm khoảng cách giữa các số trang */
+    .item-page-index {
+        margin: 0px 5px;
+        font-size: 13px;
+    }
+
+    /* Định dạng lại phần footer */
+    .footer {
+        width: 100%;
+    }
+}

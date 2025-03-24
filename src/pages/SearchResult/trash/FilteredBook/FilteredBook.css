@@ -1,0 +1,110 @@
+.container-filter {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  height: auto; /* Điều chỉnh chiều cao tự động theo nội dung */
+  width: auto;
+  border: 1px solid red;
+}
+.filter-box {
+  background: #095533;
+  color: white;
+  padding: 15px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  
+  flex-wrap: wrap; /* Cho phép xuống dòng nếu không đủ chỗ */
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 10px 0px 0px 40px;
+  flex-wrap: wrap; /* Cho phép xuống dòng khi cần */
+
+}
+
+.filter-item label {
+  font-weight: bold;
+}
+
+.filter-item select {
+  padding: 5px;
+  border-radius: 4px;
+  background-color: #fbffe4;
+  color: black;
+  margin-left: 10px; /* Giảm khoảng cách để phù hợp hơn trên màn hình nhỏ */
+  font-weight: 500;
+}
+
+.container-filter-description {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  height: auto;
+  border-left: 3px solid;
+  margin-left: 30px;
+  box-sizing: border-box;
+  flex: 3;
+}
+
+.filter-description {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 0px 20px;
+  text-align: justify;
+  vertical-align: middle;
+}
+
+/* ========== Responsive Styles ========== */
+
+@media (max-width: 768px) {
+  .container-filter{
+    justify-content: flex-start;
+    align-items: center;
+    border: 1px solid green;
+    display: flex;
+    width: 100%;
+    justify-self: flex-start;
+  }
+  .filter-box {
+    flex-direction: column;
+    align-items: flex-start;
+    border: 1px solid;
+    justify-content: center;
+  }
+
+  .filter-item {
+    width: 100%;
+    align-items: flex-start;
+    margin: 10px 0;
+    justify-content: flex-start;
+  }
+
+  .container-filter-description {
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    border: 1px solid;
+  }
+
+  .filter-description {
+    font-size: 14px;
+  }
+}
+
+.footer{
+  background-color: #095533;
+  display: flex;
+  height: 100px;
+  position: relative;
+  bottom:0px;
+  width: 100%;
+  left: 0px;
+}

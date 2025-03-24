@@ -1,0 +1,78 @@
+.container-author {
+    /* Thẻ chứa thông tin tác giả, hiển thị dưới dạng grid với 3 cột */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin: 20px 20px 0px;
+    padding: 20px 30px;
+    background-color: #095533; /* Màu nền xanh đậm */
+    border-radius: 20px; /* Bo tròn góc */
+}
+
+.container-avartar-name-author {
+    /* Khu vực chứa ảnh đại diện và tên tác giả, sắp xếp theo hàng ngang */
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.author-avatar {
+    /* Ảnh đại diện của tác giả */
+    height: 160px;
+    width: 160px;
+    object-fit: cover; /* Cắt ảnh để không bị méo */
+    border-radius: 100px; /* Làm tròn ảnh */
+    border: 2px solid #FBFFE4; /* Viền màu vàng nhạt */
+}
+
+.author-name {
+    /* Tên của tác giả */
+    margin-left: 20px;
+    font-weight: 500; /* Độ đậm chữ */
+    color: white; /* Màu chữ trắng */
+    font-size: larger; /* Cỡ chữ lớn */
+}
+
+.container-author-description {
+    /* Phần mô tả tác giả, chiếm 2 cột trong grid */
+    border-left: 5px solid white; /* Viền trái màu trắng */
+    grid-column: span 2;
+    padding: 10px 30px;
+}
+
+.author-description {
+    /* Văn bản mô tả tác giả */
+    color: white;
+    text-align: justify; /* Căn đều hai bên */
+}
+
+/* Responsive cho màn hình nhỏ hơn 768px */
+@media (max-width: 768px) {
+    .container-author {
+        /* Chuyển từ grid sang flex để hiển thị theo chiều dọc */
+        display: flex;
+        flex-direction: column;
+        padding: 0px;
+    }
+
+    .container-avartar-name-author {
+        /* Căn chỉnh khoảng cách cho chế độ mobile */
+        margin: 10px;
+    }
+
+    .author-name, .tag-description {
+        font-size: medium; /* Giảm kích thước chữ */
+    }
+
+    .author-avatar {
+        /* Thu nhỏ ảnh đại diện khi ở chế độ mobile */
+        height: 80px;
+        width: 80px;
+    }
+
+    .container-author-description {
+        /* Ẩn viền khi ở chế độ di động, căn chỉnh khoảng cách */
+        margin: 0px 10px 20px;
+        border: none;
+    }
+}
