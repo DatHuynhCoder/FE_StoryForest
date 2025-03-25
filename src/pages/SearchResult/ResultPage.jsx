@@ -7,10 +7,12 @@ import arrowIcon from "../../assets/back-next-icon.png";
 // Import các component con
 import Author from "./Filter/Author/Author";
 import Tag from "./Filter/Tag/Tag";
+import HeaderNav from "../../components/HeaderNav/HeaderNav";
 
 const ResultPage = () => {
     return (
         <div>
+            <HeaderNav/>
             {/* Component bộ lọc thể loại và sắp xếp */}
             <Tag />
             {/* Component hiển thị thông tin tác giả */}
