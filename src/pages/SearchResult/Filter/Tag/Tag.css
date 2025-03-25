@@ -1,0 +1,81 @@
+.container-filter-tag {
+    /* Thẻ chứa bộ lọc, hiển thị dưới dạng grid với 3 cột */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin: 20px 20px 0px;
+    padding: 20px 30px;
+    background-color: #095533; /* Màu nền xanh đậm */
+    border-radius: 20px; /* Bo tròn góc */
+}
+
+.container-filter-tag-select {
+    /* Khu vực chứa các tùy chọn lọc, hiển thị dưới dạng flex theo chiều dọc */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.container-select {
+    /* Thẻ chứa mỗi bộ chọn (select), căn chỉnh bằng flex */
+    display: flex;
+    margin: 10px 10px;
+}
+
+.label {
+    /* Nhãn (label) của bộ lọc */
+    margin-right: 15px;
+    padding: 5px;
+    color: white; /* Màu chữ trắng */
+    font-weight: 500; /* Độ đậm chữ */
+    font-size: large; /* Cỡ chữ lớn */
+}
+
+.container-select select {
+    /* Thiết lập giao diện cho ô chọn (dropdown) */
+    border: 1px solid;
+    padding: 10px;
+    background-color: #FBFFE4; /* Màu nền vàng nhạt */
+    border-radius: 10px; /* Bo góc ô chọn */
+    font-weight: 400;
+    width: auto;
+}
+
+.container-filter-tag-description {
+    /* Phần mô tả bộ lọc, chiếm 2 cột trong grid */
+    border-left: 5px solid white; /* Viền trái màu trắng */
+    grid-column: span 2;
+    padding: 10px 30px;
+}
+
+.tag-description {
+    /* Văn bản mô tả */
+    color: white;
+    text-align: justify; /* Căn đều hai bên */
+}
+
+/* Responsive cho màn hình nhỏ hơn 768px */
+@media (max-width: 768px) {
+    .container-filter-tag {
+        /* Chuyển từ grid sang flex để hiển thị theo chiều dọc */
+        display: flex;
+        flex-direction: column;
+        padding: 0px;
+    }
+    .container-filter-tag-select{
+        margin-top: 10px;
+    }
+    .container-select {
+        margin: 10px;
+    }
+
+    .label, .container-select select, .tag-description {
+        font-size: 14px; /* Giảm kích thước chữ */
+    }
+
+    .container-filter-tag-description {
+        /* Ẩn viền khi ở chế độ di động, căn chỉnh khoảng cách */
+        margin: 0px 10px 20px;
+        border: none;
+    }
+}
