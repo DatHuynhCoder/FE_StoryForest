@@ -1,0 +1,32 @@
+@media (min-width: 768px) {
+    .scroll-container::-webkit-scrollbar {
+      width: 0px;
+      height: 0px;
+    }
+    .scroll-container {
+      -ms-overflow-style: none; 
+      scrollbar-width: none; 
+      overflow-x: auto;
+    }
+  }
+
+@media (max-width: 768px) {
+    .scroll-container::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .scroll-container::-webkit-scrollbar-track {
+        background: #e0e0e0;
+        border-radius: 10px;
+    }
+
+    .scroll-container::-webkit-scrollbar-thumb {
+        background: #3a6351;
+        border-radius: 10px;
+    }
+
+    .scroll-container::-webkit-scrollbar-thumb:hover {
+        background: #2b4d3a;
+    }
+}
+  
