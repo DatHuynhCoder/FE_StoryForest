@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import "../HeaderNav/HeaderNav.css";
 import logo from "../../assets/logo.png";
 
 function HeaderNav() {
