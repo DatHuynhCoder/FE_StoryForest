@@ -5,12 +5,16 @@ import arrowIcon from "../../assets/back-next-icon.png";
 
 import Tag from "./Filter/Tag/Tag";
 import HeaderNav from "../../components/HeaderNav/HeaderNav";
+<<<<<<< HEAD
 import { useState } from "react";
+=======
+>>>>>>> 4ff556b00aa7253fb3e01ae2d243563f92f84df0
 
 const ResultPage = () => {
     const books = Array(10).fill({ title: "His story", image: bookImage })
     const pages = Array.from({ length: 5 }, (_, i) => i + 1);
     return (
+<<<<<<< HEAD
         <>
             <HeaderNav />
             <Tag />
@@ -34,6 +38,17 @@ const ResultPage = () => {
                                     <p className="font-medium">{book.title}</p>
                                 </div>
                             </>))}
+=======
+        <div>
+            <HeaderNav/>
+            {/* Component bộ lọc thể loại và sắp xếp */}
+            <Tag />
+            {/* Khu vực tiêu đề kết quả tìm kiếm */}
+            <div className="container-result-title">
+                <img className="icon-result" src={iconResult} alt="icon result" />
+                <p className="title-result">Kết quả tìm kiếm</p>
+            </div>
+>>>>>>> 4ff556b00aa7253fb3e01ae2d243563f92f84df0
 
                     </div>
                     {/* container-result-pagination */}
