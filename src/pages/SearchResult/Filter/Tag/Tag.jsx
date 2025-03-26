@@ -11,7 +11,7 @@ const Tag = () => {
         {/* container-tag */}
         <div className=" grid grid-rows-2 md:grid-cols-2 bg-[#095533] md:gap-10 md:pb-1" >
             {/* container-tag-filter */}
-            <div className=" md:row-span-2 flex flex-col justify-around mr-5">
+            <div className=" md:row-span-2 flex flex-col justify-around mr-1">
                 <div className=" grid grid-cols-3 m-2">
                 <label className="text-white font-medium text-lg text-center">Thể loại:</label>
                 <select name="tag" id="tag" className=" col-span-2 bg-white rounded-md font-medium h-10" value={tag} onChange={(e) => setTag(e.target.value)}>
