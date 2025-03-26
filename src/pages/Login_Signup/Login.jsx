@@ -1,12 +1,32 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import api from "../../services/api";
 // icon
-import { FaUserCircle } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
 import { RiLockPasswordFill, RiEyeCloseFill, RiEyeFill } from "react-icons/ri";
 import { FcGoogle } from "react-icons/fc";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+
+  //user info
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    try {
+      const response = await api.post("/api/reader/account/login", { email, password });
+      if (response.data.success) {
+        navigate("/home");
+      } else {
+        alert("Login failed. Please check your credentials.");
+      }
+    } catch (error) {
+      console.error("An error occurred during login:", error);
+      alert("An error occurred. Please try again later.");
+    }
+  };
 
   return (
     <div className="w-full h-screen bg-cover sm:bg-[url(/images/bg_login_lap.jpg)] bg-[url(/images/bg_login_phone.jpg)] bg-center flex justify-center items-center">
@@ -19,13 +39,16 @@ const Login = () => {
           Please login or sign up to continue
         </p>
 
-        {/* username box */}
-        <div className="mt-5 bg-(--primary-color) flex items-center rounded-3xl gap-2.5 px-5 py-2">
-          <FaUserCircle className="w-8 h-8 text-blue-800" />
+        {/* email box */}
+
+        <div className="bg-(--primary-color) flex items-center rounded-3xl gap-2.5 px-5 py-2">
+          <MdEmail className="w-8 h-8 text-blue-800" />
           <input
             className="flex-1 w-full pl-2 py-1 focus:outline-none"
-            type="text"
-            placeholder="Username"
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
 
@@ -36,6 +59,8 @@ const Login = () => {
             className="flex-1 w-full pl-2 py-1 focus:outline-none"
             type={showPassword ? "text" : "password"}
             placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           {/* See password button */}
           <button
@@ -52,7 +77,11 @@ const Login = () => {
 
         {/* Login button */}
         <div className="flex justify-center">
-          <button type="button" className="w-full sm:w-1/2 text-(--secondary-text-color) font-bold cursor-pointer bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 rounded-lg text-sm px-5 py-2.5 text-center transition-transform duration-300 ease-in-out hover:scale-105">
+          <button
+            type="button"
+            className="w-full sm:w-1/2 text-(--secondary-text-color) font-bold cursor-pointer bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 rounded-lg text-sm px-5 py-2.5 text-center transition-transform duration-300 ease-in-out hover:scale-105"
+            onClick={handleLogin}  
+          >
             Đăng nhập
           </button>
         </div>
@@ -67,7 +96,7 @@ const Login = () => {
         </div>
 
         {/* sign up option */}
-        <div className="mt-5">Doesn't have an account? 
+        <div className="mt-5">Doesn't have an account?
           <span className="font-bold text-(--secondary-color) cursor-pointer text-2xl underline-offset-6 underline">
             <Link to="/signup">Sign up</Link></span></div>
       </div>
