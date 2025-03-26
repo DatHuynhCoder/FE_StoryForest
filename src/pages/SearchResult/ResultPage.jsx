@@ -10,7 +10,6 @@ import { useState } from "react";
 const ResultPage = () => {
     const books = Array(10).fill({ title: "His story", image: bookImage })
     const pages = Array.from({ length: 5 }, (_, i) => i + 1);
-    const [inPage, setInPage] = useState(1)
     return (
         <>
             <HeaderNav />
