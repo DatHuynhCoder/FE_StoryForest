@@ -14,12 +14,13 @@ import MangaReader from './pages/Manga/MangaReader.jsx';
 import NovelReader from './pages/Novel/NovelReader.jsx';
 //search result pages
 import ResultPage from './pages/SearchResult/ResultPage.jsx';
-
+// Homepage
+import Home from './pages/Home/Home.jsx';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <Routes>
-      <Route path="/home" element={<App />} />
+      <Route path="/home" element={<Home/>} />
       <Route path="/" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/profile" element={<Profile />} />

@@ -15,9 +15,6 @@ const ResultPage = () => {
             <HeaderNav/>
             {/* Component bộ lọc thể loại và sắp xếp */}
             <Tag />
-            {/* Component hiển thị thông tin tác giả */}
-            <Author />
-
             {/* Khu vực tiêu đề kết quả tìm kiếm */}
             <div className="container-result-title">
                 <img className="icon-result" src={iconResult} alt="icon result" />

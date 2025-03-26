@@ -1,7 +1,7 @@
 /* Header container chính */
 .container-header {
     /* border: 1px solid; */
-    display: grid;
+    /* display: grid; */
     grid-template-columns: repeat(4, 1fr); /* Chia thành 4 cột */
     background-color: #FBFFE4;
     border-bottom: 5px solid #095533;
