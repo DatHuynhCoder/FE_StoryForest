@@ -1,12 +1,32 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import api from "../../services/api";
 // icon
 import { FaUserCircle } from "react-icons/fa";
 import { RiLockPasswordFill, RiEyeCloseFill, RiEyeFill } from "react-icons/ri";
 import { MdEmail } from "react-icons/md";
 
 const Signup = () => {
+  const naivigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false);
+
+  //user info
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSignup = async () => {
+    try {
+      const response = await api.post("/api/reader/account/register", { username, email, password });
+      if (response.data.success) {
+        alert("Sign up successfully");
+        naivigate("/");
+      }
+    } catch (error) {
+      console.log("Error during signup", error);
+      alert("An error occured, please try again");
+    }
+  }
 
   return (
     <div className="w-full h-screen bg-cover sm:bg-[url(/images/bg_signup_lap.jpg)] bg-[url(/images/bg_signup_phone.jpg)] bg-center flex justify-center items-center">
@@ -26,6 +46,8 @@ const Signup = () => {
             className="flex-1 w-full pl-2 py-1 focus:outline-none"
             type="text"
             placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
         </div>
 
@@ -37,6 +59,8 @@ const Signup = () => {
             className="flex-1 w-full pl-2 py-1 focus:outline-none"
             type="email"
             placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
 
@@ -47,7 +71,10 @@ const Signup = () => {
             className="flex-1 w-full pl-2 py-1 focus:outline-none"
             type={showPassword ? "text" : "password"}
             placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
+
           {/* See password button */}
           <button
             onClick={() => setShowPassword(!showPassword)}
@@ -63,7 +90,11 @@ const Signup = () => {
 
         {/* Login button */}
         <div className="flex justify-center">
-          <button type="button" className="w-full sm:w-1/2 text-(--secondary-text-color) font-bold cursor-pointer bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 rounded-lg text-sm px-5 py-2.5 text-center transition-transform duration-300 ease-in-out hover:scale-105">
+          <button
+            type="button"
+            className="w-full sm:w-1/2 text-(--secondary-text-color) font-bold cursor-pointer bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 rounded-lg text-sm px-5 py-2.5 text-center transition-transform duration-300 ease-in-out hover:scale-105"
+            onClick={handleSignup}
+          >
             Đăng ký
           </button>
         </div>
