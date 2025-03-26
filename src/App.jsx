@@ -18,20 +18,20 @@ import Home from './pages/Home/Home.jsx';
 import Layout from "./layouts/Layout.jsx";
 
 function App() {
-  return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/manga" element={<MangaReader />} />
-        <Route path="/book" element={<BookDetails />} />
-        <Route path="/novel" element={<NovelReader />} />
-        <Route path='/result' element={<ResultPage />} />
-      </Route>
-    </Routes>
-  )
+    return (
+        <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route element={<Layout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/mangaReader/:mangaId/:mangaTitle/:chapterNumber/:chapterTitle/:chapterId" element={<MangaReader />} />
+                <Route path="/bookDetail/:mangaId" element={<BookDetails />} />
+                <Route path="/novel" element={<NovelReader />} />
+                <Route path='/result' element={<ResultPage />} />
+            </Route>
+        </Routes>
+    )
 }
 
 export default App;
