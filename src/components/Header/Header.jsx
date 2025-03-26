@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import logo from "../../assets/logo.png";
 
-function HeaderNav() {
+function Header() {
     const [search, setSearch] = useState("")
     const [isOpen, setIsOpen] = useState(false)
 
@@ -65,4 +65,4 @@ function HeaderNav() {
     );
 }
 
-export default HeaderNav;
+export default Header;
