@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import logo from "../../assets/logo.png";
+import { NavLink, Link } from 'react-router';
 
 function Header() {
     const [search, setSearch] = useState("")
@@ -27,20 +28,20 @@ function Header() {
                         <div className='grid grid-cols-6 md:rounded-b-lg h-full bg-[#095533]'>
                             <button className='md:hidden text-lg text-white' onClick={() => setIsOpen(!isOpen)}>=
                                 <menu className={`absolute flex-col flex border-1 text-black bg-[#FBFFE4] w-1/3 items-start pl-2 ${toggleMenu}`}>
-                                    <a href="#">Thể loại</a>
-                                    <a href="#">Truyện chữ</a>
-                                    <a href="#">Truyện Audio</a>
-                                    <a href="#">Khác</a>
+                                    <NavLink href="#">Thể loại</NavLink>
+                                    <NavLink href="#">Truyện tranh</NavLink>
+                                    <NavLink to="/novel">Truyện chữ</NavLink>
+                                    <NavLink href="#">Khác</NavLink>
 
                                 </menu>
                             </button>
                             <p className=' col-span-5 flex justify-start items-center pl-1 md:hidden text-white font-semibold'>Trang chủ</p>
                             <ul className=' justify-around hidden md:grid md:col-span-7 md:grid-cols-5 '>
-                                <li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><a>Trang chủ</a></li>
-                                <li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><a>Thể loại</a></li>
-                                <li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><a>Truyện chữ</a></li>
-                                <li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><a>Truyện Audio</a></li>
-                                <li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><a>Khác</a></li>
+                                <li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/">Trang chủ</NavLink></li>
+                                <li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink>Thể loại</NavLink></li>
+                                <li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink>Truyện tranh</NavLink></li>
+                                <li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/novel">Truyện chữ</NavLink></li>
+                                <li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink>Khác</NavLink></li>
                             </ul>
                         </div>
 
@@ -54,8 +55,8 @@ function Header() {
                 </div>
                 {/* container-authentication */}
                 <div className='col-start-5 col-end-9 row-start-1 md:row-span-2 md:col-start-7 grid grid-cols-2 gap-2 md:gap-5 items-center md:pl-5 md:pr-5 pl-1 pr-1'>
-                    <button className='text-sm h-1/2 md:h-2/5 bg-[#095533] text-white rounded-md font-semibold hover:bg-[#1F7D53]'>Đăng ký</button>
-                    <button className='text-sm h-1/2 md:h-2/5 bg-[#095533] text-white rounded-md font-semibold hover:bg-[#1F7D53]'>Đăng nhập</button>
+                    <button className='text-sm h-1/2 md:h-2/5 bg-[#095533] text-white rounded-md font-semibold hover:bg-[#1F7D53]'><Link to="/signup">Đăng ký</Link></button>
+                    <button className='text-sm h-1/2 md:h-2/5 bg-[#095533] text-white rounded-md font-semibold hover:bg-[#1F7D53]'><Link to="/login">Đăng nhập</Link></button>
                 </div>
 
 

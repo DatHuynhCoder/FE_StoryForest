@@ -18,7 +18,7 @@ const Login = () => {
     try {
       const response = await api.post("/api/reader/account/login", { email, password });
       if (response.data.success) {
-        navigate("/home");
+        navigate("/");
       } else {
         alert("Login failed. Please check your credentials.");
       }
