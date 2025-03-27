@@ -20,7 +20,7 @@ const Signup = () => {
       const response = await api.post("/api/reader/account/register", { username, email, password });
       if (response.data.success) {
         alert("Sign up successfully");
-        naivigate("/");
+        naivigate("/login");
       }
     } catch (error) {
       console.log("Error during signup", error);
@@ -102,7 +102,7 @@ const Signup = () => {
         {/* sign up option */}
         <div className="mt-5">Already have an account?
           <span className="font-bold text-(--secondary-color) cursor-pointer text-2xl underline-offset-6 underline">
-            <Link to="/">Log in</Link></span></div>
+            <Link to="/login">Log in</Link></span></div>
       </div>
     </div>
   )
