@@ -12,6 +12,7 @@ A full-stack web application for reading and managing manga/novels, built using 
 - Responsive UI with TailwindCSS
 - AI for searching manga/novel base on description
 - Cloning your voice for reading novel
+- Reading manga when click on image
 
 ## Tech Stack
 
