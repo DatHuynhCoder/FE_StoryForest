@@ -10,13 +10,15 @@ A full-stack web application for reading and managing manga/novels, built using 
 - Bookmark favorite manga/novels
 - Admin panel for managing content
 - Responsive UI with TailwindCSS
+- AI for searching manga/novel base on description
+- Cloning your voice for reading novel
 
 ## Tech Stack
 
 - **Frontend**: React.js, TailwindCSS
 - **Backend**: Express.js, Node.js
 - **Database**: MongoDB
-- **API**: MangaDex API (or custom API)
+- **API**: MangaDex API (and custom API)
 
 ## Installation
 
@@ -27,7 +29,7 @@ Make sure you have the following installed:
 
 ### Clone the repository
 ```sh
-git clone https://github.com/yourusername/web-manga-novel.git
+git clone https://github.com/DatHuynhCoder/FE_StoryForest.git
 cd web-manga-novel
 ```
 
@@ -35,27 +37,33 @@ cd web-manga-novel
 ```sh
 cd backend
 npm install
-npm start
+npm run app
 ```
 
 ### Frontend Setup
 ```sh
 cd frontend
 npm install
-npm start
+npm run dev
 ```
 
 ## Environment Variables
 Create a `.env` file in the backend directory with the following variables:
 ```
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
+PORT=
+MONGO_URI=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+JWT_SECRET=
+JWT_REFRESH_SECRET=
+JWT_EXPIRES_IN=
+JWT_REFRESH_EXPIRES_IN=
 ```
 
 ## Usage
-- Run `npm start` in both `backend` and `frontend` directories.
-- Open `http://localhost:3000` in the browser.
+- Run `npm run app` in `backend` and `npm run dev` in `frontend` directories.
+- Ctrl + click on the link display in the terminal
 
 ## License
 This project is licensed under the MIT License.
@@ -64,4 +72,4 @@ This project is licensed under the MIT License.
 Feel free to submit pull requests or report issues!
 
 ## Contact
-For questions, reach out via GitHub issues or email me at [your-email@example.com].
+For questions, reach out via GitHub issues or email me at [22520212@gm.uit.edu.vn].
