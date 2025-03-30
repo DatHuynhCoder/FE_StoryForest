@@ -18,6 +18,8 @@ const Login = () => {
     try {
       const response = await api.post("/api/reader/account/login", { email, password });
       if (response.data.success) {
+        const {token} = response.data;
+        localStorage.setItem("token", token);
         navigate("/");
       } else {
         alert("Login failed. Please check your credentials.");
