@@ -7,7 +7,7 @@ import { RiLockPasswordFill, RiEyeCloseFill, RiEyeFill } from "react-icons/ri";
 import { MdEmail } from "react-icons/md";
 
 const Signup = () => {
-  const naivigate = useNavigate()
+  const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false);
 
   //user info
@@ -20,7 +20,7 @@ const Signup = () => {
       const response = await api.post("/api/reader/account/register", { username, email, password });
       if (response.data.success) {
         alert("Sign up successfully");
-        naivigate("/login");
+        navigate("/login");
       }
     } catch (error) {
       console.log("Error during signup", error);

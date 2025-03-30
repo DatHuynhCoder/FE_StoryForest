@@ -1,9 +1,15 @@
 //image
 import DefaultBG from "../../assets/default_bg_profile.jpg";
 import DefaultAvt from "../../assets/default_avatar.jpg";
-import { FaCrown } from "react-icons/fa";
-import { FaArrowRight } from "react-icons/fa";
+import { FaCrown, FaArrowRight } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+
+//import api
+import api from "../../services/api";
+import { useEffect, useState } from "react";
+
+//import Spinner
+import Spinner from "../../components/Spinner";
 
 const aboutUser = [
   "Có thể dành cả ngày trong một hiệu sách mà không thấy chán.",
@@ -64,6 +70,35 @@ const books = [
 ];
 
 const Profile = () => {
+  const [user, setUser] = useState(null);
+  const token = localStorage.getItem("token");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await api.get("/api/reader/account", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        if (response.data.success) {
+          setUser(response.data.data);
+        }
+      } catch (error) {
+        console.error("Khong tìm thấy người dùng:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  //Spinner to load while fetching data
+  if (isLoading) {
+    return <Spinner />;
+  }
+
   return (
     <div className="w-full min-h-screen bg-[#d9d9d9] flex flex-col items-center gap-6">
       <div className="w-full sm:w-4/5 min-h-1/2 flex flex-col bg-white pb-5 rounded-b-2xl">
@@ -74,14 +109,16 @@ const Profile = () => {
           {/* Avatar */}
           <img
             className="absolute sm:left-1/2 left-1/4 bottom-[-80px] transform -translate-x-1/2 rounded-full h-48 w-48 border-4 border-white"
-            src={DefaultAvt}
+            src={user?.avatar?.url || DefaultAvt}
             alt="User Avatar"
           />
         </div>
 
         {/* Username */}
         <div className="flex flex-row relative">
-          <h1 className="mx-12 mt-20 sm:text-center text-3xl font-bold flex-1">Username 1</h1>
+          <h1 className="mx-12 mt-20 sm:text-center text-3xl font-bold flex-1">
+            {user?.username}
+          </h1>
 
           {/* upgrade button */}
           <button className="p-[3px] cursor-pointer absolute sm:right-5 right-1 bottom-0 rounded-full bg-black">
@@ -97,12 +134,16 @@ const Profile = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="p-4 flex flex-row items-center gap-4">
             <img src="/images/email.png" alt="email logo" className="w-8 h-8" />
-            <div className="flex-1 text-xl">username2004@gmail.com</div>
+            <div className="flex-1 text-xl">
+              {user?.email}
+            </div>
           </div>
 
           <div className="p-4 flex flex-row items-center gap-4">
             <img src="/images/phone.png" alt="email logo" className="w-8 h-8" />
-            <div className="flex-1 text-xl">084657678788</div>
+            <div className={`flex-1 text-xl ${user?.phone ? "" : "text-gray-500 italic"}`}>
+              {user?.phone ? user.phone : "Thêm số điện thoại"}
+            </div>
           </div>
 
           <div className="p-4 flex flex-row items-center gap-4">
@@ -174,7 +215,7 @@ const Profile = () => {
 
                   <button type="button" className="flex flex-row items-center gap-2 text-red-700 font-bold hover:text-white rounded-full border-3 cursor-pointer border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-800">
                     <div>Xóa</div>
-                    <MdDelete className="h-5 w-5"/>
+                    <MdDelete className="h-5 w-5" />
                   </button>
                 </div>
               </div>
@@ -182,8 +223,8 @@ const Profile = () => {
           ))}
         </div>
       </div>
-    </div>
 
+    </div>
   )
 }
 

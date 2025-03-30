@@ -16,21 +16,32 @@ import Home from './pages/Home/Home.jsx';
 
 //import Layout
 import Layout from "./layouts/Layout.jsx";
+//import potected layout
+import ProtectedRoute from "./services/ProtectedRoute.jsx";
+
+//toast
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/mangaReader/:mangaId/:mangaTitle/:chapterNumber/:chapterTitle/:chapterId" element={<MangaReader />} />
-        <Route path="/bookDetail/:mangaId" element={<BookDetails />} />
-        <Route path="/novel" element={<NovelReader />} />
-        <Route path='/result' element={<ResultPage />} />
-      </Route>
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route element={<Layout />}>
+          <Route element={<ProtectedRoute allowedRoles={['reader']} />}>
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+          <Route path="/" element={<Home />} />
+          <Route path="/mangaReader/:mangaId/:mangaTitle/:chapterNumber/:chapterTitle/:chapterId" element={<MangaReader />} />
+          <Route path="/bookDetail/:mangaId" element={<BookDetails />} />
+          <Route path="/novel" element={<NovelReader />} />
+          <Route path='/result' element={<ResultPage />} />
+        </Route>
+      </Routes>
+      <ToastContainer />
+    </>
   )
 }
 
