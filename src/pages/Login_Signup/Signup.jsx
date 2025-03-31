@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import api from "../../services/api";
+import { api } from "../../services/api";
 // icon
 import { FaUserCircle } from "react-icons/fa";
 import { RiLockPasswordFill, RiEyeCloseFill, RiEyeFill } from "react-icons/ri";
 import { MdEmail } from "react-icons/md";
+
+import { toast } from "react-toastify";
 
 const Signup = () => {
   const navigate = useNavigate()
@@ -17,14 +19,16 @@ const Signup = () => {
 
   const handleSignup = async () => {
     try {
-      const response = await api.post("/api/reader/account/register", { username, email, password });
+      const response = await api.post("/api/reader/account/register", {username, email, password });
       if (response.data.success) {
-        alert("Sign up successfully");
+        toast.success("Signup successful!");
         navigate("/login");
+      } else {
+        toast.error(error.response?.data?.message || "Signup failed");
       }
     } catch (error) {
-      console.log("Error during signup", error);
-      alert("An error occured, please try again");
+      console.error("An error occurred during signup:", error);
+      toast.error("An error occurred. Please try again later.");
     }
   }
 

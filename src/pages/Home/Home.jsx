@@ -5,7 +5,7 @@ import { IoIosContacts } from "react-icons/io";
 import ContactForm from "/src/components/Contact/Contact";
 import "/src/pages/Home/Home.css";
 import { useNavigate } from 'react-router';
-import axios from 'axios';
+import { api } from "../../services/api";
 
 var categories = [
     {
@@ -52,7 +52,7 @@ function Home() {
         }
     }]);
     useEffect(() => {
-        axios.get('http://localhost:5000/mangadex/manga')
+        api.get('/mangadex/manga')
             .then((res) => {
                 setListManga(res.data);
             })
