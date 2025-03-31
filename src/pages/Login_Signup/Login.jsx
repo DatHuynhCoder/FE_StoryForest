@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import api from "../../services/api";
+import { api } from "../../services/api";
 // icon
 import { MdEmail } from "react-icons/md";
 import { RiLockPasswordFill, RiEyeCloseFill, RiEyeFill } from "react-icons/ri";
 import { FcGoogle } from "react-icons/fc";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,15 +19,17 @@ const Login = () => {
     try {
       const response = await api.post("/api/reader/account/login", { email, password });
       if (response.data.success) {
-        const {token} = response.data;
+        const { token, refreshToken } = response.data;
         localStorage.setItem("token", token);
+        localStorage.setItem("refreshToken", refreshToken);
+        toast.success("Login successful!");
         navigate("/");
       } else {
-        alert("Login failed. Please check your credentials.");
+        toast.error(error.response?.data?.message || "Login failed");
       }
     } catch (error) {
       console.error("An error occurred during login:", error);
-      alert("An error occurred. Please try again later.");
+      toast.error("An error occurred. Please try again later.");
     }
   };
 
@@ -82,7 +85,7 @@ const Login = () => {
           <button
             type="button"
             className="w-full sm:w-1/2 text-(--secondary-text-color) font-bold cursor-pointer bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 rounded-lg text-sm px-5 py-2.5 text-center transition-transform duration-300 ease-in-out hover:scale-105"
-            onClick={handleLogin}  
+            onClick={handleLogin}
           >
             Đăng nhập
           </button>

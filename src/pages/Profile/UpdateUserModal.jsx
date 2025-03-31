@@ -1,15 +1,19 @@
 import { useState, useEffect } from "react";
-import { FaSave, FaTimes, FaUser, FaImage } from "react-icons/fa";
+import { FaSave, FaTimes, FaUser, FaImage, FaCamera, FaPhone } from "react-icons/fa";
 import { BsGenderAmbiguous } from "react-icons/bs";
-import api from "../../services/api";
+import { apiAuth } from "../../services/api";
+import DefaultBG from "../../assets/default_bg_profile.jpg";
+import DefaultAvt from "../../assets/default_avatar.jpg";
+import { toast } from "react-toastify";
 
 const UpdateUserModal = ({ isOpen, onClose, user, onUserUpdate }) => {
   const [formData, setFormData] = useState({
     username: "",
     name: "",
+    phone:"",
     gender: "",
     avatar: null,
-    backgroundImage: null
+    bgImg: null
   });
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [bgPreview, setBgPreview] = useState(null);
@@ -20,17 +24,19 @@ const UpdateUserModal = ({ isOpen, onClose, user, onUserUpdate }) => {
       setFormData({
         username: user.username || "",
         name: user.name || "",
+        phone: user.phone || "",
         gender: user.gender || "",
       });
       if (user.avatar?.url) {
         setAvatarPreview(user.avatar.url);
       }
-      if (user.backgroundImage?.url) {
-        setBgPreview(user.backgroundImage.url);
+      if (user.bgImg?.url) {
+        setBgPreview(user.bgImg.url);
       }
     }
   }, [user, isOpen]);
 
+  //Change form data when username, name, phone change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -39,6 +45,7 @@ const UpdateUserModal = ({ isOpen, onClose, user, onUserUpdate }) => {
     });
   };
 
+  //Change form data when avatar change
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -56,12 +63,13 @@ const UpdateUserModal = ({ isOpen, onClose, user, onUserUpdate }) => {
     }
   };
 
+  //Change form data when background change
   const handleBgImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setFormData({
         ...formData,
-        backgroundImage: file
+        bgImg: file
       });
       
       // Create preview URL
@@ -84,6 +92,7 @@ const UpdateUserModal = ({ isOpen, onClose, user, onUserUpdate }) => {
       const submitData = new FormData();
       submitData.append("username", formData.username);
       submitData.append("name", formData.name);
+      submitData.append("phone", formData.phone)
       submitData.append("gender", formData.gender);
       
       // Add avatar if exists
@@ -92,22 +101,24 @@ const UpdateUserModal = ({ isOpen, onClose, user, onUserUpdate }) => {
       }
       
       // Add background image if exists
-      if (formData.backgroundImage instanceof File) {
-        submitData.append("backgroundImage", formData.backgroundImage);
+      if (formData.bgImg instanceof File) {
+        submitData.append("bgImg", formData.bgImg);
       }
       
-      const response = await api.put("/api/reader/account", submitData, {
+      //call api to update user data in backend
+      const response = await apiAuth.put("/api/reader/account", submitData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data"
         }
       });
       
       if (response.data.success) {
+        toast.success("Update user successfully")
         onUserUpdate(response.data.data);
         onClose();
       }
     } catch (error) {
+      toast.error("Error updating user");
       console.error("Error updating user:", error);
     } finally {
       setLoading(false);
@@ -140,57 +151,67 @@ const UpdateUserModal = ({ isOpen, onClose, user, onUserUpdate }) => {
               {/* Avatar Upload */}
               <div className="text-center">
                 <p className="mb-2 font-bold text-gray-700">Ảnh đại diện</p>
-                <div className="relative w-40 h-40 mb-4">
-                  <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-purple-500">
+                <div className="relative w-40 h-40">
+                  <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-purple-500 group">
                     <img
-                      src={avatarPreview || "/images/default_avatar.jpg"}
+                      src={avatarPreview || DefaultAvt}
                       alt="User Avatar"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-opacity group-hover:opacity-70"
                     />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <label htmlFor="avatar-upload" className="cursor-pointer bg-purple-600 hover:bg-purple-700 text-white p-3 rounded-full shadow-lg flex items-center justify-center">
+                        <FaCamera className="w-5 h-5" />
+                      </label>
+                    </div>
                   </div>
-                  <div className="absolute bottom-0 right-0">
-                    <label htmlFor="avatar-upload" className="cursor-pointer bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full shadow-lg">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                      </svg>
-                    </label>
-                    <input
-                      id="avatar-upload"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleAvatarChange}
-                      className="hidden"
-                    />
-                  </div>
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="hidden"
+                  />
                 </div>
+                <button
+                  type="button"
+                  onClick={() => document.getElementById('avatar-upload').click()}
+                  className="mt-3 text-purple-600 hover:text-purple-800 text-sm font-medium flex items-center justify-center gap-1 mx-auto"
+                >
+                  <FaCamera className="w-4 h-4" /> Thay đổi ảnh
+                </button>
               </div>
 
               {/* Background Image Upload */}
               <div className="text-center">
                 <p className="mb-2 font-bold text-gray-700">Ảnh bìa</p>
-                <div className="relative w-64 h-32 mb-4">
-                  <div className="w-64 h-32 rounded-lg overflow-hidden border-4 border-blue-500">
+                <div className="relative w-64 h-32">
+                  <div className="w-64 h-32 rounded-lg overflow-hidden border-4 border-blue-500 group">
                     <img
-                      src={bgPreview || "/images/default_bg_profile.jpg"}
+                      src={bgPreview || DefaultBG}
                       alt="Background Image"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-opacity group-hover:opacity-70"
                     />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <label htmlFor="bg-upload" className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg flex items-center justify-center">
+                        <FaImage className="w-5 h-5" />
+                      </label>
+                    </div>
                   </div>
-                  <div className="absolute bottom-0 right-0">
-                    <label htmlFor="bg-upload" className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                      </svg>
-                    </label>
-                    <input
-                      id="bg-upload"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleBgImageChange}
-                      className="hidden"
-                    />
-                  </div>
+                  <input
+                    id="bg-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleBgImageChange}
+                    className="hidden"
+                  />
                 </div>
+                <button
+                  type="button"
+                  onClick={() => document.getElementById('bg-upload').click()}
+                  className="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center justify-center gap-1 mx-auto"
+                >
+                  <FaImage className="w-4 h-4" /> Thay đổi ảnh bìa
+                </button>
               </div>
             </div>
 
@@ -239,6 +260,27 @@ const UpdateUserModal = ({ isOpen, onClose, user, onUserUpdate }) => {
               </div>
 
               <div>
+                <label htmlFor="phone" className="block text-gray-700 font-bold mb-2">
+                  Số điện thoại
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-purple-600">
+                    <FaPhone />
+                  </div>
+                  <input
+                    type="text"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="py-3 pl-10 pr-4 block w-full rounded-lg border border-gray-300 focus:ring-purple-500 focus:border-purple-500"
+                    placeholder="Số điện thoại"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
                 <label htmlFor="gender" className="block text-gray-700 font-bold mb-2">
                   Giới tính
                 </label>
@@ -251,13 +293,13 @@ const UpdateUserModal = ({ isOpen, onClose, user, onUserUpdate }) => {
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className="py-3 pl-10 pr-4 block w-full rounded-lg border border-gray-300 focus:ring-purple-500 focus:border-purple-500"
+                    className="py-3 pl-10 pr-4 block w-full rounded-lg border border-gray-300 focus:ring-purple-500 focus:border-purple-500 bg-white"
                     required
                   >
                     <option value="">-- Chọn giới tính --</option>
-                    <option value="male">Nam</option>
-                    <option value="female">Nữ</option>
-                    <option value="other">Khác</option>
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Không tiện tiết lộ">Không tiện tiết lộ</option>
                   </select>
                 </div>
               </div>
