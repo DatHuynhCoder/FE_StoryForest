@@ -8,6 +8,8 @@ import BookDetails from './pages/Details/BookDetails.jsx';
 // manga pages
 import MangaReader from './pages/Manga/MangaReader.jsx';
 // novel pages
+import NovelList from "./pages/Novel/NovelList.jsx";
+import NovelDetails from "./pages/Details/NovelDetails.jsx";
 import NovelReader from './pages/Novel/NovelReader.jsx';
 //search result pages
 import ResultPage from './pages/SearchResult/ResultPage.jsx';
@@ -36,7 +38,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/mangaReader/:mangaId/:mangaTitle/:chapterNumber/:chapterTitle/:chapterId" element={<MangaReader />} />
           <Route path="/bookDetail/:mangaId" element={<BookDetails />} />
-          <Route path="/novel" element={<NovelReader />} />
+          <Route path="/novel" element={<NovelList />} />
+          <Route path="/novel/:novelid" element={<NovelDetails />} />
+          <Route path="/novel/:novelid/:noveltitle/:chapterid/:chaptertitle" element={<NovelReader />} />
           <Route path='/result' element={<ResultPage />} />
         </Route>
       </Routes>

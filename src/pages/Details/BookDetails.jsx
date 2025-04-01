@@ -80,8 +80,8 @@ function BookDetails() {
 
                 <div className='flex flex-col justify-between w-full'>
                     <div className='pt-4 md:pt-20 px-4 md:pl-10 text-center md:text-left'>
-                        <p className='text-3xl md:text-5xl font-bold text-black md:text-white'>{infoManga.title}</p>
-                        <p className='text-lg md:text-xl font-bold text-black md:text-white'>{
+                        <p className='text-3xl md:text-5xl font-bold text-black md:text-black'>{infoManga.title}</p>
+                        <p className='text-lg md:text-xl font-bold text-black md:text-black'>{
                             infoManga.authors.map((author) => author + " ")
                         }
                         </p>
