@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import logo from "../../assets/logo.png";
 import { NavLink, Link } from 'react-router';
+import DefaultAvt from "../../assets/default_avatar.jpg";
+
+import { useSelector, useDispatch } from 'react-redux';
+
 
 function Header() {
+    const dispatch = useDispatch();
+    //get user from redux
+    const user = useSelector((state) => state.user.user);
+
     const [search, setSearch] = useState("")
     const [isOpen, setIsOpen] = useState(false)
 
@@ -11,6 +19,10 @@ function Header() {
     const handleSearch = () => {
 
         console.log(search)
+    }
+
+    const handleLogout = () => {
+        console.log("logout");
     }
 
     return (
@@ -53,10 +65,22 @@ function Header() {
 
                     </div>
                 </div>
-                {/* container-authentication */}
+                {/* Authentication Section */}
                 <div className='col-start-5 col-end-9 row-start-1 md:row-span-2 md:col-start-7 grid grid-cols-2 gap-2 md:gap-5 items-center md:pl-5 md:pr-5 pl-1 pr-1'>
-                    <button className='text-sm h-1/2 md:h-2/5 bg-[#095533] text-white rounded-md font-semibold hover:bg-[#1F7D53]'><Link to="/signup">Đăng ký</Link></button>
-                    <button className='text-sm h-1/2 md:h-2/5 bg-[#095533] text-white rounded-md font-semibold hover:bg-[#1F7D53]'><Link to="/login">Đăng nhập</Link></button>
+                    {user ? (
+                        <div className="flex items-center gap-3">
+                            <Link to="/profile">
+                                <img src={user.avatar?.url || DefaultAvt} alt="avatar" className="w-8 h-8 rounded-full" />
+                            </Link>
+                            <span className="font-semibold">{user.username}</span>
+                            <button className='text-sm h-1/2 md:h-2/5 bg-red-500 text-white rounded-md font-semibold hover:bg-red-600' onClick={handleLogout}>Đăng xuất</button>
+                        </div>
+                    ) : (
+                        <>
+                            <button className='text-sm h-1/2 md:h-2/5 bg-[#095533] text-white rounded-md font-semibold hover:bg-[#1F7D53]'><Link to="/signup">Đăng ký</Link></button>
+                            <button className='text-sm h-1/2 md:h-2/5 bg-[#095533] text-white rounded-md font-semibold hover:bg-[#1F7D53]'><Link to="/login">Đăng nhập</Link></button>
+                        </>
+                    )}
                 </div>
 
 

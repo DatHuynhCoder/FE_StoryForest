@@ -7,8 +7,13 @@ import { RiLockPasswordFill, RiEyeCloseFill, RiEyeFill } from "react-icons/ri";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "react-toastify";
 
+//use redux to store user
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../../redux/userSlice";
+
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
 
   //user info
@@ -22,6 +27,7 @@ const Login = () => {
         const { token, refreshToken } = response.data;
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
+        dispatch(loginSuccess({user: response.data.data, token: response.data.token}))
         toast.success("Login successful!");
         navigate("/");
       } else {

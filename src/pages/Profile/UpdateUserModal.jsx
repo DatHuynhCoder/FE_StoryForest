@@ -5,8 +5,11 @@ import { apiAuth } from "../../services/api";
 import DefaultBG from "../../assets/default_bg_profile.jpg";
 import DefaultAvt from "../../assets/default_avatar.jpg";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { updateUser } from "../../redux/userSlice";
 
 const UpdateUserModal = ({ isOpen, onClose, user, onUserUpdate }) => {
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     username: "",
     name: "",
@@ -114,6 +117,7 @@ const UpdateUserModal = ({ isOpen, onClose, user, onUserUpdate }) => {
       
       if (response.data.success) {
         toast.success("Update user successfully")
+        dispatch(updateUser(response.data.data));
         onUserUpdate(response.data.data);
         onClose();
       }
