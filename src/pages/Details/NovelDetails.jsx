@@ -23,6 +23,7 @@ function NovelDetails() {
     })
     const [chapters, setChapters] = useState([
         {
+            order: 1,
             novelid: "67eabac46f25807d87d7acc1",
             chapter_title: "Awakening",
             chapter_link: "https://www.royalroad.com/fiction/107529/wh-40k-transcendence/chapter/2098252/awakening",
@@ -52,7 +53,7 @@ function NovelDetails() {
             setInfoNovel(res.data.data)
             api.get(`/api/novel/${novelid}/chapters`).then(res => {
                 console.log(res.data)
-                setChapters(res.data.data)
+                setChapters(res.data.data.sort((a, b) => a.order - b.order))
             })
         }).catch(err => console.log(err)).finally(() => {
             setLoading(false)
