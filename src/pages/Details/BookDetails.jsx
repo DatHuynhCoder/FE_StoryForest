@@ -1,21 +1,46 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import axios from 'axios'
+import { api } from '../../services/api'
+import Spinner from '../../components/Spinner'
 
 function BookDetails() {
     const navigate = useNavigate()
     const { mangaId } = useParams()
     const [loading, setLoading] = useState(true)
     const [infoManga, setInfoManga] = useState({
-        artists: ['Kawakami Taiki'],
-        authors: ['Fuse'],
-        coverUrl: "https://uploads.mangadex.org/covers/e78a489b-6632-4d61-b00b-5206f5b8b22b/67de8b2f-c080-4006-91dd-a3b87abdb7fd.jpg",
-        description: "The ordinary Mikami Satoru found himself dying after being stabbed by a slasher. It should have been the end of his meager 37 years, but he found himself deaf and blind after hearing a mysterious voice.  \nHe had been reincarnated into a slime!  \n  \nWhile complaining about becoming the weak but famous slime and enjoying the life of a slime at the same time, Mikami Satoru met with the Catastrophe-level monster “Storm Dragon Veldora”, and his fate began to move.\n\n---\n**Links:**\n- Alternative Official English - [K MANGA](https://kmanga.kodansha.com/title/10044/episode/317350) (U.S. Only), [INKR](https://comics.inkr.com/title/233-that-time-i-got-reincarnated-as-a-slime), [Azuki](https://www.azuki.co/series/that-time-i-got-reincarnated-as-a-slime), [Coolmic](https://coolmic.me/titles/587), [Manga Planet](https://mangaplanet.com/comic/618e32db10673)",
-        id: "e78a489b-6632-4d61-b00b-5206f5b8b22b",
-        publicationYear: 2015,
-        status: "ongoing",
-        tags: ['Reincarnation', 'Monsters', 'Action', 'Demons', 'Comedy', 'Samurai', 'Isekai', 'Fantasy', 'Adaptation'],
-        title: "Tensei Shitara Slime Datta Ken"
+        mangaid: "32d76d19-8a05-4db0-9fc2-e0b0648fe9d0",
+        title: "Solo Leveling",
+        author: [
+            "h-goon (현군)",
+            "Chugong (추공)",
+            "Gi So-Ryeong (기소령)"
+        ],
+        artist: [
+            "REDICE Studio (레드아이스 스튜디오)",
+            "Jang Sung-Rak (장성락)"
+        ],
+        synopsis: "10 years ago, after “the Gate” that connected the real world with the monster world opened, some of the ordinary, everyday people received the power to hunt monsters within the Gate. They are known as “Hunters”. However, not all Hunters are powerful. My name is Sung Jin-Woo, an E-rank Hunter. I’m someone who has to risk his life in the lowliest of dungeons, the “World’s Weakest”. Having no skills whatsoever to display, I barely earned the required money by fighting in low-leveled dungeons… at least until I found a hidden dungeon with the hardest difficulty within the D-rank dungeons! In the end, as I was accepting death, I suddenly received a strange power, a quest log that only I could see, a secret to leveling up that only I know about! If I trained in accordance with my quests and hunted monsters, my level would rise. Changing from the weakest Hunter to the strongest S-rank Hunter!\n\n---\n**Links:**\n\n- Official English Translation [<Pocket Comics>](https://www.pocketcomics.com/comic/320) | [<WebNovel>](https://www.webnovel.com/comic/only-i-level-up-(solo-leveling)_15227640605485101) | [<Tapas>](https://tapas.io/series/solo-leveling-comic/info)\n- Alternate Official Raw - [Kakao Webtoon](https://webtoon.kakao.com/content/나-혼자만-레벨업/2320)",
+        tags: [
+            "Award Winning",
+            "Monsters",
+            "Action",
+            "Long Strip",
+            "Adventure",
+            "Magic",
+            "Drama",
+            "Fantasy",
+            "Web Comic",
+            "Supernatural",
+            "Adaptation",
+            "Full Color"
+        ],
+        status: "completed",
+        type: "manga",
+        views: 238,
+        followers: 0,
+        rate: 5,
+        cover_url: "https://uploads.mangadex.org/covers/32d76d19-8a05-4db0-9fc2-e0b0648fe9d0/e90bdc47-c8b9-4df7-b2c0-17641b645ee1.jpg"
     })
     const [chapters, setChapters] = useState([
         { id: '123', title: 'Chapter 1', name: 'Beginning', date: '2022-07-04', chapter: '1', pages: 12 },
@@ -40,10 +65,10 @@ function BookDetails() {
         navigate(`/mangaReader/${mangaId}/${infoManga.title}/${chapters[0].chapter}/${chapters[0].title}/${chapters[0].id}`, { state: { chapters } })
     }
     useEffect(() => {
-        axios.get(`http://localhost:5000/manga/${mangaId}/details`)
+        api.get(`/manga/${mangaId}/details`)
             .then((res) => {
                 console.log(res.data)
-                axios.get(`http://localhost:5000/manga/${mangaId}/chapters`)
+                api.get(`/manga/${mangaId}/chapters`)
                     .then((res) => {
                         setChapters(res.data.chapters.filter((chapter) => chapter.pages !== 0 && chapter.title !== ''));
                     })
@@ -58,20 +83,20 @@ function BookDetails() {
             })
     }, [mangaId])
 
+    if (loading) {
+        return (<Spinner />)
+    }
+
     return (
         <>
-            {loading &&
-                <div className='flex flex-1 justify-center items-center bg-white h-screen'>
-                    <img src="https://i.gifer.com/ZZ5H.gif" alt="Loading..." className='w-16 h-16' />
-                </div>}
             <div className='border w-full h-64 absolute z-10 bg-cover bg-center filter blur-md'
-                style={{ backgroundImage: 'url(' + infoManga.coverUrl + ')' }}>
+                style={{ backgroundImage: 'url(' + infoManga.cover_url + ')' }}>
             </div>
 
             <div className='flex flex-col md:flex-row relative z-20'>
                 <div className='pt-8 md:pt-20 px-4 md:pl-20 flex justify-center md:justify-start'>
                     <img
-                        src={infoManga.coverUrl}
+                        src={infoManga.cover_url}
                         alt="SPY x FAMILY Cover"
                         loading='lazy'
                         className='w-48 h-64 md:w-60 md:h-72 object-cover shadow-lg'
@@ -82,7 +107,7 @@ function BookDetails() {
                     <div className='pt-4 md:pt-20 px-4 md:pl-10 text-center md:text-left'>
                         <p className='text-3xl md:text-5xl font-bold text-black md:text-black'>{infoManga.title}</p>
                         <p className='text-lg md:text-xl font-bold text-black md:text-black'>{
-                            infoManga.authors.map((author) => author + " ")
+                            infoManga.author.map((author) => author + " ")
                         }
                         </p>
                     </div>
@@ -104,7 +129,7 @@ function BookDetails() {
                 </div>
             </div>
             <div className='pl-10 pr-10 md:pl-20 md:pr-20 md:mt-5 text-justify'>
-                {infoManga.description.split('---')[0]}
+                {infoManga.synopsis.split('---')[0]}
             </div>
             <div className='flex flex-col md:flex-row justify-center pl-10 pr-10 md:pl-20 md:pr-20'>
                 {/* This div is for the chapter list */}
