@@ -1,8 +1,9 @@
 import { Navigate, Outlet } from "react-router";
 import { jwtDecode } from "jwt-decode";
+import { useSelector } from "react-redux";
 
 const ProtectedRoute = ({ allowedRoles }) => {
-  const token = localStorage.getItem("token");
+  const token = useSelector((state) => state.user.token);
 
   if (!token) {
     return <Navigate to="/login" replace />;

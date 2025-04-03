@@ -24,10 +24,7 @@ const Login = () => {
     try {
       const response = await api.post("/api/reader/account/login", { email, password });
       if (response.data.success) {
-        const { token, refreshToken } = response.data;
-        localStorage.setItem("token", token);
-        localStorage.setItem("refreshToken", refreshToken);
-        dispatch(loginSuccess({user: response.data.data, token: response.data.token}))
+        dispatch(loginSuccess({user: response.data.data, token: response.data.accessToken}))
         toast.success("Login successful!");
         navigate("/");
       } else {

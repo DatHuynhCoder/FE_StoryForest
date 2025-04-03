@@ -89,7 +89,6 @@ const UpdateUserModal = ({ isOpen, onClose, user, onUserUpdate }) => {
     setLoading(true);
     
     try {
-      const token = localStorage.getItem("token");
       
       // Create FormData for file upload
       const submitData = new FormData();

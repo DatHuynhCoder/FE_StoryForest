@@ -1,31 +1,23 @@
 import axios from "axios";
-import { useNavigate } from "react-router";
+import {store} from "../redux/store.js"
+import { refreshToken } from "../redux/userSlice.js";
 import { jwtDecode } from "jwt-decode";
-
-const navigate = useNavigate;
 
 // Instance WITHOUT auth (for public requests)
 export const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
+    withCredentials: true,
 });
 
-api.interceptors.request.use((config) => {
-    console.log("API Request Headers:", config.headers);
-    return config;
-});
-
-// withCredentials: true, // Gửi cookie, session
 // Instance WITH auth (for protected requests)
 export const apiAuth = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
+    withCredentials: true,
 });
 
-// Flag to prevent multiple refresh token requests
 let isRefreshing = false;
-// Queue of failed requests to retry after token refresh
 let failedQueue = [];
 
-// Process the queue of failed requests
 const processQueue = (error, token = null) => {
     failedQueue.forEach(prom => {
         if (error) {
@@ -37,28 +29,24 @@ const processQueue = (error, token = null) => {
     failedQueue = [];
 };
 
-// Function to refresh the access token
 const refreshAccessToken = async () => {
-    try {
-        const refreshToken = localStorage.getItem("refreshToken");
-        if (!refreshToken) {
-            throw new Error("No refresh token available");
-        }
-
-        const response = await axios.post(
-            `${import.meta.env.VITE_API_URL}/api/reader/account/refresh-token`,
-            { refreshToken }
+    try {   
+        // Use api instance instead of axios directly to ensure consistent config
+        const response = await api.post(
+            "/api/reader/account/refresh-token", 
+            {}, // Empty body is fine since we're using cookies
+            { withCredentials: true }
         );
 
         if (response.data.success) {
-            localStorage.setItem("token", response.data.token || response.data.accessToken);
-            return response.data.token || response.data.accessToken;
+            const newToken = response.data.accessToken;
+            store.dispatch(refreshToken(newToken)); 
+            return newToken;
         } else {
             throw new Error("Failed to refresh token");
         }
     } catch (error) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("refreshToken");
+        console.error("Error refreshing token:", error);
         return null;
     }
 };
@@ -66,69 +54,62 @@ const refreshAccessToken = async () => {
 // Request interceptor
 apiAuth.interceptors.request.use(
     async (config) => {
-        const token = localStorage.getItem("token");
+        try {
+            // Get token from Redux state instead of cookies for consistency
+            const state = store.getState();
+            const token = state.user?.token; // Adjust path based on your Redux structure
+            
+            if (token) {
+                try {
+                    const decoded = jwtDecode(token);
+                    const currentTime = Date.now() / 1000;
 
-        if (token) {
-            try {
-                const decoded = jwtDecode(token);
-                const currentTime = Date.now() / 1000;
+                    if (decoded.exp < currentTime) {
+                        if (!isRefreshing) {
+                            isRefreshing = true;
+                            const newToken = await refreshAccessToken();
+                            isRefreshing = false;
 
-                // If token is expired, try to refresh it
-                if (decoded.exp < currentTime) {
-                    if (!isRefreshing) {
-                        isRefreshing = true;
-                        const newToken = await refreshAccessToken();
-                        isRefreshing = false;
-
-                        if (newToken) {
-                            config.headers.Authorization = `Bearer ${newToken}`;
-                            processQueue(null, newToken);
+                            if (newToken) {
+                                config.headers.Authorization = `Bearer ${newToken}`;
+                                processQueue(null, newToken);
+                            } else {
+                                processQueue(new Error("Failed to refresh token"));
+                                return Promise.reject("Token refresh failed");
+                            }
                         } else {
-                            processQueue(new Error("Failed to refresh token"));
-                            navigate("/login");
-                            return Promise.reject("Token refresh failed");
+                            return new Promise((resolve, reject) => {
+                                failedQueue.push({
+                                    resolve: (token) => {
+                                        config.headers.Authorization = `Bearer ${token}`;
+                                        resolve(config);
+                                    },
+                                    reject
+                                });
+                            });
                         }
                     } else {
-                        // If refresh is already in progress, queue this request
-                        return new Promise((resolve, reject) => {
-                            failedQueue.push({
-                                resolve: (token) => {
-                                    config.headers.Authorization = `Bearer ${token}`;
-                                    resolve(config);
-                                },
-                                reject
-                            });
-                        });
+                        config.headers.Authorization = `Bearer ${token}`;
                     }
-                } else {
-                    // Token is still valid
-                    config.headers.Authorization = `Bearer ${token}`;
+                } catch (error) {
+                    console.error("Invalid token:", error);
                 }
-            } catch (error) {
-                console.error("Invalid token:", error);
-                localStorage.removeItem("token");
-                localStorage.removeItem("refreshToken");
-                navigate("/login");
-                return Promise.reject(error);
             }
+        } catch (error) {
+            console.error("Token retrieval error:", error);
         }
 
         return config;
     },
-    (error) => {
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
 
-// Response interceptor
+// Response interceptor - similar fixes as request interceptor
 apiAuth.interceptors.response.use(
-    (response) => {
-        return response;
-    },
+    (response) => response,
     async (error) => {
         const originalRequest = error.config;
 
-        // If error is 401 and we haven't retried yet
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
@@ -140,23 +121,22 @@ apiAuth.interceptors.response.use(
                     isRefreshing = false;
 
                     if (newToken) {
-                        // Retry the original request with new token
                         originalRequest.headers.Authorization = `Bearer ${newToken}`;
                         processQueue(null, newToken);
                         return axios(originalRequest);
                     } else {
                         processQueue(new Error("Failed to refresh token"));
-                        navigate("/login");
+                        // Handle navigation properly - don't use navigate here directly
+                        window.location.href = "/login"; // Basic solution
                         return Promise.reject("Token refresh failed");
                     }
                 } catch (refreshError) {
                     isRefreshing = false;
                     processQueue(refreshError);
-                    navigate("/login");
+                    window.location.href = "/login"; // Basic solution
                     return Promise.reject(refreshError);
                 }
             } else {
-                // If refresh is already in progress, queue this request
                 return new Promise((resolve, reject) => {
                     failedQueue.push({
                         resolve: (token) => {
