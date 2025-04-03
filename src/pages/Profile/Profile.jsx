@@ -74,7 +74,6 @@ const books = [
 
 const Profile = () => {
   const [user, setUser] = useState(null);
-  const token = localStorage.getItem("token");
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
