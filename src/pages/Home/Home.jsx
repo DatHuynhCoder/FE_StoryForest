@@ -100,12 +100,12 @@ function Home() {
                         {listManga.length !== 0 && listManga.map((manga, index) => (
                             <div key={index} className="flex flex-col min-w-[150px]">
                                 <div className='flex-1 w-48'>
-                                    <img src={manga.coverUrl} alt="" loading='lazy' className="w-full h-[200px] object-cover rounded-md shadow-md" />
+                                    <img src={manga.cover_url} alt="" loading='lazy' className="w-full h-[200px] object-cover rounded-md shadow-md" />
                                 </div>
                                 <div className="flex-8">
                                     <p className="font-bold">{manga.title}</p>
                                 </div>
-                                <div onClick={() => handleViewDetails(manga.id)} className='rounded bg-green-700 p-2 md:p-3 text-white text-center cursor-pointer font-bold bottom-0'>
+                                <div onClick={() => handleViewDetails(manga.mangaid)} className='rounded bg-green-700 p-2 md:p-3 text-white text-center cursor-pointer font-bold bottom-0'>
                                     View
                                 </div>
                             </div>
