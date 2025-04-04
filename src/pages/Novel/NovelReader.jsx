@@ -1,62 +1,88 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaComment } from "react-icons/fa";
+import { useLocation, useParams, useNavigate } from 'react-router';
 import './NovelReader.css'; // Import the CSS file
+import { api } from '../../services/api';
+import Spinner from '../../components/Spinner';
 
 function NovelReader() {
-    const novelContent = [
-        'Trong những câu chuyện mà cha mẹ kể bên giường ngủ của con cái, những câu chuyện mà người ta thường gọi là cổ tích, không thể thiếu một chuyện tình giữa Công chúa và Hoàng tử.',
-        'Một nàng Công chúa biến mất, chỉ để lại duy nhất một chiếc giày thủy tinh, và một chàng Hoàng tử đi khắp nơi tìm nàng. Một nàng Công chúa ăn phải quả táo độc do âm mưu của mụ phù thủy và chìm vào giấc ngủ sâu, được đánh thức bởi nụ hôn của Hoàng tử.',
-        'Có người chê bai những câu chuyện ấy là sáo rỗng, nhưng gọi một điều là sáo rỗng vốn dĩ chỉ có nghĩa rằng đó là câu chuyện được yêu thích và phổ biến. Có câu chuyện nào khơi gợi cảm xúc con người nhiều như tình yêu nở rộ giữa nghịch cảnh?',
-        'Thế nhưng, lý do người ta yêu thích những câu chuyện tựa cổ tích lại chính là vì những câu chuyện cổ tích ấy không thể xảy ra trong thực tế. Trí tưởng tượng chỉ mãi là trí tưởng tượng, không thể tránh khỏi sự khác biệt với thực tại.',
-        'Trong thực tế, mọi thứ xuất hiện trong cổ tích đều tồn tại: những nàng Công chúa bị giam trong tháp, những mụ phù thủy, những chàng Hoàng tử dũng cảm, và tình yêu.',
-        'Nhưng chẳng có gì đảm bảo rằng tất cả những yếu tố ấy sẽ hòa quyện cùng nhau. Chàng Hoàng tử tuấn tú sẽ cứu nàng Công chúa bị nguyền rủa và nhốt trong tháp vẫn chưa xuất hiện.',
-        '“Liệu một người như thế có xuất hiện không? Một chàng Hoàng tử trong mơ...”',
-        '“Hmm, chịu.”',
-        'Câu chuyện cũ về một chàng Hoàng tử tuấn tú xuất hiện và cứu lấy nàng Công chúa xinh đẹp đã trở nên phai nhòa theo thời gian.',
-        '***',
-        'Đã hơn 15 năm kể từ khi nàng Công chúa bị nhốt trong tháp trở thành lời đồn đại trong giới hầu cận của hoàng gia. Người ta thương hại nàng Công chúa bị nguyền rủa khiến toàn thân biến dạng, nhưng cũng không ngừng chế giễu.',
-        '“Hoàng tử nào lại đi yêu một người phụ nữ thân thể bị biến dạng chẳng khác nào quái vật? Có khi hắn ta lại sợ đái ra quần vì cái lời nguyền ấy chứ.”',
-        '“Haa. Thật đáng tiếc. Thế mà người ta nói rằng cô ấy từng rất xinh đẹp...”',
-        'Nàng Công chúa bị cha mẹ và anh chị em ruồng bỏ, chẳng có ai yêu thương nàng.',
-        '“Ặc, nếu là ta, ta đã tự cắn lưỡi mà chết luôn rồi... Híc!!”',
-        'Ngoại trừ một người.',
-        '“Suỵt.”',
-        'Nàng Công chúa không hề cô đơn.',
-        '“Cẩn thận, Công chúa có thể nghe thấy các người đấy.”',
-        'Có một người hầu gái trung thành đã tự nguyện nhận lấy vị trí chăm sóc nàng Công chúa mà ai ai cũng xa lánh.',
-        'Một người hầu không màng tới ánh mắt thiên hạ, chỉ một lòng hầu hạ nàng Công chúa.',
-        'Người ta gọi người hầu gái ấy là Hoàng tử.',
-        {
-            url: 'https://i.imgur.com/lKxztBg.jpeg'
-        }
-    ]
+    const { novelid, noveltitle, chapterid, chaptertitle } = useParams()
+    const navigate = useNavigate()
+    const location = useLocation()
+    const chapters = location.state.chapters || []
+    const [novelContent, setNovelContent] = useState({
+        novelid: "67eabac46f25807d87d7acc1",
+        chapter_title: "Awakening",
+        chapter_link: "https://www.royalroad.com/fiction/107529/wh-40k-transcendence/chapter/2098252/awakening",
+        chapter_content: [
+            "", "---", "", "The first thing I notice is the second. A low, mechanical hum, constant..."
+        ],
+        _id: "67eb5b9f3bb426e0d0fd8200"
+    })
     const comments = [
         { avatar: 'https://static.ybox.vn/2022/ 7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User1', content: 'This is a comment' },
         { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User2', content: 'This is a comment' },
         { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User3', content: 'This is a comment' },
         { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User4', content: 'This is a comment' },
     ]
+    const [loading, setLoading] = useState(true)
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    const handleNextChapter = () => {
+        const currentIndex = chapters.findIndex((chapter) => chapter._id === chapterid)
+        if (currentIndex !== -1 && currentIndex < chapters.length - 1) {
+            const nextChapter = chapters[currentIndex + 1]
+            setLoading(true)
+            // /novel/:novelid/:noveltitle/:chapterid/:chaptertitle
+            navigate(`/novel/${novelid}/${noveltitle}/${nextChapter._id}/${nextChapter.chapter_title}`, { state: { chapters } })
+        }
+    }
+
+    const handlePreviousChapter = () => {
+        const currentIndex = chapters.findIndex((chapter) => chapter._id === chapterid)
+        if (currentIndex > 0) {
+            const previousChapter = chapters[currentIndex - 1]
+            setLoading(true)
+            // /novel/:novelid/:noveltitle/:chapterid/:chaptertitle
+            navigate(`/novel/${novelid}/${noveltitle}/${previousChapter._id}/${previousChapter.chapter_title}`, { state: { chapters } })
+        }
+    }
+
+    const handleBackToDetails = () => {
+        navigate(`/novel/${novelid}`)
+    }
+
+    useEffect(() => {
+        api.get(`/api/novel/${novelid}/${chapterid}`).then(res => {
+            console.log('check chapter info: ', res.data)
+            console.log('check chapters array:', chapters)
+            setNovelContent(res.data.data[0])
+        }).catch(err => console.log(err)).finally(() => setLoading(false))
+    }, [chapterid])
+
+    if (loading) {
+        return <Spinner />
     }
 
     return (
         <>
             <div className='flex flex-col justify-center items-center md:pl-[200px] md:pr-[200px] bg-[#f0dcbd]'>
                 <div className='flex flex-col'>
-                    <p className='text-xl md:text-3xl font-semibold text-black text-center'>Hầu Gái của Nàng Công Chúa Bị Nguyền Rủa</p>
+                    <p onClick={() => handleBackToDetails()} className='text-xl md:text-3xl font-semibold text-black text-center hover:underline cursor-pointer'>{noveltitle}</p>
                 </div>
                 {/* This div will contain 2 button */}
                 <div className='flex flex-col justify-center headifo sticky-top'>
-                    <p className='md:text-lg mt-2'>Chương 0: Rapunzel</p>
+                    <p className='md:text-lg mt-2'>{chaptertitle}</p>
                 </div>
                 <div className='flex flex-col justify-center sticky-top'>
-                    <button className='p-[10px] bg-green-700 text-white font-bold md:w-[500px] w-[200px] rounded mt-3'>Chương sau</button>
-                    <button className='p-[10px] font-bold md:w-[500px] w-[200px] rounded border mt-3'>Chương trước</button>
+                    <button onClick={() => handleNextChapter()} className='p-[10px] bg-green-700 text-white font-bold md:w-[500px] w-[200px] rounded mt-3 cursor-pointer'>Next chapter</button>
+                    <button onClick={() => handlePreviousChapter()} className='p-[10px] font-bold md:w-[500px] w-[200px] rounded border mt-3 cursor-pointer'>Previous chapter</button>
                 </div>
                 {/* This div will contain the manga images */}
                 <div className='p-[10px] md:p-[10px]'>
-                    {novelContent.map((content, index) => (
+                    {novelContent.chapter_content.map((content, index) => (
                         <div className='mt-3' key={index}>
                             {typeof content === 'string' ? (
                                 <p className='md:text-xl text-justify'>{content}</p>

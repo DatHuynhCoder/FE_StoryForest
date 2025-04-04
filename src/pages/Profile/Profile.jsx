@@ -1,9 +1,18 @@
 //image
 import DefaultBG from "../../assets/default_bg_profile.jpg";
 import DefaultAvt from "../../assets/default_avatar.jpg";
-import { FaCrown } from "react-icons/fa";
-import { FaArrowRight } from "react-icons/fa";
+import { FaCrown, FaArrowRight } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+
+//import api
+import { apiAuth } from "../../services/api";
+
+import { useEffect, useState } from "react";
+
+//import Spinner
+import Spinner from "../../components/Spinner";
+//import modal
+import UpdateUserModal from "./UpdateUserModal";
 
 const aboutUser = [
   "Có thể dành cả ngày trong một hiệu sách mà không thấy chán.",
@@ -64,24 +73,51 @@ const books = [
 ];
 
 const Profile = () => {
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await apiAuth.get("/api/reader/account");
+        if (response.data.success) {
+          setUser(response.data.data);
+        }
+      } catch (error) {
+        console.error("Khong tìm thấy người dùng:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  //Spinner to load while fetching data
+  if (isLoading) {
+    return <Spinner />;
+  }
+
   return (
     <div className="w-full min-h-screen bg-[#d9d9d9] flex flex-col items-center gap-6">
       <div className="w-full sm:w-4/5 min-h-1/2 flex flex-col bg-white pb-5 rounded-b-2xl">
         {/* Background Profile */}
         <div className="relative h-40">
-          <img className="w-full h-full object-cover object-center" src={DefaultBG} alt="background-profile" />
+          <img className="w-full h-full object-cover object-center" src={user?.bgImg?.url || DefaultBG} alt="background-profile" />
 
           {/* Avatar */}
           <img
             className="absolute sm:left-1/2 left-1/4 bottom-[-80px] transform -translate-x-1/2 rounded-full h-48 w-48 border-4 border-white"
-            src={DefaultAvt}
+            src={user?.avatar?.url || DefaultAvt}
             alt="User Avatar"
           />
         </div>
 
         {/* Username */}
         <div className="flex flex-row relative">
-          <h1 className="mx-12 mt-20 sm:text-center text-3xl font-bold flex-1">Username 1</h1>
+          <h1 className="mx-12 mt-20 sm:text-center text-3xl font-bold flex-1">
+            {user?.username}
+          </h1>
 
           {/* upgrade button */}
           <button className="p-[3px] cursor-pointer absolute sm:right-5 right-1 bottom-0 rounded-full bg-black">
@@ -97,12 +133,16 @@ const Profile = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="p-4 flex flex-row items-center gap-4">
             <img src="/images/email.png" alt="email logo" className="w-8 h-8" />
-            <div className="flex-1 text-xl">username2004@gmail.com</div>
+            <div className="flex-1 text-xl">
+              {user?.email}
+            </div>
           </div>
 
           <div className="p-4 flex flex-row items-center gap-4">
             <img src="/images/phone.png" alt="email logo" className="w-8 h-8" />
-            <div className="flex-1 text-xl">084657678788</div>
+            <div className={`flex-1 text-xl ${user?.phone ? "" : "text-gray-500 italic"}`}>
+              {user?.phone ? user.phone : "Thêm số điện thoại"}
+            </div>
           </div>
 
           <div className="p-4 flex flex-row items-center gap-4">
@@ -113,11 +153,15 @@ const Profile = () => {
 
         {/* Edit and Exit section */}
         <div className="flex flex-row justify-center gap-10 mt-4">
-          <button type="button" className="text-base cursor-pointer text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-bold rounded-full px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+          <button
+            type="button"
+            className="text-base cursor-pointer text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-bold rounded-full px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+            onClick={() => setIsModalOpen(true)}
+          >
             ✏️ Chỉnh sửa
           </button>
 
-          <button type="button" class="text-green-700 font-bold hover:text-white rounded-full border-3 cursor-pointer border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 text-sm px-5 py-2.5 text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
+          <button type="button" className="text-green-700 font-bold hover:text-white rounded-full border-3 cursor-pointer border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 text-sm px-5 py-2.5 text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
             🚪Đăng xuất
           </button>
         </div>
@@ -145,11 +189,11 @@ const Profile = () => {
             <img src="/images/fav_book.png" alt="info about me" className="w-12 h-12" />
           </div>
 
-          <button type="button" class="cursor-pointer text-white bg-purple-700 hover:bg-purple-800 focus:ring-4  font-bold rounded-full text-sm p-2.5 text-center inline-flex items-center">
-            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+          <button type="button" className="cursor-pointer text-white bg-purple-700 hover:bg-purple-800 focus:ring-4  font-bold rounded-full text-sm p-2.5 text-center inline-flex items-center">
+            <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
             </svg>
-            <span class="sr-only">xem them</span>
+            <span className="sr-only">xem them</span>
           </button>
         </h2>
 
@@ -159,12 +203,12 @@ const Profile = () => {
 
         <div className="flex flex-row flex-wrap gap-3">
           {books.map((book, index) => (
-            <a key={index} href="#" class="flex flex-col items-center bg-white border border-gray-200 rounded-2xl shadow-sm md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
-              <img class="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src={book.picture} alt="error book" />
-              <div class="flex flex-col justify-between p-4 leading-normal">
-                <h4 class="mb-2 text-3xl font-bold tracking-tight text-(--secondary-color) dark:text-white">{book.name}</h4>
-                <p class="mb-3 font-normal text-green-700 ">{book.author}</p>
-                <p class="mb-3 font-normal text-black ">{book.description}</p>
+            <a key={index} href="#" className="flex flex-col items-center bg-white border border-gray-200 rounded-2xl shadow-sm md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+              <img className="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src={book.picture} alt="error book" />
+              <div className="flex flex-col justify-between p-4 leading-normal">
+                <h4 className="mb-2 text-3xl font-bold tracking-tight text-(--secondary-color) dark:text-white">{book.name}</h4>
+                <p className="mb-3 font-normal text-green-700 ">{book.author}</p>
+                <p className="mb-3 font-normal text-black ">{book.description}</p>
 
                 <div className="flex flex-row justify-center gap-10 mt-4">
                   <button type="button" className="flex flex-row items-center gap-2 text-base cursor-pointer text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-bold rounded-full px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
@@ -174,7 +218,7 @@ const Profile = () => {
 
                   <button type="button" className="flex flex-row items-center gap-2 text-red-700 font-bold hover:text-white rounded-full border-3 cursor-pointer border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-800">
                     <div>Xóa</div>
-                    <MdDelete className="h-5 w-5"/>
+                    <MdDelete className="h-5 w-5" />
                   </button>
                 </div>
               </div>
@@ -182,8 +226,15 @@ const Profile = () => {
           ))}
         </div>
       </div>
-    </div>
 
+      {/* update modal */}
+      <UpdateUserModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        user={user}
+        onUserUpdate={(updatedUser) => setUser(updatedUser)}
+      />
+    </div>
   )
 }
 

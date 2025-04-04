@@ -5,7 +5,7 @@ import { IoIosContacts } from "react-icons/io";
 import ContactForm from "/src/components/Contact/Contact";
 import "/src/pages/Home/Home.css";
 import { useNavigate } from 'react-router';
-import axios from 'axios';
+import { api } from "../../services/api";
 
 var categories = [
     {
@@ -52,7 +52,7 @@ function Home() {
         }
     }]);
     useEffect(() => {
-        axios.get('http://localhost:5000/mangadex/manga')
+        api.get('/mangadex/manga')
             .then((res) => {
                 setListManga(res.data);
             })
@@ -100,12 +100,12 @@ function Home() {
                         {listManga.length !== 0 && listManga.map((manga, index) => (
                             <div key={index} className="flex flex-col min-w-[150px]">
                                 <div className='flex-1 w-48'>
-                                    <img src={manga.coverUrl} alt="" loading='lazy' className="w-full h-[200px] object-cover rounded-md shadow-md" />
+                                    <img src={manga.cover_url} alt="" loading='lazy' className="w-full h-[200px] object-cover rounded-md shadow-md" />
                                 </div>
                                 <div className="flex-8">
                                     <p className="font-bold">{manga.title}</p>
                                 </div>
-                                <div onClick={() => handleViewDetails(manga.id)} className='rounded bg-green-700 p-2 md:p-3 text-white text-center cursor-pointer font-bold bottom-0'>
+                                <div onClick={() => handleViewDetails(manga.mangaid)} className='rounded bg-green-700 p-2 md:p-3 text-white text-center cursor-pointer font-bold bottom-0'>
                                     View
                                 </div>
                             </div>

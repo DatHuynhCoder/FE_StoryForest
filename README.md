@@ -1,12 +1,76 @@
-# React + Vite
+# Web Manga/Novel Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack web application for reading and managing manga/novels, built using React.js, Express.js, MongoDB, and TailwindCSS.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- User authentication (signup/login/logout)
+- Browse, search, and filter manga/novels
+- Read manga/novels online
+- Bookmark favorite manga/novels
+- Admin panel for managing content
+- Responsive UI with TailwindCSS
+- AI for searching manga/novel base on description
+- Cloning your voice for reading novel
+- Reading manga when click on image
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Frontend**: React.js, TailwindCSS
+- **Backend**: Express.js, Node.js
+- **Database**: MongoDB
+- **API**: MangaDex API (and custom API)
+
+## Installation
+
+### Prerequisites
+Make sure you have the following installed:
+- [Node.js](https://nodejs.org/)
+- [MongoDB](https://www.mongodb.com/)
+
+### Clone the repository
+```sh
+git clone https://github.com/DatHuynhCoder/FE_StoryForest.git
+cd web-manga-novel
+```
+
+### Backend Setup
+```sh
+cd backend
+npm install
+npm run app
+```
+
+### Frontend Setup
+```sh
+cd frontend
+npm install
+npm run dev
+```
+
+## Environment Variables
+Create a `.env` file in the backend directory with the following variables:
+```
+PORT=
+MONGO_URI=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+JWT_SECRET=
+JWT_REFRESH_SECRET=
+JWT_EXPIRES_IN=
+JWT_REFRESH_EXPIRES_IN=
+```
+
+## Usage
+- Run `npm run app` in `backend` and `npm run dev` in `frontend` directories.
+- Ctrl + click on the link display in the terminal
+
+## License
+This project is licensed under the MIT License.
+
+## Contributions
+Feel free to submit pull requests or report issues!
+
+## Contact
+For questions, reach out via GitHub issues or email me at [22520212@gm.uit.edu.vn].

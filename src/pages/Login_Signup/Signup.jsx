@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import api from "../../services/api";
+import { api } from "../../services/api";
 // icon
 import { FaUserCircle } from "react-icons/fa";
 import { RiLockPasswordFill, RiEyeCloseFill, RiEyeFill } from "react-icons/ri";
 import { MdEmail } from "react-icons/md";
 
+import { toast } from "react-toastify";
+
 const Signup = () => {
-  const naivigate = useNavigate()
+  const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false);
 
   //user info
@@ -17,14 +19,16 @@ const Signup = () => {
 
   const handleSignup = async () => {
     try {
-      const response = await api.post("/api/reader/account/register", { username, email, password });
+      const response = await api.post("/api/reader/account/register", {username, email, password });
       if (response.data.success) {
-        alert("Sign up successfully");
-        naivigate("/");
+        toast.success("Signup successful!");
+        navigate("/login");
+      } else {
+        toast.error(error.response?.data?.message || "Signup failed");
       }
     } catch (error) {
-      console.log("Error during signup", error);
-      alert("An error occured, please try again");
+      console.error("An error occurred during signup:", error);
+      toast.error("An error occurred. Please try again later.");
     }
   }
 
@@ -102,7 +106,7 @@ const Signup = () => {
         {/* sign up option */}
         <div className="mt-5">Already have an account?
           <span className="font-bold text-(--secondary-color) cursor-pointer text-2xl underline-offset-6 underline">
-            <Link to="/">Log in</Link></span></div>
+            <Link to="/login">Log in</Link></span></div>
       </div>
     </div>
   )
