@@ -158,7 +158,7 @@ function BookDetails() {
                                         <img src={comment.avatar} alt={comment.user} className='w-10 h-10 rounded-full' />
                                         <p className='ml-1'>{comment.user}</p>
                                     </div>
-                                    <div className='mt-2 w-[100%] border p-2 rounded-md mt-2'>
+                                    <div className='w-[100%] border p-2 rounded-md mt-2'>
                                         <p>{comment.content}</p>
                                     </div>
                                 </div>
