@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
 import { api } from '../../services/api'
 import Spinner from '../../components/Spinner'
 import { useNavigate } from 'react-router'
