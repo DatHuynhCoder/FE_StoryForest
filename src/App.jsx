@@ -41,7 +41,7 @@ function App() {
           <Route path="/novel" element={<NovelList />} />
           <Route path="/novel/:novelid" element={<NovelDetails />} />
           <Route path="/novel/:novelid/:noveltitle/:chapterid/:chaptertitle" element={<NovelReader />} />
-          <Route path='/result' element={<ResultPage />} />
+          <Route path='/result/:keyword' element={<ResultPage />} />
         </Route>
       </Routes>
       <ToastContainer />

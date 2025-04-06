@@ -57,7 +57,7 @@ function MangaReader() {
         <>
             <div className='flex flex-col justify-center items-center md:ml-[200px] md:mr-[200px]'>
                 <div className='flex flex-col'>
-                    <p className='text-3xl md:text-5xl font-bold text-black text-center cursor-pointer' onClick={handleBackToDetails}>{mangaTitle}</p>
+                    <p className='text-3xl md:text-5xl font-bold text-black text-center cursor-pointer' onClick={handleBackToDetails}>{mangaTitle == undefined ? "" : mangaTitle}</p>
                 </div>
                 {/* This div will contain 2 button */}
                 <p className='md:text-lg mt-2'>Chương {chapterNumber}: {chapterTitle}</p>

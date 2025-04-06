@@ -70,7 +70,7 @@ function BookDetails() {
                 console.log(res.data)
                 api.get(`/manga/${mangaId}/chapters`)
                     .then((res) => {
-                        setChapters(res.data.chapters.filter((chapter) => chapter.pages !== 0 && chapter.title !== ''));
+                        setChapters(res.data.chapters.filter((chapter) => chapter.pages !== 0));
                     })
                 setInfoManga(res.data);
                 // setLoading(false)
