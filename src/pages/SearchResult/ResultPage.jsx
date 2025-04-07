@@ -7,8 +7,34 @@ import arrowIcon from "../../assets/back-next-icon.png";
 // Import các component con
 import Author from "./Filter/Author/Author";
 import Tag from "./Filter/Tag/Tag";
-
+// 
+import { api } from "../../services/api";
+//
+import { useEffect, useState } from "react";
+import { useParams } from "react-router";
+import { useNavigate } from "react-router";
+import Spinner from "../../components/Spinner";
 const ResultPage = () => {
+    const { keyword } = useParams();
+    const [listResult, setListResult] = useState([]);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        api.get(`api/search/${keyword}`)
+            .then((res) => {
+                console.log(res.data);
+                setListResult(res.data.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            }).finally(() => {
+                setLoading(false);
+            })
+    }, [keyword]);
+    if (loading) {
+        return (
+            <Spinner />
+        )
+    }
     return (
         <div>
             {/* Component bộ lọc thể loại và sắp xếp */}
@@ -23,34 +49,14 @@ const ResultPage = () => {
             <div className="container-result-books">
                 <div className="grid-books">
                     {/* Hiển thị danh sách sách theo dạng lưới */}
-                    <div className="item-book">
-                        <img className="book-image" src={bookImage} alt="book image" />
-                        <p className="book-name">Tên truyện</p>
-                    </div>
-                    <div className="item-book">
-                        <img className="book-image" src={bookImage} alt="book image" />
-                        <p className="book-name">Tên truyện</p>
-                    </div>
-                    <div className="item-book">
-                        <img className="book-image" src={bookImage} alt="book image" />
-                        <p className="book-name">Tên truyện</p>
-                    </div>
-                    <div className="item-book">
-                        <img className="book-image" src={bookImage} alt="book image" />
-                        <p className="book-name">Tên truyện</p>
-                    </div>
-                    <div className="item-book">
-                        <img className="book-image" src={bookImage} alt="book image" />
-                        <p className="book-name">Tên truyện</p>
-                    </div>
-                    <div className="item-book">
-                        <img className="book-image" src={bookImage} alt="book image" />
-                        <p className="book-name">Tên truyện</p>
-                    </div>
-                    <div className="item-book">
-                        <img className="book-image" src={bookImage} alt="book image" />
-                        <p className="book-name">Tên truyện</p>
-                    </div>
+                    {
+                        listResult.map((item, index) => (
+                            <div className="item-book" key={index}>
+                                <img className="book-image" src={item.cover_url} alt="book image" />
+                                <p className="book-name">{item.title}</p>
+                            </div>
+                        ))
+                    }
                 </div>
             </div>
 
@@ -60,7 +66,7 @@ const ResultPage = () => {
                 <div className="item-page-index">
                     <img className="back-page-index" src={arrowIcon} alt="arrow icon" />
                 </div>
-                
+
                 {/* Hiển thị số trang */}
                 <div className="item-page-index">1</div>
                 <div className="item-page-index">2</div>
