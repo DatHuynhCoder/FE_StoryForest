@@ -5,21 +5,22 @@ import Spinner from '../../components/Spinner'
 
 function NovelDetails() {
     const navigate = useNavigate()
-    const { novelid } = useParams()
+    const { novelid } = useParams() // from NovelList.jsx
     const [loading, setLoading] = useState(true)
     const [infoNovel, setInfoNovel] = useState({
-        author: "Kratos5627",
-        button_link: "https://www.royalroad.com/fiction/107529/wh-40k-transcendence/chapter/2098252/awakening",
-        cover_url: "https://www.royalroadcdn.com/public/covers-large/107529-wh-40k-transcendence.jpg?time=1741671555",
-        followers: 0,
-        link: "https://www.royalroad.com/fiction/107529/wh-40k-transcendence",
-        rate: 4,
-        status: "Fan Fiction",
-        synopsis: "He wakes up in a universe he knows all too well—a nightmare given form, where war never ends and survival is a fleeting privilege. He’s read the lore, studied the factions, memorized the fates of empires. But knowing doesn’t mean controlling.Thrown into the lowest depths of this brutal reality, he refuses to be just another forgotten soul ground to dust. He watches, learns, adapts. Strength is the only currency here, and he intends to amass more than anyone—more than the warriors, the psykers, the so-called gods.Not for power. Not for survival. For something beyond all of it.Something greater than this universe itself.",
-        tags: ['GameLit', 'Portal Fantasy / Isekai', 'Anti-Hero Lead', 'War and Military', 'Grimdark', 'Action', 'Adventure', 'Fantasy', 'Sci-fi', 'Artificial Intelligence', 'Attractive Lead', 'Cyberpunk', 'Dystopia', 'Hard Sci-fi', 'Low Fantasy', 'Magic', 'Male Lead', 'Reincarnation', 'Supernatural'],
-        title: "WH 40k: Transcendence",
+        _id: '67eabb616f25807d87d7ad10',
+        title: 'Infinite Farmer: A Plants vs Dungeon LitRPG',
+        author: 'R.C. Joshua',
+        synopsis: 'Betrayed. Alone. Forced to survive the deadliest dungeon in the universe. As aFarmer.Tulland dreamed of adventure.To be someone who sees every-place, goes every-where, and does every-thing.All he wanted was to go beyond the confines of his tiny island. So, when the Church denied him a class, he turned to the only other being that could grant him his wish; The System.And the System delivered. Tulland gotaClass, but not one he ever wished for. Awakening as a Farmer, he finds himself in the one place where he can grow away from the clutches of the Church — The Infinite; a dungeon whose end even heroes of old have never seen. Armed with what dregs of power the System deigned to give him, Tulland will have to figure out how to survive, and cultivate, the universe’s deadliest dungeon.Expect:+ Progression fantasy with actual farming!+ A very stubborn MC+ Combat! Action! Plants!Schedule:+ Daily (7 chapters per week) (more while we’re starting out)+ Book 1 completely written!',
+        tags: ['LitRPG', 'Portal Fantasy / Isekai', 'Dungeon', 'Post Apocalyptic', 'Strategy', 'Action', 'Adventure', 'Fantasy', 'GameLit', 'High Fantasy', 'Magic', 'Male Lead', 'Progression'],
+        status: 'Original',
         views: 238,
-        _id: "67eabac46f25807d87d7acc1"
+        followers: 0,
+        rate: 4,
+        cover_url: 'https://www.royalroadcdn.com/public/covers-large/infinite-farmer-cultivating-the-infinite-dungeon-112376.jpg?time=1731726233',
+        type: 'novel',
+        artist: [],
+        mangaid: ''
     })
     const [chapters, setChapters] = useState([
         {
