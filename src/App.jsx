@@ -37,7 +37,12 @@ import AddStaffForm from "./components/UserMagement/AddStaffForm.jsx";
 // Staff
 import StaffLayout from "./layouts/Staff/StaffLayout.jsx";
 import StoryManagement from "./pages/Staff/StoryManagement.jsx";
-//import ChapterEditor from "./components/Staff/EditStory.jsx";
+import DetailStory from "./components/Staff/DetailStory.jsx";
+import EditChapter from "./components/Staff/EditChapter.jsx";
+import EditStory from "./components/Staff/EditStory.jsx";
+import AddNewStory from "./components/Staff/AddNewStory.jsx";
+import AddChapter from "./components/Staff/AddChapter.jsx";
+
 
 function App() {
   return (
@@ -71,10 +76,11 @@ function App() {
 
         <Route element={<StaffLayout />}>
           <Route path="/staff/story-management" element={<StoryManagement />}> </Route>  
-          <Route path="/staff/story-management/edit-story/:id" element={<StoryManagement />}> </Route> 
-          <Route path="/staff/author-management" element={<StoryManagement />}> </Route>  
-          <Route path="/staff/VIP-management" element={<StoryManagement />}> </Route> 
-        
+          <Route path="/staff/story-management/edit-story/:id_story" element={<EditStory />}> </Route> 
+          <Route path="/staff/story-management/edit-story/:id_story/:id_chapter" element={<EditChapter />}> </Route> 
+          <Route path="/staff/story-management/edit-story/:id_story/add-chapter" element={<AddChapter />}> </Route> 
+          <Route path="/staff/story-management/detail-story/:id" element={<DetailStory />}> </Route> 
+          <Route path="/staff/story-management/add-story" element={<AddNewStory />}> </Route> 
         </Route>
 
       </Routes>

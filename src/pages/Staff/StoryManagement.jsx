@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FiEdit2, FiTrash2, FiInfo, FiPlus, FiSearch } from 'react-icons/fi';
+import { FiEdit2, FiTrash2, FiInfo, FiPlus, FiSearch, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 
 const StoryManagement = () => {
@@ -7,40 +7,67 @@ const StoryManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const storiesPerPage = 10; // Số truyện hiển thị mỗi trang
 
-  // Dummy data
-  const stories = Array(5).fill({
-    title: 'One Piece',
-    chapterCount: 1080
-  });
+  // Dummy data with cover images
+  const allStories = Array.from({ length: 20 }, (_, i) => ({
+    id: i + 1,
+    title: `One Piece ${i + 1}`,
+    chapterCount: Math.floor(Math.random() * 1000) + 1,
+    coverImage: '/src/assets/book.jpg'
+  }));
+
+  // Tính toán stories hiển thị trên trang hiện tại
+  const indexOfLastStory = currentPage * storiesPerPage;
+  const indexOfFirstStory = indexOfLastStory - storiesPerPage;
+  const currentStories = allStories.slice(indexOfFirstStory, indexOfLastStory);
+  const totalPages = Math.ceil(allStories.length / storiesPerPage);
 
   const handleEdit = (storyId) => {
     navigate(`/staff/story-management/edit-story/${storyId}`);
   };
-
+  
+  const handleSeeDetails = (storyId) => {
+    navigate(`/staff/story-management/detail-story/${storyId}`);
+  };
+  
   const handleAdd = () => {
     navigate('/staff/story-management/add-story');
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // Implement search functionality
     console.log('Searching for:', searchQuery);
+    // Reset về trang 1 khi tìm kiếm
+    setCurrentPage(1);
+  };
+
+  // Hàm xử lý xóa truyện
+  const handleDelete = (storyId) => {
+    if (window.confirm(`Bạn có chắc muốn xóa truyện này?`)) {
+      console.log(`Xóa truyện có ID: ${storyId}`);
+      // Thực hiện xóa ở đây (trong demo chỉ log ra console)
+    }
+  };
+
+  // Hàm chuyển đến trang cụ thể
+  const goToPage = (page) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="bg-gray-50 min-h-screen p-4 md:p-6">
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <div className="flex items-center space-x-4">
+        <div className="px-4 py-3 md:px-6 md:py-4 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0">
+          <div className="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
             {/* Search bar */}
-            <form onSubmit={handleSearch} className="relative">
+            <form onSubmit={handleSearch} className="relative w-full md:w-64">
               <div className="flex items-center">
                 <input
                   type="text"
                   placeholder="Tìm kiếm..."
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -49,9 +76,9 @@ const StoryManagement = () => {
             </form>
             
             {/* Sort dropdown */}
-            <div className="relative">
+            <div className="relative w-full md:w-auto">
               <select
-                className="appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full md:w-40 appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value)}
               >
@@ -71,7 +98,7 @@ const StoryManagement = () => {
           {/* Add button */}
           <button 
             onClick={handleAdd}
-            className="flex items-center space-x-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="w-full md:w-auto flex items-center justify-center space-x-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             <FiPlus className="text-sm" />
             <span>Thêm</span>
@@ -79,33 +106,57 @@ const StoryManagement = () => {
         </div>
 
         {/* Story count */}
-        <div className="px-6 py-3 bg-gray-100 border-b border-gray-200">
-          <span className="text-sm font-medium">Danh sách Truyện (129)</span>
+        <div className="px-4 md:px-6 py-2 md:py-3 bg-gray-100 border-b border-gray-200">
+          <span className="text-sm font-medium">
+            Hiển thị {indexOfFirstStory + 1}-{Math.min(indexOfLastStory, allStories.length)} trong tổng số {allStories.length} truyện
+          </span>
         </div>
 
         {/* Story list */}
         <div className="divide-y divide-gray-200">
-          {stories.map((story, index) => (
-            <div key={index} className="px-6 py-4 hover:bg-gray-50">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium text-gray-900">{story.title}</h3>
-                  <p className="text-sm text-gray-500">{story.chapterCount} chapters</p>
+          {currentStories.map((story) => (
+            <div key={story.id} className="px-4 md:px-6 py-3 md:py-4 hover:bg-gray-50">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+                <div className="flex items-center space-x-3 md:space-x-4 w-full sm:w-auto">
+                  {/* Cover image */}
+                  <div className="w-16 h-24 md:w-20 md:h-28 flex-shrink-0">
+                    <img 
+                      src={story.coverImage} 
+                      alt={`${story.title} cover`} 
+                      className="w-full h-full object-cover rounded"
+                    />
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-gray-900 truncate">{story.title}</h3>
+                    <p className="text-sm text-gray-500">{story.chapterCount} chương</p>
+                  </div>
                 </div>
                 
                 {/* Action buttons */}
-                <div className="flex space-x-4">
-                  <button className="flex items-center text-gray-600 hover:text-gray-800 text-sm">
-                    <span className="mr-1">Chi tiết</span>
-                  </button>
+                <div className="flex flex-col xs:flex-row space-y-2 xs:space-y-0 xs:space-x-3 md:space-x-4 w-full sm:w-auto">
                   <button 
-                    className="flex items-center text-green-600 hover:text-green-800 text-sm"
-                    onClick={() => handleEdit(index)}
+                    className="flex items-center text-blue-600 hover:text-blue-800 text-sm justify-start"
+                    onClick={() => handleSeeDetails(story.id)}
                   >
-                    <span className="mr-1">Sửa</span>
+                    <FiInfo className="mr-1 md:hidden" />
+                    <span>Chi tiết</span>
                   </button>
-                  <button className="flex items-center text-red-600 hover:text-red-800 text-sm">
-                    <span className="mr-1">Xóa</span>
+
+                  <button 
+                    className="flex items-center text-green-600 hover:text-green-800 text-sm justify-start"
+                    onClick={() => handleEdit(story.id)}
+                  >
+                    <FiEdit2 className="mr-1 md:hidden" />
+                    <span>Sửa</span>
+                  </button>
+                  
+                  <button 
+                    className="flex items-center text-red-600 hover:text-red-800 text-sm justify-start"
+                    onClick={() => handleDelete(story.id)}
+                  >
+                    <FiTrash2 className="mr-1 md:hidden" />
+                    <span>Xóa</span>
                   </button>
                 </div>
               </div>
@@ -114,25 +165,73 @@ const StoryManagement = () => {
         </div>
 
         {/* Pagination */}
-        <div className="px-6 py-4 border-t border-gray-200 flex justify-between items-center">
-          <span className="text-sm text-gray-500">Trang {currentPage}</span>
+        <div className="px-4 md:px-6 py-3 md:py-4 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+          <span className="text-sm text-gray-500">
+            Trang {currentPage}/{totalPages}
+          </span>
+          
           <div className="flex space-x-2">
             <button 
-              className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 hover:bg-gray-50"
+              className="p-2 md:px-3 md:py-1 border border-gray-300 rounded text-sm disabled:opacity-50 hover:bg-gray-50 flex items-center"
               disabled={currentPage === 1}
-              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              onClick={() => goToPage(currentPage - 1)}
             >
-              Trước
+              <FiChevronLeft className="md:hidden" />
+              <span className="hidden md:inline">Trước</span>
             </button>
-            <button className="px-3 py-1 border border-gray-300 rounded text-sm bg-gray-100 font-medium">
-              1
-            </button>
+            
+            {/* Hiển thị các nút trang */}
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => goToPage(pageNum)}
+                  className={`px-3 py-1 border rounded text-sm hidden sm:block ${
+                    currentPage === pageNum 
+                      ? 'bg-blue-600 text-white border-blue-600' 
+                      : 'border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+
+            {totalPages > 5 && currentPage < totalPages - 2 && (
+              <span className="px-2 hidden sm:flex items-center">...</span>
+            )}
+
+            {totalPages > 5 && currentPage < totalPages - 2 && (
+              <button
+                onClick={() => goToPage(totalPages)}
+                className={`px-3 py-1 border rounded text-sm hidden sm:block ${
+                  currentPage === totalPages 
+                    ? 'bg-blue-600 text-white border-blue-600' 
+                    : 'border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                {totalPages}
+              </button>
+            )}
+            
             <button 
-              className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 hover:bg-gray-50"
-              disabled={currentPage === 10}
-              onClick={() => setCurrentPage(prev => Math.min(10, prev + 1))}
+              className="p-2 md:px-3 md:py-1 border border-gray-300 rounded text-sm disabled:opacity-50 hover:bg-gray-50 flex items-center"
+              disabled={currentPage === totalPages}
+              onClick={() => goToPage(currentPage + 1)}
             >
-              Sau
+              <FiChevronRight className="md:hidden" />
+              <span className="hidden md:inline">Sau</span>
             </button>
           </div>
         </div>
