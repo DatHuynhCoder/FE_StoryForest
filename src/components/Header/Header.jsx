@@ -87,20 +87,20 @@ function Header() {
 					<div className='col-span-3 '>
 						<div className='grid grid-cols-6 md:rounded-b-lg h-full bg-[#095533]'>
 							<button className='md:hidden text-lg text-white cursor-pointer' onClick={() => setIsOpen(!isOpen)}>=
-								<menu className={`absolute flex-col flex border-1 text-black bg-[#FBFFE4] w-1/3 items-start pl-2 ${toggleMenu} z-10`}>
-									<NavLink className='hover:underline hover:underline-offset-6' href="#">Thể loại</NavLink>
-									<NavLink className='hover:underline hover:underline-offset-6' href="#">Truyện tranh</NavLink>
+								<menu className={`absolute flex-col flex border-1 text-black bg-[#FBFFE4] w-1/3 items-start pl-2 ${toggleMenu} z-100`}>
+									<NavLink className='hover:underline hover:underline-offset-6' to="/">Thể loại</NavLink>
+									<NavLink className='hover:underline hover:underline-offset-6' to="/manga">Truyện tranh</NavLink>
 									<NavLink className='hover:underline hover:underline-offset-6' to="/novel">Truyện chữ</NavLink>
-									<NavLink className='hover:underline hover:underline-offset-6' href="#">Khác</NavLink>
+									<NavLink className='hover:underline hover:underline-offset-6' to="/">Khác</NavLink>
 								</menu>
 							</button>
 							<p className=' col-span-5 flex justify-start items-center pl-1 md:hidden text-white font-semibold'>Trang chủ</p>
 							<ul className=' justify-around hidden md:grid md:col-span-7 md:grid-cols-5 '>
 								<li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/">Trang chủ</NavLink></li>
-								<li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink>Thể loại</NavLink></li>
-								<li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink>Truyện tranh</NavLink></li>
+								<li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/">Thể loại</NavLink></li>
+								<li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/manga">Truyện tranh</NavLink></li>
 								<li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/novel">Truyện chữ</NavLink></li>
-								<li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink>Khác</NavLink></li>
+								<li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/">Khác</NavLink></li>
 							</ul>
 						</div>
 

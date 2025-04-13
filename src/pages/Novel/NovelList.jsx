@@ -39,6 +39,7 @@ function NovelList() {
 
   useEffect(() => {
     api.get('/api/novel/').then((res) => {
+      console.log(res.data.data)
       setNovelList(res.data.data)
     }).catch((err) => console.log(err)).finally(() => setLoading(false))
   }, [])

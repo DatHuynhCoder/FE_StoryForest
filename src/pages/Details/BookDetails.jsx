@@ -6,49 +6,39 @@ import Spinner from '../../components/Spinner'
 
 function BookDetails() {
     const navigate = useNavigate()
-    const { mangaId } = useParams()
+    const { _id } = useParams()
     const [loading, setLoading] = useState(true)
     const [infoManga, setInfoManga] = useState({
-        mangaid: "32d76d19-8a05-4db0-9fc2-e0b0648fe9d0",
-        title: "Solo Leveling",
-        author: [
-            "h-goon (현군)",
-            "Chugong (추공)",
-            "Gi So-Ryeong (기소령)"
-        ],
-        artist: [
-            "REDICE Studio (레드아이스 스튜디오)",
-            "Jang Sung-Rak (장성락)"
-        ],
-        synopsis: "10 years ago, after “the Gate” that connected the real world with the monster world opened, some of the ordinary, everyday people received the power to hunt monsters within the Gate. They are known as “Hunters”. However, not all Hunters are powerful. My name is Sung Jin-Woo, an E-rank Hunter. I’m someone who has to risk his life in the lowliest of dungeons, the “World’s Weakest”. Having no skills whatsoever to display, I barely earned the required money by fighting in low-leveled dungeons… at least until I found a hidden dungeon with the hardest difficulty within the D-rank dungeons! In the end, as I was accepting death, I suddenly received a strange power, a quest log that only I could see, a secret to leveling up that only I know about! If I trained in accordance with my quests and hunted monsters, my level would rise. Changing from the weakest Hunter to the strongest S-rank Hunter!\n\n---\n**Links:**\n\n- Official English Translation [<Pocket Comics>](https://www.pocketcomics.com/comic/320) | [<WebNovel>](https://www.webnovel.com/comic/only-i-level-up-(solo-leveling)_15227640605485101) | [<Tapas>](https://tapas.io/series/solo-leveling-comic/info)\n- Alternate Official Raw - [Kakao Webtoon](https://webtoon.kakao.com/content/나-혼자만-레벨업/2320)",
-        tags: [
-            "Award Winning",
-            "Monsters",
-            "Action",
-            "Long Strip",
-            "Adventure",
-            "Magic",
-            "Drama",
-            "Fantasy",
-            "Web Comic",
-            "Supernatural",
-            "Adaptation",
-            "Full Color"
-        ],
-        status: "completed",
-        type: "manga",
-        views: 238,
+        artist: ['REDICE Studio (레드아이스 스튜디오)', 'Jang Sung-Rak (장성락)'],
+        author: ['h-goon (현군)', 'Chugong (추공)', 'Gi So-Ryeong (기소령)'],
+        bookImg: {
+            url: 'https://res.cloudinary.com/dvtcbryg5/image/upload/v1744423218/StoryForest/Book/mzbhrc52tmszzqnsdusq.jpg',
+            public_id: 'StoryForest/Book/mzbhrc52tmszzqnsdusq'
+        },
+        cover_url: "https://uploads.mangadex.org/covers/32d76d19-8a05-4db0-9fc2-e0b0648fe9d0/e90bdc47-c8b9-4df7-b2c0-17641b645ee1.jpg",
         followers: 0,
+        mangaid: "32d76d19-8a05-4db0-9fc2-e0b0648fe9d0",
         rate: 5,
-        cover_url: "https://uploads.mangadex.org/covers/32d76d19-8a05-4db0-9fc2-e0b0648fe9d0/e90bdc47-c8b9-4df7-b2c0-17641b645ee1.jpg"
+        status: "completed",
+        synopsis: "10 years ago, after “the Gate” that connected the real world with the monster world opened, some of the ordinary, everyday people received the power to hunt monsters within the Gate. They are known as “Hunters”. However, not all Hunters are powerful. My name is Sung Jin-Woo, an E-rank Hunter. I’m someone who has to risk his life in the lowliest of dungeons, the “World’s Weakest”. Having no skills whatsoever to display, I barely earned the required money by fighting in low-leveled dungeons… at least until I found a hidden dungeon with the hardest difficulty within the D-rank dungeons! In the end, as I was accepting death, I suddenly received a strange power, a quest log that only I could see, a secret to leveling up that only I know about! If I trained in accordance with my quests and hunted monsters, my level would rise. Changing from the weakest Hunter to the strongest S-rank Hunter!\n\n---\n**Links:**\n\n- Official English Translation [<Pocket Comics>](https://www.pocketcomics.com/comic/320) | [<WebNovel>](https://www.webnovel.com/comic/only-i-level-up-(solo-leveling)_15227640605485101) | [<Tapas>](https://tapas.io/series/solo-leveling-comic/info)\n- Alternate Official Raw - [Kakao Webtoon](https://webtoon.kakao.com/content/나-혼자만-레벨업/2320)",
+        tags: ['Award Winning', 'Monsters', 'Action', 'Long Strip', 'Adventure', 'Magic', 'Drama', 'Fantasy', 'Web Comic', 'Supernatural', 'Adaptation', 'Full Color'],
+        title: "Solo Leveling",
+        type: "manga",
+        updatedAt: "2025-04-12T02:00:00.436Z",
+        views: 238,
+        _id: "67f298a0c0aa3501386b7afb"
     })
     const [chapters, setChapters] = useState([
-        { id: '123', title: 'Chapter 1', name: 'Beginning', date: '2022-07-04', chapter: '1', pages: 12 },
-        { id: '123', title: 'Chapter 2', name: 'Middle', date: '2022-07-04', chapter: '1', pages: 12 },
-        { id: '123', title: 'Chapter 3', name: 'End', date: '2022-07-04', chapter: '1', pages: 12 },
-        { id: '123', title: 'Chapter 4', name: 'Beginning', date: '2022-07-04', chapter: '1', pages: 12 },
-        { id: '123', title: 'Chapter 5', name: 'Middle', date: '2022-07-04', chapter: '1', pages: 12 },
-        { id: '123', title: 'Chapter 6', name: 'End', date: '2022-07-04', chapter: '1', pages: 12 }
+        {
+            _id: "67f9e19f83c490c21b7a8958",
+            chapterid: "1a8bc908-7847-498f-a71f-69762713e829",
+            title: "Prologue",
+            chapter: "0",
+            volume: "1",
+            pages: 9,
+            publishDate: "2019-06-14T10:37:42+00:00",
+            mangaid: "32d76d19-8a05-4db0-9fc2-e0b0648fe9d0"
+        }
     ])
     const tags = ['Action', 'Adventure', 'Comedy', 'Drama', 'Fantasy', 'Mystery', 'Psychological', 'Romance', 'Sci-fi', 'Slice of Life', 'Supernatural']
     const comments = [
@@ -58,21 +48,25 @@ function BookDetails() {
         { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User4', content: 'This is a comment' },
     ]
     // handle click on a chapter => navigate to MangaReader
-    const handleClickedChapter = (chapterId, mangaTitle, chapterNumber, chapterTitle) => {
-        navigate(`/mangaReader/${mangaId}/${mangaTitle}/${chapterNumber}/${chapterTitle}/${chapterId}`, { state: { chapters } })
+    const handleClickedChapter = (chapterid, mangatitle, chapternumber, chaptertitle) => {
+        // to MangaReader.jsx
+        navigate(`/mangaReader/${infoManga.mangaid}/${chapterid}`, { state: { _id, chapters, mangatitle, chapternumber, chaptertitle } })
     }
     const handleStartReading = () => {
-        navigate(`/mangaReader/${mangaId}/${infoManga.title}/${chapters[0].chapter}/${chapters[0].title}/${chapters[0].id}`, { state: { chapters } })
+        let mangatitle = infoManga.title
+        let chapternumber = chapters[0].chapter
+        let chaptertitle = chapters[0].title
+        // to MangaReader.jsx
+        navigate(`/mangaReader/${infoManga.mangaid}/${chapters[0].chapterid}`, { state: { _id, chapters, mangatitle, chapternumber, chaptertitle } })
     }
     useEffect(() => {
-        api.get(`/manga/${mangaId}/details`)
+        api.get(`api/manga/${_id}`)
             .then((res) => {
-                console.log(res.data)
-                api.get(`/manga/${mangaId}/chapters`)
+                setInfoManga(res.data.data);
+                api.get(`api/manga/${infoManga.mangaid}/chapters`)
                     .then((res) => {
-                        setChapters(res.data.chapters.filter((chapter) => chapter.pages !== 0));
+                        setChapters(res.data.data.filter((chapter) => chapter.pages !== 0));
                     })
-                setInfoManga(res.data);
                 // setLoading(false)
             })
             .catch((err) => {
@@ -81,7 +75,7 @@ function BookDetails() {
             }).finally(() => {
                 setLoading(false)
             })
-    }, [mangaId])
+    }, [_id])
 
     if (loading) {
         return (<Spinner />)
@@ -90,13 +84,13 @@ function BookDetails() {
     return (
         <>
             <div className='border w-full h-64 absolute z-10 bg-cover bg-center filter blur-md'
-                style={{ backgroundImage: 'url(' + infoManga.cover_url + ')' }}>
+                style={{ backgroundImage: 'url(' + infoManga.bookImg.url + ')' }}>
             </div>
 
             <div className='flex flex-col md:flex-row relative z-20'>
                 <div className='pt-8 md:pt-20 px-4 md:pl-20 flex justify-center md:justify-start'>
                     <img
-                        src={infoManga.cover_url}
+                        src={infoManga.bookImg.url}
                         alt="SPY x FAMILY Cover"
                         loading='lazy'
                         className='w-48 h-64 md:w-60 md:h-72 object-cover shadow-lg'
@@ -137,7 +131,7 @@ function BookDetails() {
                     <p className='font-bold text-green-700'>Danh sách chương</p>
                     <ul className='h-64 overflow-y-scroll'>
                         {chapters.filter((chapter) => chapter.pages !== 0 && chapter.title !== '').map((chapter) => (
-                            <li key={chapter.title} onClick={() => handleClickedChapter(chapter.id, infoManga.title, chapter.chapter, chapter.title)}>
+                            <li key={chapter.title} onClick={() => handleClickedChapter(chapter.chapterid, infoManga.title, chapter.chapter, chapter.title)}>
                                 <div className='p-2 border rounded-md m-1 bg-white'>
                                     <p className='line-clamp-1'>Chap&nbsp;{chapter.chapter}: {chapter.title}</p>
                                     <p className='text-gray-400'>{chapter.date}</p>
