@@ -6,6 +6,7 @@ import Signup from './pages/Login_Signup/Signup.jsx';
 import Profile from './pages/Profile/Profile.jsx';
 import BookDetails from './pages/Details/BookDetails.jsx';
 // manga pages
+import MangaList from './pages/Manga/MangaList.jsx';
 import MangaReader from './pages/Manga/MangaReader.jsx';
 // novel pages
 import NovelList from "./pages/Novel/NovelList.jsx";
@@ -36,8 +37,9 @@ function App() {
             <Route path="/profile" element={<Profile />} />
           </Route>
           <Route path="/" element={<Home />} />
-          <Route path="/mangaReader/:mangaId/:mangaTitle/:chapterNumber/:chapterTitle/:chapterId" element={<MangaReader />} />
-          <Route path="/bookDetail/:mangaId" element={<BookDetails />} />
+          <Route path="/manga" element={<MangaList />} />
+          <Route path="/mangaReader/:mangaid/:chapterid" element={<MangaReader />} />
+          <Route path="/bookDetail/:_id" element={<BookDetails />} />
           <Route path="/novel" element={<NovelList />} />
           <Route path="/novel/:novelid" element={<NovelDetails />} />
           <Route path="/novel/:novelid/:noveltitle/:chapterid/:chaptertitle" element={<NovelReader />} />
