@@ -61,16 +61,16 @@ function Home() {
         views: 238,
         _id: "67f298a0c0aa3501386b7afb"
     }]);
-    useEffect(() => {
-        api.get('/api/manga/')
-            .then((res) => {
-                console.log("check /api/manga", res.data.data);
-                setListManga(res.data.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-    }, []);
+    // useEffect(() => {
+    //     api.get('/api/manga/')
+    //         .then((res) => {
+    //             console.log("check /api/manga", res.data.data);
+    //             setListManga(res.data.data);
+    //         })
+    //         .catch((err) => {
+    //             console.log(err);
+    //         })
+    // }, []);
     const handleViewDetails = (_id) => {
         console.log("check _id", _id);
         navigate(`/bookDetail/${_id}`);

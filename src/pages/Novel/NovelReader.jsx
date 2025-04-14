@@ -6,10 +6,10 @@ import { api } from '../../services/api';
 import Spinner from '../../components/Spinner';
 
 function NovelReader() {
-    const { novelid, noveltitle, chapterid, chaptertitle } = useParams()
+    const { novelid, chapterid } = useParams()
     const navigate = useNavigate()
     const location = useLocation()
-    const chapters = location.state.chapters || []
+    const { chapters, noveltitle, chaptertitle } = location.state || {}
     const [novelContent, setNovelContent] = useState({
         novelid: "67eabac46f25807d87d7acc1",
         chapter_title: "Awakening",
@@ -35,8 +35,9 @@ function NovelReader() {
         if (currentIndex !== -1 && currentIndex < chapters.length - 1) {
             const nextChapter = chapters[currentIndex + 1]
             setLoading(true)
+            let chaptertitle = nextChapter.chapter_title
             // /novel/:novelid/:noveltitle/:chapterid/:chaptertitle
-            navigate(`/novel/${novelid}/${noveltitle}/${nextChapter._id}/${nextChapter.chapter_title}`, { state: { chapters } })
+            navigate(`/novelReader/${novelid}/${nextChapter._id}`, { state: { chapters, noveltitle, chaptertitle } })
         }
     }
 
@@ -46,7 +47,8 @@ function NovelReader() {
             const previousChapter = chapters[currentIndex - 1]
             setLoading(true)
             // /novel/:novelid/:noveltitle/:chapterid/:chaptertitle
-            navigate(`/novel/${novelid}/${noveltitle}/${previousChapter._id}/${previousChapter.chapter_title}`, { state: { chapters } })
+            let chaptertitle = previousChapter.chapter_title
+            navigate(`/novelReader/${novelid}/${previousChapter._id}`, { state: { chapters, noveltitle, chaptertitle } })
         }
     }
 
@@ -56,8 +58,6 @@ function NovelReader() {
 
     useEffect(() => {
         api.get(`/api/novel/${novelid}/${chapterid}`).then(res => {
-            console.log('check chapter info: ', res.data)
-            console.log('check chapters array:', chapters)
             setNovelContent(res.data.data[0])
         }).catch(err => console.log(err)).finally(() => setLoading(false))
     }, [chapterid])

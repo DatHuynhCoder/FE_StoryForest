@@ -7,6 +7,7 @@ import { RxRocket } from "react-icons/rx";
 import { MdSmartDisplay } from "react-icons/md";
 import { FaFlagCheckered } from "react-icons/fa";
 import { PiShootingStarFill } from "react-icons/pi";
+import { FiRefreshCw } from "react-icons/fi";
 
 function NovelList() {
   const navigate = useNavigate()
@@ -27,6 +28,7 @@ function NovelList() {
       mangaid: ''
     }
   ])
+  const [savedNovelList, setSavedNovelList] = useState([])
   const [currentItems, setCurrentItems] = useState([])
   const [itemOffset, setItemOffset] = useState(0)
   const [pageCount, setPageCount] = useState(0)
@@ -41,6 +43,7 @@ function NovelList() {
     api.get('/api/novel/').then((res) => {
       console.log(res.data.data)
       setNovelList(res.data.data)
+      setSavedNovelList(res.data.data)
     }).catch((err) => console.log(err)).finally(() => setLoading(false))
   }, [])
 
@@ -60,7 +63,18 @@ function NovelList() {
     searchParams.set('page', event.selected);
     navigate(`?${searchParams.toString()}`, { replace: true });
   }
-
+  const handleClickBestRated = () => {
+    const sortedNovels = [...savedNovelList].sort((a, b) => b.rate - a.rate)
+    setNovelList(sortedNovels)
+  }
+  const handleClickOngoing = () => {
+    let temp = [...savedNovelList]
+    const ongoingNovels = temp.filter(novel => novel.status === 'ongoing')
+    setNovelList(ongoingNovels)
+  }
+  const handleClickRefresh = () => {
+    setNovelList(savedNovelList)
+  }
   if (loading) return <Spinner />
 
   return (
@@ -68,7 +82,7 @@ function NovelList() {
       <div className='bg-[url("https://static.vecteezy.com/system/resources/previews/042/623/256/non_2x/high-trees-in-forest-illustration-jungle-landscape-vector.jpg")] bg-no-repeat bg-cover fixed left-0 w-full'>
         <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white h-screen pb-30'>
           <div className='flex-3 pb-18 border overflow-y-auto h-full'>
-            {currentItems.map(novel => (
+            {novelList.length !== 0 ? currentItems.map(novel => (
               <div className='flex md:flex-row flex-col p-5 border-b' key={novel._id}>
                 <div className='flex-1'>
                   <img src={novel.cover_url} alt="" className='w-30 m-auto' />
@@ -93,7 +107,24 @@ function NovelList() {
                   </div>
                 </div>
               </div>
-            ))}
+            )) :
+              <div className='flex md:flex-row flex-col p-5 border-b'>
+                <div className='flex-1'>
+                  <div className='w-30 m-auto'></div>
+                </div>
+                <div className='flex-4'>
+                  <p className='text-lg md:text-xl font-bold text-green-500 text-center hover:underline cursor-pointer'>Nothing to show</p>
+                  <div className='flex'>
+                    <div className='flex flex-col flex-2'>
+
+                    </div>
+                    <div className='flex-2'>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
 
             {/* Pagination */}
             <div className='my-4 flex justify-center fixed bottom-0 bg-white py-2'>
@@ -120,10 +151,10 @@ function NovelList() {
 
           {/* Optional Right Sidebar */}
           <div className='flex-1 flex-column border md:block hidden'>
-            <div className='cursor-pointer border m-1 p-2'>
+            <div className='cursor-pointer border m-1 p-2' onClick={() => handleClickBestRated()}>
               <p className=' flex font-bold'><span><RxRocket /></span>&nbsp;BEST RATED</p>
             </div>
-            <div className='cursor-pointer border m-1 p-2'>
+            <div className='cursor-pointer border m-1 p-2' onClick={() => handleClickOngoing()}>
               <p className=' flex font-bold'><span><MdSmartDisplay /></span>&nbsp;ONGOING FICTION</p>
             </div>
             <div className='cursor-pointer border m-1 p-2'>
@@ -131,6 +162,9 @@ function NovelList() {
             </div>
             <div className='cursor-pointer border m-1 p-2'>
               <p className=' flex font-bold'><span><PiShootingStarFill /></span>&nbsp;RISING STARS</p>
+            </div>
+            <div className='cursor-pointer border m-1 p-2' onClick={() => handleClickRefresh()}>
+              <p className=' flex font-bold'><span><FiRefreshCw /></span>&nbsp;REFRESH</p>
             </div>
           </div>
         </div>

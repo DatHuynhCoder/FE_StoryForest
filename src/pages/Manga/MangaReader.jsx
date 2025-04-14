@@ -54,7 +54,7 @@ function MangaReader() {
     }
 
     const handleBackToDetails = () => {
-        navigate(`/bookDetail/${_id}`);
+        navigate(`/bookDetail/${_id}/${mangaid}`);
     }
 
     useEffect(() => {
