@@ -45,6 +45,10 @@ function Header() {
 		{
 			artist: ['REDICE Studio (레드아이스 스튜디오)', 'Jang Sung-Rak (장성락)'],
 			author: ['h-goon (현군)', 'Chugong (추공)', 'Gi So-Ryeong (기소령)'],
+			bookImg: {
+				url: 'https://res.cloudinary.com/dvtcbryg5/image/upload/…4423218/StoryForest/Book/mzbhrc52tmszzqnsdusq.jpg',
+				public_id: 'StoryForest/Book/mzbhrc52tmszzqnsdusq'
+			},
 			cover_url: "https://uploads.mangadex.org/covers/32d76d19-8a05-4db0-9fc2-e0b0648fe9d0/e90bdc47-c8b9-4df7-b2c0-17641b645ee1.jpg",
 			followers: 0,
 			mangaid: "32d76d19-8a05-4db0-9fc2-e0b0648fe9d0",
@@ -54,22 +58,59 @@ function Header() {
 			tags: ['Award Winning', 'Monsters', 'Action', 'Long Strip', 'Adventure', 'Magic', 'Drama', 'Fantasy', 'Web Comic', 'Supernatural', 'Adaptation', 'Full Color'],
 			title: "Solo Leveling",
 			type: "manga",
+			updatedAt: "2025-04-12T02:00:00.436Z",
 			views: 238,
+			_id: "67f298a0c0aa3501386b7afb"
 		}
 	])
+	const [novelList, setNovelList] = useState([{
+		artist: [],
+		author: 'R.C. Joshua',
+		bookImg: {
+			url: "https://res.cloudinary.com/dvtcbryg5/image/upload/v1744423828/StoryFor…",
+			public_id: "StoryForest/Book/fg3883opownhiuid4hyn"
+		},
+		cover_url: 'https://www.royalroadcdn.com/public/covers-large/infinite-farmer-cultivating-the-infinite-dungeon-112376.jpg?time=1731726233',
+		followers: 0,
+		mangaid: '',
+		rate: 4,
+		status: 'Original',
+		synopsis: 'Betrayed. Alone. Forced to survive the deadliest dungeon in the universe. As aFarmer.Tulland dreamed of adventure.To be someone who sees every-place, goes every-where, and does every-thing.All he wanted was to go beyond the confines of his tiny island. So, when the Church denied him a class, he turned to the only other being that could grant him his wish; The System.And the System delivered. Tulland gotaClass, but not one he ever wished for. Awakening as a Farmer, he finds himself in the one place where he can grow away from the clutches of the Church — The Infinite; a dungeon whose end even heroes of old have never seen. Armed with what dregs of power the System deigned to give him, Tulland will have to figure out how to survive, and cultivate, the universe’s deadliest dungeon.Expect:+ Progression fantasy with actual farming!+ A very stubborn MC+ Combat! Action! Plants!Schedule:+ Daily (7 chapters per week) (more while we’re starting out)+ Book 1 completely written!',
+		tags: ['LitRPG', 'Portal Fantasy / Isekai', 'Dungeon', 'Post Apocalyptic', 'Strategy', 'Action', 'Adventure', 'Fantasy', 'GameLit', 'High Fantasy', 'Magic', 'Male Lead', 'Progression'],
+		title: 'Infinite Farmer: A Plants vs Dungeon LitRPG',
+		type: 'novel',
+		updatedAt: "2025-04-12T02:00:00.436Z",
+		views: 238,
+		_id: '67eabb616f25807d87d7ad10'
+	}])
 	useEffect(() => {
-		api.get('/mangadex/manga')
+		api.get('/api/manga')
 			.then((res) => {
-				setListManga(res.data);
+				console.log("check listManga in header: ", res.data.data);
+				setListManga(res.data.data);
 			})
 			.catch((err) => {
 				console.log(err);
+			}).finally(() => {
+				api.get('/api/novel')
+					.then(res2 => {
+						console.log("check novelList in header: ", res2.data.data);
+						setNovelList(res2.data.data);
+					})
 			})
 	}, []);
 	const handleSearch = () => {
 		if (search) {
 			navigate(`/result/${search}`)
 		}
+	}
+	const handleViewMangaDetails = (_id, mangaid) => {
+		setSearch("")
+		navigate(`/bookDetail/${_id}/${mangaid}`)
+	}
+	const handleViewNovelDetails = (novelid) => {
+		setSearch("")
+		navigate(`/novel/${novelid}`)
 	}
 	return (
 		<>
@@ -181,18 +222,39 @@ function Header() {
 				search && (
 
 					<div className="w-[100%] md:w-[90%] mt-10 relative px-4 md:px-0 m-auto">
-						<div className="relative">
-							<div className="flex gap-15 overflow-x-auto scroll-container">
-								{listManga.length !== 0 && listManga.filter(x => x.title.toLowerCase().includes(search.toLowerCase()) === true || x.synopsis.toLowerCase().includes(search.toLowerCase())).map((manga, index) => (
-									<div key={index} className="flex flex-col min-w-[150px]">
-										<div className='flex-1 w-48'>
-											<img src={manga.cover_url} alt="" loading='lazy' className="w-full h-[200px] object-cover rounded-md shadow-md" />
+						<div className='flex w-[100%]'>
+							<div className='flex-1'>
+								<p className='text-lg md:text-xl font-bold text-green-500 text-center hover:underline cursor-pointer'>MANGA</p>
+							</div>
+							<div className='flex-1'>
+								<p className='text-lg md:text-xl font-bold text-green-500 text-center hover:underline cursor-pointer'>NOVEL</p>
+							</div>
+						</div>
+						<div className="relative flex">
+							{/* Manga searched result */}
+							<div className='flex-3 pb-18 border overflow-y-auto h-100'>
+								{search && listManga?.length !== 0 && listManga.filter(x => x.title.toLowerCase().includes(search.toLowerCase()) === true || x.synopsis.toLowerCase().includes(search.toLowerCase())).map((manga, index) => (
+									<div className='flex md:flex-row flex-col p-5 border-b' key={manga._id}>
+										<div className='flex-1'>
+											<img src={manga?.bookImg?.url} alt="" className='w-30 m-auto' loading='lazy' />
 										</div>
-										<div className="flex-8">
-											<p className="font-bold">{manga.title}</p>
+										<div className='flex-1'>
+											<p onClick={() => handleViewMangaDetails(manga._id, manga.mangaid)} className='text-lg md:text-xl font-bold text-green-500 text-center hover:underline cursor-pointer'>{manga.title}</p>
+
 										</div>
-										<div onClick={() => handleViewDetails(manga.mangaid)} className='rounded bg-green-700 p-2 md:p-3 text-white text-center cursor-pointer font-bold bottom-0'>
-											View
+									</div>
+								))}
+							</div>
+							{/* Novel searched result */}
+							<div className='flex-3 pb-18 border overflow-y-auto h-100'>
+								{search && novelList?.length !== 0 && novelList.filter(x => x.title.toLowerCase().includes(search.toLowerCase()) === true || x.synopsis.toLowerCase().includes(search.toLowerCase())).map((novel, index) => (
+									<div className='flex md:flex-row flex-col p-5 border-b' key={novel._id}>
+										<div className='flex-1'>
+											<img src={novel?.bookImg?.url} alt="" className='w-30 m-auto' loading='lazy' />
+										</div>
+										<div className='flex-4'>
+											<p onClick={() => handleViewNovelDetails(novel._id)} className='text-lg md:text-xl font-bold text-green-500 text-center hover:underline cursor-pointer'>{novel.title}</p>
+
 										</div>
 									</div>
 								))}

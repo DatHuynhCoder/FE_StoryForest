@@ -39,10 +39,10 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/manga" element={<MangaList />} />
           <Route path="/mangaReader/:mangaid/:chapterid" element={<MangaReader />} />
-          <Route path="/bookDetail/:_id" element={<BookDetails />} />
+          <Route path="/bookDetail/:_id/:mangaid" element={<BookDetails />} />
           <Route path="/novel" element={<NovelList />} />
           <Route path="/novel/:novelid" element={<NovelDetails />} />
-          <Route path="/novel/:novelid/:noveltitle/:chapterid/:chaptertitle" element={<NovelReader />} />
+          <Route path="/novelReader/:novelid/:chapterid" element={<NovelReader />} />
           <Route path='/result/:keyword' element={<ResultPage />} />
         </Route>
       </Routes>
