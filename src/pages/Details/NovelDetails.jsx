@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router'
-import { api } from '../../services/api'
+import { api, apiAuth } from '../../services/api'
 import Spinner from '../../components/Spinner'
+import { useSelector } from 'react-redux'
+import { toast } from 'react-toastify'
 
 function NovelDetails() {
   const navigate = useNavigate()
+  //get user from redux store
+  const user = useSelector((state) => state.user.user);
   const { novelid } = useParams() // from NovelList.jsx
   const [loading, setLoading] = useState(true)
   const [infoNovel, setInfoNovel] = useState({
@@ -48,6 +52,29 @@ function NovelDetails() {
   const handleStartReading = (novelid, noveltitle, chapterid, chaptertitle) => {
     navigate(`/novelReader/${novelid}/${chapterid}`, { state: { chapters, noveltitle, chaptertitle } })
   }
+
+    //handle add to favorite
+    const handleAddFavorite = async () => {
+      // check if user is logged in
+      if(!user){
+        toast.error("Vui lòng đăng nhập để thêm vào thư viện")
+        return
+      }
+  
+      try {
+        const response = await apiAuth.post('/api/reader/favorite/addFavorite', {bookId: novelid});
+        if (response.data.success) {
+          toast.success("Thêm vào thư viện thành công")
+        } else {
+          toast.error("Thêm vào thư viện thất bại")
+        }
+      } catch (error) {
+        console.log(error)
+        toast.error("Thêm vào thư viện thất bại")
+      }
+    }
+
+
   useEffect(() => {
     api.get(`/api/novel/${novelid}`).then(res => {
       console.log(res.data)
@@ -93,7 +120,7 @@ function NovelDetails() {
 
           <div className='flex-col px-4 md:ml-10 mt-6 md:mt-0'>
             <div className='flex flex-col sm:flex-row justify-center md:justify-start space-y-2 sm:space-y-0 sm:space-x-3 mb-4'>
-              <div className='rounded bg-green-700 p-2 md:p-3 text-white text-center cursor-pointer font-bold'>Thêm vào thư viện</div>
+              <div onClick={handleAddFavorite} className='rounded bg-green-700 p-2 md:p-3 text-white text-center cursor-pointer font-bold'>Thêm vào thư viện</div>
               <div onClick={() => handleStartReading(infoNovel._id, infoNovel.title, chapters[0]._id, chapters[0].chapter_title)} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold'>Bắt đầu đọc</div>
             </div>
 
@@ -143,7 +170,7 @@ function NovelDetails() {
                     <img src={comment.avatar} alt={comment.user} className='w-10 h-10 rounded-full' />
                     <p className='ml-1'>{comment.user}</p>
                   </div>
-                  <div className='mt-2 w-[100%] border p-2 rounded-md mt-2'>
+                  <div className='w-[100%] border p-2 rounded-md mt-2'>
                     <p>{comment.content}</p>
                   </div>
                 </div>

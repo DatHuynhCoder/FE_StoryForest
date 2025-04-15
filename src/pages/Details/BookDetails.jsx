@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router'
-import axios from 'axios'
-import { api } from '../../services/api'
+import { api, apiAuth } from '../../services/api'
 import Spinner from '../../components/Spinner'
+import { toast } from 'react-toastify'
+import { useSelector } from 'react-redux'
 
 function BookDetails() {
   const navigate = useNavigate()
+  //get user from redux store
+  const user = useSelector((state) => state.user.user)
   const { _id, mangaid } = useParams()
   const [loading, setLoading] = useState(true)
   const [infoManga, setInfoManga] = useState({
@@ -59,6 +62,28 @@ function BookDetails() {
     // to MangaReader.jsx
     navigate(`/mangaReader/${infoManga.mangaid}/${chapters[0].chapterid}`, { state: { _id, chapters, mangatitle, chapternumber, chaptertitle } })
   }
+
+  //handle add to favorite
+  const handleAddFavorite = async () => {
+    // check if user is logged in
+    if(!user){
+      toast.error("Vui lòng đăng nhập để thêm vào thư viện")
+      return
+    }
+
+    try {
+      const response = await apiAuth.post('/api/reader/favorite/addFavorite', {bookId: _id});
+      if (response.data.success) {
+        toast.success("Thêm vào thư viện thành công")
+      } else {
+        toast.error("Thêm vào thư viện thất bại")
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error("Thêm vào thư viện thất bại")
+    }
+  }
+
   useEffect(() => {
     api.get(`api/manga/${_id}`)
       .then((res) => {
@@ -105,7 +130,7 @@ function BookDetails() {
 
           <div className='flex-col px-4 md:ml-10 mt-6 md:mt-0'>
             <div className='flex flex-col sm:flex-row justify-center md:justify-start space-y-2 sm:space-y-0 sm:space-x-3 mb-4'>
-              <div className='rounded bg-green-700 p-2 md:p-3 text-white text-center cursor-pointer font-bold'>Thêm vào thư viện</div>
+              <div onClick={handleAddFavorite} className='rounded bg-green-700 p-2 md:p-3 text-white text-center cursor-pointer font-bold'>Thêm vào thư viện</div>
               <div onClick={handleStartReading} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold'>Bắt đầu đọc</div>
             </div>
 
