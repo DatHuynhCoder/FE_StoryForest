@@ -27,7 +27,9 @@ const FavoriteBooks = ({ books, handleContinueReading, handleDeleteFavoritebook 
             <img className="w-full h-48 object-cover sm:w-36 sm:h-full" src={book.bookImg.url} alt={book.title} />
             <div className="flex flex-col justify-between p-3 sm:p-4 leading-normal">
               <h4 className="mb-1 sm:mb-2 text-xl sm:text-2xl font-bold tracking-tight dark:text-white line-clamp-2">{book.title}</h4>
-              <p className="mb-1 sm:mb-3 font-normal text-green-700 text-sm sm:text-base">{book.author[0]}</p>
+              <p className="mb-1 sm:mb-3 font-normal text-green-700 text-sm sm:text-base line-clamp-2">
+                {Array.isArray(book.author) ? book.author.join(', ') : book.author}
+              </p>
               <p className="mb-2 sm:mb-3 font-normal text-black text-sm sm:text-base line-clamp-3">{book.synopsis}</p>
 
               <div className="flex flex-row justify-center gap-3 sm:gap-10 mt-2 sm:mt-4">
