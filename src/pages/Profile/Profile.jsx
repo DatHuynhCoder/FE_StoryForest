@@ -3,7 +3,7 @@ import DefaultAvt from "../../assets/default_avatar.jpg";
 import { FaCrown, FaUser, FaBook, FaHeart, FaCog, FaBars } from "react-icons/fa";
 
 //import api
-import { apiAuth } from "../../services/api";
+import { apiAuth, api } from "../../services/api";
 
 import { useEffect, useState } from "react";
 
@@ -16,6 +16,9 @@ import UpdateUserModal from "./UpdateUserModal";
 import FavoriteBooks from "./FavoriteBooks";
 import AboutMe from "./AboutMe";
 import Settings from "./Setting";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
 
 const aboutUser = [
   "Có thể dành cả ngày trong một hiệu sách mà không thấy chán.",
@@ -30,53 +33,12 @@ const aboutUser = [
   "Ước gì có thêm thời gian mỗi ngày chỉ để đọc nhiều sách hơn."
 ];
 
-const books = [
-  {
-    _id: 1,
-    name: "Atomic Habits",
-    author: "James Clear",
-    picture: "/images/book_cover.png",
-    description: "A practical guide to building good habits, breaking bad ones, and mastering the tiny behaviors that lead to remarkable results."
-  },
-  {
-    _id: 2,
-    name: "The Alchemist",
-    author: "Paulo Coelho",
-    picture: "/images/book_cover.png",
-    description: "A philosophical novel about a shepherd's journey to fulfill his personal legend and discover the true meaning of life."
-  },
-  {
-    _id: 3,
-    name: "Deep Work",
-    author: "Cal Newport",
-    picture: "/images/book_cover.png",
-    description: "A book about the benefits of focused work in a distracted world and how to cultivate deep concentration."
-  },
-  {
-    _id: 4,
-    name: "1984",
-    author: "George Orwell",
-    picture: "/images/book_cover.png",
-    description: "A dystopian novel that explores a totalitarian future where government surveillance and control suppress individual freedom."
-  },
-  {
-    _id: 5,
-    name: "Sapiens: A Brief History of Humankind",
-    author: "Yuval Noah Harari",
-    picture: "/images/book_cover.png",
-    description: "An exploration of the history of human evolution, societies, and the forces that shaped our world today."
-  },
-  {
-    _id: 6,
-    name: "The Subtle Art of Not Giving a F*ck",
-    author: "Mark Manson",
-    picture: "/images/book_cover.png",
-    description: "A self-help book that encourages readers to focus on what truly matters and let go of unimportant worries."
-  }
-];
-
 const Profile = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [user, setUser] = useState(null);
+  const [favoriteBooks, setFavoriteBooks] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('profile');
@@ -98,6 +60,21 @@ const Profile = () => {
     fetchUser();
   }, []);
 
+  useEffect(() => {
+    const fetchFavorite = async () => {
+      try {
+        const response = await apiAuth.get('/api/reader/favorite/getFavorite');
+        if (response.data.success) {
+          setFavoriteBooks(response.data.data);
+        }
+      } catch (error) {
+        console.error("Khong tìm thấy favorite:", error);
+      }
+    };
+
+    fetchFavorite();
+  }, [])
+
   // Close sidebar when selecting an option on mobile
   const handleSectionClick = (section) => {
     setActiveSection(section);
@@ -105,6 +82,53 @@ const Profile = () => {
       setSidebarOpen(false);
     }
   };
+
+  //Handle click on continue Reading favorite Book
+  const handleContinueReading = (book) => {
+    try {
+      if (book.type === 'manga') {
+        navigate(`/bookDetail/${book._id}/${book.mangaid}`);
+      }
+      else {
+        navigate(`/novel/${book._id}`);
+      }
+    } catch (error) {
+      toast.error("An error occur during continue reading:", error);
+    }
+  }
+
+  //Handle click on remove favorite book
+  const handleDeleteFavoritebook = async (bookId) => {
+    try {
+      const response = await apiAuth.delete('/api/reader/favorite/deleteFavorite', {
+        data: { bookId: bookId }
+      });
+      if (response.data.success) {
+        console.log(response.data.data);
+        // Update the favoriteBooks state to remove the deleted book
+        setFavoriteBooks(prevBooks => prevBooks.filter(book => book._id !== bookId));
+        toast.success('Delete favorite book sucessfully');
+      }
+      else {
+        toast.error('Error in deleting davorite book');
+      }
+    } catch (error) {
+      toast.error("An error occur during delete favorite book:", error);
+    }
+  }
+
+  //Handle logout
+  const handleLogout = async () => {
+    try {
+      const response = await api.post("/api/reader/account/logout");
+      if (response.data.success) {
+        dispatch(logout());
+        navigate("/login")
+      }
+    } catch (error) {
+      toast.error("An error occur during logout:", error);
+    }
+  }
 
   //Spinner to load while fetching data
   if (isLoading) {
@@ -183,7 +207,7 @@ const Profile = () => {
           ✏️ Chỉnh sửa
         </button>
 
-        <button type="button" className="text-green-700 font-bold hover:text-white rounded-full border-2 cursor-pointer border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 text-sm px-3 sm:px-5 py-2 sm:py-2.5 text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
+        <button onClick={handleLogout} type="button" className="text-green-700 font-bold hover:text-white rounded-full border-2 cursor-pointer border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 text-sm px-3 sm:px-5 py-2 sm:py-2.5 text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
           🚪Đăng xuất
         </button>
       </div>
@@ -199,7 +223,11 @@ const Profile = () => {
       case 'about':
         return <AboutMe aboutUser={aboutUser} />;
       case 'favorite':
-        return <FavoriteBooks books={books} />;
+        return <FavoriteBooks
+          books={favoriteBooks}
+          handleContinueReading={handleContinueReading}
+          handleDeleteFavoritebook={handleDeleteFavoritebook}
+        />;
       case 'settings':
         return <Settings />;
       default:
