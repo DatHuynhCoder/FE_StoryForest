@@ -25,56 +25,67 @@ function NovelList() {
       cover_url: 'https://www.royalroadcdn.com/public/covers-large/infinite-farmer-cultivating-the-infinite-dungeon-112376.jpg?time=1731726233',
       type: 'novel',
       artist: [],
-      mangaid: ''
+      mangaid: '',
+      page: 1
     }
   ])
-  const [savedNovelList, setSavedNovelList] = useState([])
-  const [currentItems, setCurrentItems] = useState([])
-  const [itemOffset, setItemOffset] = useState(0)
-  const [pageCount, setPageCount] = useState(0)
-  const itemsPerPage = 5
   const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(0); // Current page (0-based index)
+  const [totalPages, setTotalPages] = useState(0)
+
+  const itemsPerPage = 10
+
+
+  const fetchNovels = (page) => {
+    console.log("check page: ", page)
+    setLoading(true);
+    api.get(`/api/novel/v2?page=${page + 1}&limit=${itemsPerPage}`) // Backend expects 1-based page index
+      .then((res) => {
+        const { data, pagination } = res.data;
+        console.log("check list novel: ", data)
+        setNovelList(data);
+        setCurrentPage(pagination.currentPage - 1); // Convert to 0-based index
+        setTotalPages(pagination.totalPages);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch novels:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const handleClickOnNovel = (novelid) => {
     navigate(`/novel/${novelid}`)
   }
 
   useEffect(() => {
-    api.get('/api/novel/').then((res) => {
-      console.log(res.data.data)
-      setNovelList(res.data.data)
-      setSavedNovelList(res.data.data)
-    }).catch((err) => console.log(err)).finally(() => setLoading(false))
+    fetchNovels(0)
   }, [])
 
-  useEffect(() => {
-    const endOffset = itemOffset + itemsPerPage
-    setCurrentItems(novelList.slice(itemOffset, endOffset))
-    setPageCount(Math.ceil(novelList.length / itemsPerPage))
-  }, [itemOffset, itemsPerPage, novelList])
-
   const handlePageClick = (event) => {
-    const newOffset = (event.selected * itemsPerPage) % novelList.length
-    setItemOffset(newOffset)
-    setCurrentPage(event.selected); // Add this if you need state
-
-    // Set URL query param
-    const searchParams = new URLSearchParams(window.location.search);
-    searchParams.set('page', event.selected);
-    navigate(`?${searchParams.toString()}`, { replace: true });
+    const newPage = event.selected
+    fetchNovels(newPage)
   }
   const handleClickBestRated = () => {
-    const sortedNovels = [...savedNovelList].sort((a, b) => b.rate - a.rate)
-    setNovelList(sortedNovels)
+    api.get('/api/novel/v2?sort=rate&order=desc&page=1&limit=100') // Example for sorting by rate
+      .then((res) => {
+        const { data, pagination } = res.data;
+        setNovelList(data);
+        setCurrentPage(pagination.currentPage - 1);
+        setTotalPages(pagination.totalPages);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch best-rated mangas:", err);
+      });
   }
   const handleClickOngoing = () => {
-    let temp = [...savedNovelList]
-    const ongoingNovels = temp.filter(novel => novel.status === 'ongoing')
-    setNovelList(ongoingNovels)
+
   }
   const handleClickRefresh = () => {
-    setNovelList(savedNovelList)
+
   }
+
   if (loading) return <Spinner />
 
   return (
@@ -82,7 +93,7 @@ function NovelList() {
       <div className='bg-[url("https://static.vecteezy.com/system/resources/previews/042/623/256/non_2x/high-trees-in-forest-illustration-jungle-landscape-vector.jpg")] bg-no-repeat bg-cover fixed left-0 w-full'>
         <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white h-screen pb-30'>
           <div className='flex-3 pb-18 border overflow-y-auto h-full'>
-            {novelList.length !== 0 ? currentItems.map(novel => (
+            {novelList.length !== 0 ? novelList.map(novel => (
               <div className='flex md:flex-row flex-col p-5 border-b' key={novel._id}>
                 <div className='flex-1'>
                   <img src={novel.cover_url} alt="" className='w-30 m-auto' />
@@ -135,7 +146,8 @@ function NovelList() {
                 onPageChange={handlePageClick}
                 pageRangeDisplayed={3}
                 marginPagesDisplayed={1}
-                pageCount={pageCount}
+                pageCount={totalPages}
+                forcePage={currentPage}
                 containerClassName="flex md:gap-2 gap-1 cursor-pointer px-2"
                 pageClassName="border rounded" // Just the li
                 pageLinkClassName="block md:px-3 px-2 py-1 hover:bg-green-200" // The actual <a>

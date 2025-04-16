@@ -14,7 +14,10 @@ function MangaList() {
   const [listManga, setListManga] = useState([{
     artist: ['REDICE Studio (레드아이스 스튜디오)', 'Jang Sung-Rak (장성락)'],
     author: ['h-goon (현군)', 'Chugong (추공)', 'Gi So-Ryeong (기소령)'],
-    bookImg: { url: 'https://res.cloudinary.com/dvtcbryg5/image/upload/…4423218/StoryForest/Book/mzbhrc52tmszzqnsdusq.jpg', public_id: 'StoryForest/Book/mzbhrc52tmszzqnsdusq' },
+    bookImg: {
+      url: 'https://res.cloudinary.com/dvtcbryg5/image/upload/…4423218/StoryForest/Book/mzbhrc52tmszzqnsdusq.jpg',
+      public_id: 'StoryForest/Book/mzbhrc52tmszzqnsdusq'
+    },
     cover_url: "https://uploads.mangadex.org/covers/32d76d19-8a05-4db0-9fc2-e0b0648fe9d0/e90bdc47-c8b9-4df7-b2c0-17641b645ee1.jpg",
     followers: 0,
     mangaid: "32d76d19-8a05-4db0-9fc2-e0b0648fe9d0",
@@ -26,68 +29,83 @@ function MangaList() {
     type: "manga",
     updatedAt: "2025-04-12T02:00:00.436Z",
     views: 238,
+    page: 1,
     _id: "67f298a0c0aa3501386b7afb"
   }]);
-  const [savedListManga, setSavedListManga] = useState([])
-  const [currentItems, setCurrentItems] = useState([])
-  const [itemOffset, setItemOffset] = useState(0)
-  const [pageCount, setPageCount] = useState(0)
-  const itemsPerPage = 5
   const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(0); // Current page (0-based index)
+  const [totalPages, setTotalPages] = useState(0)
+  const [sortType, setSortType] = useState("normal")
+
+  const itemsPerPage = 10
+
+  const fetchMangas = (page) => {
+    console.log("check page: ", page)
+    setLoading(true);
+    api.get(`/api/manga/v2?page=${page + 1}&limit=${itemsPerPage}`) // Backend expects 1-based page index
+      .then((res) => {
+        const { data, pagination } = res.data;
+        console.log("check list manga: ", data)
+        setListManga(data);
+        setCurrentPage(pagination.currentPage - 1); // Convert to 0-based index
+        setTotalPages(pagination.totalPages);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch mangas:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+  const fetchMangasWithType = (page) => {
+    console.log("check page: ", page)
+    setLoading(true);
+    api.get(`/api/manga/v2?page=${page + 1}&limit=${itemsPerPage}&sort=${sortType}&order=desc`) // Backend expects 1-based page index
+      .then((res) => {
+        const { data, pagination } = res.data;
+        console.log("check list manga: ", data)
+        setListManga(data);
+        setCurrentPage(pagination.currentPage - 1); // Convert to 0-based index
+        setTotalPages(pagination.totalPages);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch mangas:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const handleClickOnManga = (_id, mangaid) => {
     navigate(`/bookDetail/${_id}/${mangaid}`)
   }
 
   useEffect(() => {
-    api.get('/api/manga/')
-      .then((res) => {
-        setListManga(res.data.data);
-        setSavedListManga(res.data.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      }).finally(() => {
-        setLoading(false)
-      })
+    fetchMangas(0)
   }, [])
 
-  useEffect(() => {
-    const endOffset = itemOffset + itemsPerPage
-    setCurrentItems(listManga.slice(itemOffset, endOffset))
-    setPageCount(Math.ceil(listManga.length / itemsPerPage))
-  }, [itemOffset, itemsPerPage, listManga])
-
   const handlePageClick = (event) => {
-    const newOffset = (event.selected * itemsPerPage) % listManga.length
-    setItemOffset(newOffset)
-    setCurrentPage(event.selected); // Add this if you need state
-
-    // Set URL query param
-    const searchParams = new URLSearchParams(window.location.search);
-    searchParams.set('page', event.selected);
-    navigate(`?${searchParams.toString()}`, { replace: true });
+    const newPage = event.selected
+    if (sortType === "normal") fetchMangas(newPage)
+    else fetchMangasWithType(newPage)
   }
 
   const handleClickBestRated = () => {
-    const sortedMangas = [...savedListManga].sort((a, b) => b.rate - a.rate)
-    setListManga(sortedMangas)
+    setSortType("rate")
+    fetchMangasWithType(0)
   }
 
   const handleClickOngoing = () => {
-    let temp = [...savedListManga]
-    const ongoingMangas = temp.filter(manga => manga.status === 'ongoing')
-    setListManga(ongoingMangas)
+
   }
 
   const handleClickComplete = () => {
-    let temp = [...savedListManga]
-    const completeMangas = temp.filter(manga => manga.status === 'completed')
-    setListManga(completeMangas)
+
   }
 
   const handleClickRefresh = () => {
-    setListManga(savedListManga)
+    setSortType("normal")
+    fetchMangas(0)
   }
 
   if (loading) return <Spinner />
@@ -97,7 +115,7 @@ function MangaList() {
       <div className='bg-[url("https://static.vecteezy.com/system/resources/previews/042/623/256/non_2x/high-trees-in-forest-illustration-jungle-landscape-vector.jpg")] bg-no-repeat bg-cover fixed left-0 w-full'>
         <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white h-screen pb-30'>
           <div className='flex-3 pb-18 border overflow-y-auto h-full'>
-            {listManga.length !== 0 ? currentItems.map(manga => (
+            {listManga.length !== 0 ? listManga.map(manga => (
               <div className='flex md:flex-row flex-col p-5 border-b' key={manga._id}>
                 <div className='flex-1'>
                   <img src={manga.bookImg.url} alt="" className='w-30 m-auto' loading='lazy' />
@@ -151,7 +169,8 @@ function MangaList() {
                 onPageChange={handlePageClick}
                 pageRangeDisplayed={3}
                 marginPagesDisplayed={1}
-                pageCount={pageCount}
+                pageCount={totalPages} // Use totalPages from BE
+                forcePage={currentPage} // Highlight the current page
                 containerClassName="flex md:gap-2 gap-1 cursor-pointer px-2"
                 pageClassName="border rounded" // Just the li
                 pageLinkClassName="block md:px-3 px-2 py-1 hover:bg-green-200" // The actual <a>
