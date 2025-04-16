@@ -86,7 +86,6 @@ function Header() {
 	useEffect(() => {
 		api.get('/api/manga')
 			.then((res) => {
-				console.log("check listManga in header: ", res.data.data);
 				setListManga(res.data.data);
 			})
 			.catch((err) => {
@@ -94,7 +93,6 @@ function Header() {
 			}).finally(() => {
 				api.get('/api/novel')
 					.then(res2 => {
-						console.log("check novelList in header: ", res2.data.data);
 						setNovelList(res2.data.data);
 					})
 			})
