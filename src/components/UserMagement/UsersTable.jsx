@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Search, Plus, Eye } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 
 const UserTable = () => {
@@ -70,7 +70,7 @@ const UserTable = () => {
             <input
               type="text"
               placeholder="Tìm kiếm..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-teal-500"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -123,7 +123,7 @@ const UserTable = () => {
                     <td className="px-3 sm:px-4 py-3 whitespace-nowrap text-sm text-center">
                       <button
                         onClick={() => handleViewDetails(user)}
-                        className="text-blue-600 hover:text-blue-900 inline-flex items-center justify-center"
+                        className="text-teal-600 hover:text-teal-900 inline-flex items-center justify-center"
                         title="Xem chi tiết"
                       >
                         <Eye className="h-4 w-4" />
@@ -173,7 +173,7 @@ const UserTable = () => {
                   key={pageNum}
                   onClick={() => setCurrentPage(pageNum)}
                   className={`px-3 py-1 border rounded text-sm ${
-                    currentPage === pageNum ? 'bg-blue-600 text-white border-blue-600' : ''
+                    currentPage === pageNum ? 'bg-teal-600 text-white border-teal-600' : ''
                   }`}
                 >
                   {pageNum}

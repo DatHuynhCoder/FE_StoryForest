@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router";
 import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 
 const AdminSideBar = () => {
@@ -14,6 +14,8 @@ const AdminSideBar = () => {
       ...prev,
       [menu]: !prev[menu]
     }));
+
+    if (menu === 'storyForest') navigate('/admin/dashboard'); // Luôn chuyển hướng
   };
 
   return (
@@ -30,12 +32,12 @@ const AdminSideBar = () => {
           <button
             onClick={() => toggleMenu('storyForest')}
             className={`flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-colors ${
-              openMenus.storyForest ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'
+              openMenus.storyForest ? 'bg-teal-50 text-teal-600' : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
             <span className="flex items-center">
               <span className={`w-2 h-2 rounded-full mr-3 ${
-                openMenus.storyForest ? 'bg-blue-500' : 'bg-gray-300'
+                openMenus.storyForest ? 'bg-teal-500' : 'bg-gray-300'
               }`}></span>
               <span className="font-medium">StoryForest</span>
             </span>
@@ -49,9 +51,9 @@ const AdminSideBar = () => {
           {openMenus.storyForest && (
             <div className="ml-5 space-y-1">
               <NavLink
-                to="/admin"
+                to="/admin/dashboard"
                 className={({ isActive }) => `block px-3 py-2 rounded-lg transition-colors ${
-                  isActive ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
+                  isActive ? 'bg-teal-100 text-teal-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 Dashboard
@@ -59,7 +61,7 @@ const AdminSideBar = () => {
               <NavLink
                 to="/admin/user-management"
                 className={({ isActive }) => `block px-3 py-2 rounded-lg transition-colors ${
-                  isActive ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
+                  isActive ? 'bg-teal-100 text-teal-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 Quản lý người dùng
@@ -67,7 +69,7 @@ const AdminSideBar = () => {
               <NavLink
                 to="/admin/web-management"
                 className={({ isActive }) => `block px-3 py-2 rounded-lg transition-colors ${
-                  isActive ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
+                  isActive ? 'bg-teal-100 text-teal-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 Quản lý web đặt sách
@@ -81,12 +83,12 @@ const AdminSideBar = () => {
           <button
             onClick={() => toggleMenu('notification')}
             className={`flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-colors ${
-              openMenus.notification ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'
+              openMenus.notification ? 'bg-teal-50 text-teal-600' : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
             <span className="flex items-center">
               <span className={`w-2 h-2 rounded-full mr-3 ${
-                openMenus.notification ? 'bg-blue-500' : 'bg-gray-300'
+                openMenus.notification ? 'bg-teal-500' : 'bg-gray-300'
               }`}></span>
               <span className="font-medium">Thông báo</span>
             </span>
@@ -100,17 +102,17 @@ const AdminSideBar = () => {
           {openMenus.notification && (
             <div className="ml-5 space-y-1">
               <NavLink
-                to="/admin"
+                to="/#"
                 className={({ isActive }) => `block px-3 py-2 rounded-lg transition-colors ${
-                  isActive ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
+                  isActive ? 'bg-teal-100 text-teal-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 Cài đặt
               </NavLink>
               <NavLink
-                to="/admin"
+                to="/#"
                 className={({ isActive }) => `block px-3 py-2 rounded-lg transition-colors ${
-                  isActive ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
+                  isActive ? 'bg-teal-100 text-teal-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 Profile

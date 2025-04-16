@@ -1,29 +1,47 @@
 import React from 'react';
-import { FiSearch } from 'react-icons/fi';
+import { FiMenu } from 'react-icons/fi';
+import defaultAvatar from "../../assets/default_avatar.jpg";
 
-const StaffHeader = () => {
+const Staff = {
+  username: "Minh Minh",
+  role: "Staff",
+  avatar: {
+    url: "https://i.pravatar.cc/300" 
+  }
+};
+
+const StaffHeader = ({ onToggleSidebar }) => {
+  const userDisplay = {
+    name: Staff.username || "Chưa có tên",
+    role: Staff.role || "Vai trò",
+    avatar: Staff.avatar?.url || defaultAvatar,
+  };
+
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
-      {/* Search input */}
-      <div className="relative w-64">
-        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <FiSearch className="text-gray-400" />
-        </div>
-        <input
-          type="text"
-          className="w-full py-2 pl-10 pr-4 text-sm bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
-          placeholder="Type to search..."
-        />
-      </div>
+      {/* Nút menu hiện ở mobile */}
+      <button
+        className="text-gray-600 md:hidden"
+        onClick={onToggleSidebar}
+      >
+        <FiMenu className="w-6 h-6" />
+      </button>
 
-      {/* User profile */}
+      {/* Khoảng trống giữa (giữ khoảng cho sidebar) */}
+      <div className="w-64 hidden md:block"></div>
+
+      {/* Thông tin người dùng */}
       <div className="flex items-center space-x-3">
         <div className="flex flex-col items-end">
-          <span className="text-sm font-medium text-gray-700">Minh Minh</span>
-          <span className="text-xs text-gray-500">Staff</span>
+          <span className="text-sm font-medium text-gray-700">{userDisplay.name}</span>
+          <span className="text-xs text-gray-500">{userDisplay.role}</span>
         </div>
-        <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">
-          MM
+        <div className="w-8 h-8 rounded-full bg-teal-500 overflow-hidden">
+          <img
+            src={userDisplay.avatar}
+            alt="avatar"
+            className="w-full h-full object-cover"
+          />
         </div>
       </div>
     </header>

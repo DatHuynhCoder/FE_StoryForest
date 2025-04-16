@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { FiPlus, FiTrash2, FiUpload, FiX } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 const AddChapter = () => {
   const navigate = useNavigate();

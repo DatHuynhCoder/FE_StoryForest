@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { FiEdit2, FiTrash2, FiInfo, FiPlus, FiSearch, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 const StoryManagement = () => {
   const [sortOption, setSortOption] = useState('Mới nhất');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
-  const storiesPerPage = 10; // Số truyện hiển thị mỗi trang
+  const storiesPerPage = 10;
 
   // Dummy data with cover images
   const allStories = Array.from({ length: 20 }, (_, i) => ({
@@ -46,7 +46,7 @@ const StoryManagement = () => {
   const handleDelete = (storyId) => {
     if (window.confirm(`Bạn có chắc muốn xóa truyện này?`)) {
       console.log(`Xóa truyện có ID: ${storyId}`);
-      // Thực hiện xóa ở đây (trong demo chỉ log ra console)
+      // Thực hiện xóa 
     }
   };
 
@@ -67,7 +67,7 @@ const StoryManagement = () => {
                 <input
                   type="text"
                   placeholder="Tìm kiếm..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -78,7 +78,7 @@ const StoryManagement = () => {
             {/* Sort dropdown */}
             <div className="relative w-full md:w-auto">
               <select
-                className="w-full md:w-40 appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full md:w-40 appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value)}
               >
@@ -98,7 +98,7 @@ const StoryManagement = () => {
           {/* Add button */}
           <button 
             onClick={handleAdd}
-            className="w-full md:w-auto flex items-center justify-center space-x-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="w-full md:w-auto flex items-center justify-center space-x-1 px-3 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
           >
             <FiPlus className="text-sm" />
             <span>Thêm</span>
@@ -136,7 +136,7 @@ const StoryManagement = () => {
                 {/* Action buttons */}
                 <div className="flex flex-col xs:flex-row space-y-2 xs:space-y-0 xs:space-x-3 md:space-x-4 w-full sm:w-auto">
                   <button 
-                    className="flex items-center text-blue-600 hover:text-blue-800 text-sm justify-start"
+                    className="flex items-center text-teal-600 hover:text-teal-800 text-sm justify-start"
                     onClick={() => handleSeeDetails(story.id)}
                   >
                     <FiInfo className="mr-1 md:hidden" />
@@ -199,7 +199,7 @@ const StoryManagement = () => {
                   onClick={() => goToPage(pageNum)}
                   className={`px-3 py-1 border rounded text-sm hidden sm:block ${
                     currentPage === pageNum 
-                      ? 'bg-blue-600 text-white border-blue-600' 
+                      ? 'bg-teal-600 text-white border-teal-600' 
                       : 'border-gray-300 hover:bg-gray-50'
                   }`}
                 >
@@ -217,7 +217,7 @@ const StoryManagement = () => {
                 onClick={() => goToPage(totalPages)}
                 className={`px-3 py-1 border rounded text-sm hidden sm:block ${
                   currentPage === totalPages 
-                    ? 'bg-blue-600 text-white border-blue-600' 
+                    ? 'bg-teal-600 text-white border-teal-600' 
                     : 'border-gray-300 hover:bg-gray-50'
                 }`}
               >

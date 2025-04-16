@@ -4,7 +4,7 @@ import Chart from 'react-apexcharts';
 const NewUserMonthlyChart = () => {
   // Cấu hình biểu đồ
   const chartOptions = {
-    colors: ['#465FFF'],
+    colors: ['#14B8A6'],
     chart: {
       fontFamily: 'Outfit, sans-serif',
       type: 'bar',
@@ -76,7 +76,7 @@ const NewUserMonthlyChart = () => {
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-gray-800">New Users / Monthly </h3>
         <div className="flex items-center">
-          <span className="w-3 h-3 rounded-full bg-[#465FFF] mr-2"></span>
+          <span className="w-3 h-3 rounded-full bg-[#14B8A6] mr-2"></span>
           <span className="text-sm text-gray-500">Monthly</span>
         </div>
       </div>

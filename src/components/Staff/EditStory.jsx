@@ -1,6 +1,6 @@
 import { FiEdit2, FiTrash2, FiPlus, FiChevronRight, FiArrowLeft } from "react-icons/fi";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 
 const EditStory = () => {
@@ -197,7 +197,7 @@ const EditStory = () => {
                           <div className="flex justify-end space-x-3">
                             <button 
                               onClick={() => handleEditChapter(chapter.id)} 
-                              className="text-blue-600 hover:text-blue-800 transition-colors">
+                              className="text-teal-600 hover:text-teal-800 transition-colors">
                               <FiEdit2 size={16} />
                             </button>
                             <button 

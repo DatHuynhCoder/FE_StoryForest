@@ -1,5 +1,4 @@
 import React from 'react';
-import BarChartOne from '../../components/Chart/Bar/BarChartOne';
 import MonthlyTarget from '../../components/WebManagement/MonthlyTarget';
 import StatisticsChart from '../../components/WebManagement/StatisticsChart';
 import MonthlySales from '../../components/WebManagement/MonthlySales';

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Pencil, Trash2, Search, Plus, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import AddStaffForm from './AddStaffForm';
 
 const StaffTable = () => {
@@ -82,14 +82,14 @@ const StaffTable = () => {
             <input
               type="text"
               placeholder="Tìm kiếm..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-teal-500"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <button 
             onClick={handleAddClick}
-            className="flex items-center justify-center gap-1 bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700"
+            className="flex items-center justify-center gap-1 bg-teal-600 text-white px-3 py-2 rounded text-sm hover:bg-teal-700"
           >
             <Plus className="h-4 w-4" />
             <span className="hidden sm:inline">Thêm mới</span>
@@ -162,7 +162,7 @@ const StaffTable = () => {
                       <div className="flex justify-end space-x-2">
                         <button 
                           onClick={() => handleEdit(user.id)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-teal-600 hover:text-teal-900"
                           title="Sửa"
                         >
                           <Pencil size={16} />
@@ -221,7 +221,7 @@ const StaffTable = () => {
                   key={pageNum}
                   onClick={() => setCurrentPage(pageNum)}
                   className={`px-3 py-1 border rounded text-sm ${
-                    currentPage === pageNum ? 'bg-blue-600 text-white border-blue-600' : ''
+                    currentPage === pageNum ? 'bg-teal-600 text-white border-teal-600' : ''
                   }`}
                 >
                   {pageNum}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router";
 import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 
 const StaffSideBar = () => {
@@ -30,12 +30,12 @@ const StaffSideBar = () => {
           <button
             onClick={() => toggleMenu('storyForest')}
             className={`flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-colors ${
-              openMenus.storyForest ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'
+              openMenus.storyForest ? 'bg-teal-50 text-teal-600' : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
             <span className="flex items-center">
               <span className={`w-2 h-2 rounded-full mr-3 ${
-                openMenus.storyForest ? 'bg-blue-500' : 'bg-gray-300'
+                openMenus.storyForest ? 'bg-teal-500' : 'bg-gray-300'
               }`}></span>
               <span className="font-medium">StoryForest</span>
             </span>
@@ -51,7 +51,7 @@ const StaffSideBar = () => {
               <NavLink
                 to="/staff/story-management"
                 className={({ isActive }) => `block px-3 py-2 rounded-lg transition-colors ${
-                  isActive ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
+                  isActive ? 'bg-teal-100 text-teal-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 Quản lý truyện
@@ -59,7 +59,7 @@ const StaffSideBar = () => {
               <NavLink
                 to="/staff/author-management"
                 className={({ isActive }) => `block px-3 py-2 rounded-lg transition-colors ${
-                  isActive ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
+                  isActive ? 'bg-teal-100 text-teal-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 Quản lý tác giả 
@@ -67,7 +67,7 @@ const StaffSideBar = () => {
               <NavLink
                 to="/staff/VIP-management"
                 className={({ isActive }) => `block px-3 py-2 rounded-lg transition-colors ${
-                  isActive ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
+                  isActive ? 'bg-teal-100 text-teal-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 Quản lý đăng ký VIP 
@@ -81,12 +81,12 @@ const StaffSideBar = () => {
           <button
             onClick={() => toggleMenu('notification')}
             className={`flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-colors ${
-              openMenus.notification ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'
+              openMenus.notification ? 'bg-teal-50 text-teal-600' : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
             <span className="flex items-center">
               <span className={`w-2 h-2 rounded-full mr-3 ${
-                openMenus.notification ? 'bg-blue-500' : 'bg-gray-300'
+                openMenus.notification ? 'bg-teal-500' : 'bg-gray-300'
               }`}></span>
               <span className="font-medium"></span>
             </span>
@@ -102,7 +102,7 @@ const StaffSideBar = () => {
               <NavLink
                 to="/"
                 className={({ isActive }) => `block px-3 py-2 rounded-lg transition-colors ${
-                  isActive ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
+                  isActive ? 'bg-teal-100 text-teal-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 Cài đặt
@@ -110,7 +110,7 @@ const StaffSideBar = () => {
               <NavLink
                 to="/"
                 className={({ isActive }) => `block px-3 py-2 rounded-lg transition-colors ${
-                  isActive ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
+                  isActive ? 'bg-teal-100 text-teal-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 Profile

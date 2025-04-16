@@ -1,6 +1,6 @@
 import { FiPlus, FiTrash2, FiSave, FiX, FiUpload, FiEdit2 } from "react-icons/fi";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 const AddNewStory = () => {
   const navigate = useNavigate();
@@ -270,7 +270,7 @@ const AddNewStory = () => {
                           <div className="flex justify-end space-x-3">
                             <button 
                               type="button"
-                              className="text-blue-600 hover:text-blue-800 transition-colors"
+                              className="text-teal-600 hover:text-teal-800 transition-colors"
                               onClick={() => {
                                 setNewChapter({
                                   title: chapter.title,

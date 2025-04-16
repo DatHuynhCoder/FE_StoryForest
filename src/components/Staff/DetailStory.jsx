@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FiEdit, FiTrash2, FiPlus, FiChevronLeft, FiChevronRight, FiStar } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 const StoryDetail = () => {
   const navigate = useNavigate();
@@ -64,7 +64,7 @@ const StoryDetail = () => {
         <div className="px-4 py-3 md:px-6 md:py-4 border-b border-gray-200">
           <button 
             onClick={handleBack}
-            className="flex items-center text-blue-600 hover:text-blue-800"
+            className="flex items-center text-teal-600 hover:text-teal-800"
           >
             <FiChevronLeft className="mr-1" />
             <span>Quay lại</span>
@@ -104,7 +104,7 @@ const StoryDetail = () => {
                   <p className="text-gray-700"><span className="font-medium">Trạng thái:</span> 
                     <span className={`ml-1 px-2 py-1 text-xs rounded-full ${
                       story.status === 'completed' ? 'bg-green-100 text-green-800' :
-                      story.status === 'ongoing' ? 'bg-blue-100 text-blue-800' :
+                      story.status === 'ongoing' ? 'bg-teal-100 text-teal-800' :
                       'bg-gray-100 text-gray-800'
                     }`}>
                       {story.status === 'completed' ? 'Hoàn thành' : 
@@ -143,7 +143,7 @@ const StoryDetail = () => {
           <div className="mt-6 flex flex-wrap gap-3">
             <button 
               onClick={handleEditStory}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center"
+              className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 flex items-center"
             >
               <FiEdit className="mr-2" />
               <span>Chỉnh sửa truyện</span>

@@ -89,7 +89,7 @@ const AddStaffForm = () => {
   return (
     <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-6">
       <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center">
-        <User className="h-6 w-6 mr-2 text-blue-600" />
+        <User className="h-6 w-6 mr-2 text-teal-600" />
         Thêm nhân viên mới
       </h2>
 
@@ -112,7 +112,7 @@ const AddStaffForm = () => {
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleChange}
-                className={`pl-10 w-full rounded-md border ${errors.fullName ? 'border-red-500' : 'border-gray-300'} p-2 focus:ring-blue-500 focus:border-blue-500`}
+                className={`pl-10 w-full rounded-md border ${errors.fullName ? 'border-red-500' : 'border-gray-300'} p-2 focus:ring-teal-500 focus:border-teal-500`}
                 placeholder="Nguyễn Văn A"
               />
             </div>
@@ -128,7 +128,7 @@ const AddStaffForm = () => {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                className={`pl-10 w-full rounded-md border ${errors.username ? 'border-red-500' : 'border-gray-300'} p-2 focus:ring-blue-500 focus:border-blue-500`}
+                className={`pl-10 w-full rounded-md border ${errors.username ? 'border-red-500' : 'border-gray-300'} p-2 focus:ring-teal-500 focus:border-teal-500`}
                 placeholder="nguyenvana"
               />
             </div>
@@ -144,7 +144,7 @@ const AddStaffForm = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`pl-10 w-full rounded-md border ${errors.email ? 'border-red-500' : 'border-gray-300'} p-2 focus:ring-blue-500 focus:border-blue-500`}
+                className={`pl-10 w-full rounded-md border ${errors.email ? 'border-red-500' : 'border-gray-300'} p-2 focus:ring-teal-500 focus:border-teal-500`}
                 placeholder="nguyenvana@truyen.vn"
               />
             </div>
@@ -160,7 +160,7 @@ const AddStaffForm = () => {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className={`pl-10 w-full rounded-md border ${errors.phone ? 'border-red-500' : 'border-gray-300'} p-2 focus:ring-blue-500 focus:border-blue-500`}
+                className={`pl-10 w-full rounded-md border ${errors.phone ? 'border-red-500' : 'border-gray-300'} p-2 focus:ring-teal-500 focus:border-teal-500`}
                 placeholder="0987654321"
               />
             </div>
@@ -176,7 +176,7 @@ const AddStaffForm = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className={`pl-10 w-full rounded-md border ${errors.password ? 'border-red-500' : 'border-gray-300'} p-2 focus:ring-blue-500 focus:border-blue-500`}
+                className={`pl-10 w-full rounded-md border ${errors.password ? 'border-red-500' : 'border-gray-300'} p-2 focus:ring-teal-500 focus:border-teal-500`}
                 placeholder="Ít nhất 6 ký tự"
               />
             </div>
@@ -187,7 +187,7 @@ const AddStaffForm = () => {
         {/* Thông tin công việc */}
         <div className="mb-6">
           <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
-            <Briefcase className="h-5 w-5 mr-2 text-blue-600" />
+            <Briefcase className="h-5 w-5 mr-2 text-teal-600" />
             Thông tin công việc
           </h3>
 
@@ -198,7 +198,7 @@ const AddStaffForm = () => {
                 name="position"
                 value={formData.position}
                 onChange={handleChange}
-                className={`w-full rounded-md border ${errors.position ? 'border-red-500' : 'border-gray-300'} p-2 focus:ring-blue-500 focus:border-blue-500`}
+                className={`w-full rounded-md border ${errors.position ? 'border-red-500' : 'border-gray-300'} p-2 focus:ring-teal-500 focus:border-teal-500`}
               >
                 <option value="">Chọn chức vụ</option>
                 <option value="Biên tập viên">Biên tập viên</option>
@@ -216,7 +216,7 @@ const AddStaffForm = () => {
                 name="department"
                 value={formData.department}
                 onChange={handleChange}
-                className="w-full rounded-md border border-gray-300 p-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full rounded-md border border-gray-300 p-2 focus:ring-teal-500 focus:border-teal-500"
                 placeholder="Ví dụ: Biên tập"
               />
             </div>
@@ -226,7 +226,7 @@ const AddStaffForm = () => {
         {/* Quyền hạn */}
         <div className="mb-6">
           <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
-            <Shield className="h-5 w-5 mr-2 text-blue-600" />
+            <Shield className="h-5 w-5 mr-2 text-teal-600" />
             Phân quyền <span className="text-red-500">*</span>
           </h3>
           {errors.permissions && <p className="mt-1 text-sm text-red-600 mb-2">{errors.permissions}</p>}
@@ -238,7 +238,7 @@ const AddStaffForm = () => {
                   onClick={() => handlePermissionChange(permission)}
                   className={`flex items-center justify-center w-5 h-5 rounded mr-2 ${
                     formData.permissions.includes(permission) 
-                      ? 'bg-blue-600 text-white' 
+                      ? 'bg-teal-600 text-white' 
                       : 'border border-gray-300'
                   }`}
                 >
@@ -260,7 +260,7 @@ const AddStaffForm = () => {
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-600 rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="px-4 py-2 bg-teal-600 rounded-md text-sm font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
           >
             Thêm nhân viên
           </button>

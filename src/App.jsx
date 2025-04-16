@@ -43,6 +43,12 @@ import EditStory from "./components/Staff/EditStory.jsx";
 import AddNewStory from "./components/Staff/AddNewStory.jsx";
 import AddChapter from "./components/Staff/AddChapter.jsx";
 
+import AuthorManagement from "./pages/Staff/AuthorManagement.jsx";
+import AuthorDetail from "./components/Staff/AthourDetail.jsx";
+import AuthorEdit from "./components/Staff/AuthorEdit.jsx";
+import AddAuthor from "./components/Staff/AuthorAddNew.jsx";
+import VipManagement from "./pages/Staff/VIPManagement.jsx";
+
 
 function App() {
   return (
@@ -67,7 +73,8 @@ function App() {
 
 
         <Route element={<AdminLayout />}>
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          
           <Route path="/admin/user-management" element={<UserManagement />}> </Route>
           <Route path="/admin/user-management/users/:id" element={<UserInformations />} />
           <Route path="/admin/user-management/staff/:id" element={<StaffInformations />} />
@@ -81,12 +88,16 @@ function App() {
           <Route path="/staff/story-management/edit-story/:id_story/add-chapter" element={<AddChapter />}> </Route> 
           <Route path="/staff/story-management/detail-story/:id" element={<DetailStory />}> </Route> 
           <Route path="/staff/story-management/add-story" element={<AddNewStory />}> </Route> 
+          
+          <Route path="/staff/author-management" element={<AuthorManagement />}> </Route>  
+          <Route path="/staff/author-management/detail-author/:author_id" element={<AuthorDetail />}> </Route>  
+          <Route path="/staff/author-management/edit-author/:author_id" element={<AuthorEdit />}> </Route>  
+          <Route path="/staff/author-management/add-author" element={<AddAuthor />}> </Route>  
+
+          <Route path="/staff/vip-management" element={<VipManagement />}> </Route>  
         </Route>
 
       </Routes>
-
-
-
 
       <ToastContainer />
     </>

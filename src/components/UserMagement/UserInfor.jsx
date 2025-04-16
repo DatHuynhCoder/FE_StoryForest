@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router';
 import { ArrowLeft, Book, BookOpen, DollarSign, Clock, User, Mail, Phone } from 'lucide-react';
 
 const UserInformations = () => {
@@ -49,7 +49,7 @@ const UserInformations = () => {
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6">
       <div className="mb-6">
-        <Link to="/admin/user-management" className="flex items-center text-blue-600 hover:text-blue-800">
+        <Link to="/admin/user-management" className="flex items-center text-teal-600 hover:text-teal-800">
           <ArrowLeft className="h-4 w-4 mr-1" />
           Quay lại danh sách
         </Link>
@@ -62,7 +62,7 @@ const UserInformations = () => {
               <img 
                 src={user.avatar} 
                 alt={user.fullName} 
-                className="w-24 h-24 rounded-full mb-3 border-2 border-blue-200"
+                className="w-24 h-24 rounded-full mb-3 border-2 border-teal-200"
               />
               <h2 className="text-xl font-bold text-center">{user.fullName}</h2>
               <span className="text-sm text-gray-500">@{user.username}</span>
@@ -108,7 +108,7 @@ const UserInformations = () => {
                   onClick={() => setActiveTab('overview')}
                   className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${
                     activeTab === 'overview'
-                      ? 'border-blue-500 text-blue-600'
+                      ? 'border-teal-500 text-teal-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
@@ -118,7 +118,7 @@ const UserInformations = () => {
                   onClick={() => setActiveTab('reading')}
                   className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${
                     activeTab === 'reading'
-                      ? 'border-blue-500 text-blue-600'
+                      ? 'border-teal-500 text-teal-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
@@ -128,7 +128,7 @@ const UserInformations = () => {
                   onClick={() => setActiveTab('purchased')}
                   className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${
                     activeTab === 'purchased'
-                      ? 'border-blue-500 text-blue-600'
+                      ? 'border-teal-500 text-teal-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
@@ -142,9 +142,9 @@ const UserInformations = () => {
                 <div>
                   <h3 className="text-lg font-medium mb-4">Thống kê đọc truyện</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div className="bg-blue-50 rounded-lg p-4">
+                    <div className="bg-teal-50 rounded-lg p-4">
                       <div className="flex items-center">
-                        <BookOpen className="h-5 w-5 text-blue-600 mr-2" />
+                        <BookOpen className="h-5 w-5 text-teal-600 mr-2" />
                         <span className="text-sm font-medium text-gray-600">Tổng số truyện đã đọc</span>
                       </div>
                       <div className="text-2xl font-bold mt-2">{user.readingStats.totalRead}</div>
@@ -196,7 +196,7 @@ const UserInformations = () => {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               <div className="w-full bg-gray-200 rounded-full h-2.5">
                                 <div 
-                                  className="bg-blue-600 h-2.5 rounded-full" 
+                                  className="bg-teal-600 h-2.5 rounded-full" 
                                   style={{ width: story.progress }}
                                 ></div>
                               </div>

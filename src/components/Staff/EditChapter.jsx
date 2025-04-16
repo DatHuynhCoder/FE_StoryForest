@@ -1,6 +1,6 @@
 import { FiPlus, FiTrash2, FiSave, FiX, FiChevronRight, FiArrowLeft } from "react-icons/fi";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router"; 
 
 const EditChapter = () => {
   const navigate = useNavigate(); 
