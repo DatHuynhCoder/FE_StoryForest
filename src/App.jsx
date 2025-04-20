@@ -25,7 +25,7 @@ import ProtectedRoute from "./services/ProtectedRoute.jsx";
 //toast
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import AdvancedSearchPage from "./pages/AdvancedSearch/AdvancedSearchPage.jsx";
+
 
 function App() {
   return (
@@ -45,7 +45,7 @@ function App() {
           <Route path="/novel/:novelid" element={<NovelDetails />} />
           <Route path="/novelReader/:novelid/:chapterid" element={<NovelReader />} />
           <Route path='/result/:keyword' element={<ResultPage />} />
-          <Route path='/advanced' element={<AdvancedSearchPage />} />
+    
         </Route>
       </Routes>
       <ToastContainer />

@@ -7,6 +7,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { api } from '../../services/api';
 import { logout } from '../../redux/userSlice';
+import AdvancedSearch from '../AdvancedSearch/AdvancedSearch';
+
 
 
 function Header() {
@@ -29,6 +31,8 @@ function Header() {
 
 	const toggleMenu = isOpen ? "" : "hidden";
 	const toggleProfile = isOpenProfile ? "" : "hidden";
+
+	const [toggleAdvancedSearch, setToggleAdvancedSearch] = useState(false)
 
 	const handleLogout = async () => {
 		try {
@@ -150,6 +154,10 @@ function Header() {
 							className=' border-2 border-[#095533] h-3/4 w-full p-1 bg-white rounded-lg' placeholder='Bạn muốn tìm truyện gì' value={search}
 							onChange={(e) => setSearch(e.target.value)}
 							onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+
+							onFocus={() => setToggleAdvancedSearch(true)}
+							
+							
 						/>
 					</div>
 				</div>
@@ -258,9 +266,12 @@ function Header() {
 								))}
 							</div>
 						</div>
+						
 					</div>
 				)
 			}
+
+			{toggleAdvancedSearch ? <AdvancedSearch setOpen ={setToggleAdvancedSearch}/> : (<></>)}
 		</>
 	);
 }
