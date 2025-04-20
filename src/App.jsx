@@ -26,6 +26,7 @@ import ProtectedRoute from "./services/ProtectedRoute.jsx";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+
 function App() {
   return (
     <>
@@ -44,6 +45,7 @@ function App() {
           <Route path="/novel/:novelid" element={<NovelDetails />} />
           <Route path="/novelReader/:novelid/:chapterid" element={<NovelReader />} />
           <Route path='/result/:keyword' element={<ResultPage />} />
+    
         </Route>
       </Routes>
       <ToastContainer />
