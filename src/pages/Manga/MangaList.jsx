@@ -8,6 +8,8 @@ import { MdSmartDisplay } from "react-icons/md";
 import { FaFlagCheckered } from "react-icons/fa";
 import { PiShootingStarFill } from "react-icons/pi";
 import { FiRefreshCw } from "react-icons/fi";
+import { GiBleedingEye } from "react-icons/gi";
+import { RiUserFollowLine } from "react-icons/ri";
 
 function MangaList() {
   const navigate = useNavigate();
@@ -36,6 +38,7 @@ function MangaList() {
   const [currentPage, setCurrentPage] = useState(0); // Current page (0-based index)
   const [totalPages, setTotalPages] = useState(0)
   const [sortType, setSortType] = useState("normal")
+  const [statusType, setStatusType] = useState("normal")
 
   const itemsPerPage = 10
 
@@ -45,7 +48,6 @@ function MangaList() {
     api.get(`/api/manga/v2?page=${page + 1}&limit=${itemsPerPage}`) // Backend expects 1-based page index
       .then((res) => {
         const { data, pagination } = res.data;
-        console.log("check list manga: ", data)
         setListManga(data);
         setCurrentPage(pagination.currentPage - 1); // Convert to 0-based index
         setTotalPages(pagination.totalPages);
@@ -57,13 +59,12 @@ function MangaList() {
         setLoading(false);
       });
   };
-  const fetchMangasWithType = (page) => {
+  const fetchMangasWithSortType = (page, type) => {
     console.log("check page: ", page)
     setLoading(true);
-    api.get(`/api/manga/v2?page=${page + 1}&limit=${itemsPerPage}&sort=${sortType}&order=desc`) // Backend expects 1-based page index
+    api.get(`/api/manga/v2?page=${page + 1}&limit=${itemsPerPage}&sort=${type}&order=desc`) // Backend expects 1-based page index
       .then((res) => {
         const { data, pagination } = res.data;
-        console.log("check list manga: ", data)
         setListManga(data);
         setCurrentPage(pagination.currentPage - 1); // Convert to 0-based index
         setTotalPages(pagination.totalPages);
@@ -75,6 +76,23 @@ function MangaList() {
         setLoading(false);
       });
   };
+  const fetchMangasByStatus = (page, status) => {
+    console.log("check page: ", page)
+    setLoading(true);
+    api.get(`/api/manga/status?page=${page + 1}&limit=${itemsPerPage}&status=${status}`) // Backend expects 1-based page index
+      .then(res => {
+        const { data, pagination } = res.data;
+        setListManga(data)
+        setCurrentPage(pagination.currentPage - 1)
+        setTotalPages(pagination.totalPages)
+      })
+      .catch(err => {
+        console.error("Failed to fetch mangas:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      })
+  }
 
   const handleClickOnManga = (_id, mangaid) => {
     navigate(`/bookDetail/${_id}/${mangaid}`)
@@ -86,25 +104,50 @@ function MangaList() {
 
   const handlePageClick = (event) => {
     const newPage = event.selected
-    if (sortType === "normal") fetchMangas(newPage)
-    else fetchMangasWithType(newPage)
+    if (sortType === "normal") {
+      if (statusType === "normal")
+        fetchMangas(newPage)
+      else
+        fetchMangasByStatus(newPage, statusType)
+    }
+    else fetchMangasWithSortType(newPage, sortType)
   }
 
   const handleClickBestRated = () => {
     setSortType("rate")
-    fetchMangasWithType(0)
+    setStatusType("normal")
+    fetchMangasWithSortType(0, "rate")
+  }
+
+  const handleClickTopView = () => {
+    setSortType("views")
+    setStatusType("normal")
+    fetchMangasWithSortType(0, "views")
+  }
+
+  const handleClickMostFollowed = () => {
+    setSortType("followers")
+    setStatusType("normal")
+    fetchMangasWithSortType(0, "followers")
   }
 
   const handleClickOngoing = () => {
-
+    setStatusType("ongoing")
+    setSortType("normal")
+    //fetch
+    fetchMangasByStatus(0, "ongoing")
   }
 
   const handleClickComplete = () => {
-
+    setStatusType("completed")
+    setSortType("normal")
+    //fetch
+    fetchMangasByStatus(0, "completed")
   }
 
   const handleClickRefresh = () => {
     setSortType("normal")
+    setStatusType("normal")
     fetchMangas(0)
   }
 
@@ -188,6 +231,12 @@ function MangaList() {
           <div className='flex-1 flex-column border md:block hidden'>
             <div className='cursor-pointer border m-1 p-2' onClick={() => handleClickBestRated()}>
               <p className=' flex font-bold'><span><RxRocket /></span>&nbsp;BEST RATED</p>
+            </div>
+            <div className='cursor-pointer border m-1 p-2' onClick={() => handleClickTopView()}>
+              <p className=' flex font-bold'><span><GiBleedingEye /></span>&nbsp;TOP VIEWS</p>
+            </div>
+            <div className='cursor-pointer border m-1 p-2' onClick={() => handleClickMostFollowed()}>
+              <p className=' flex font-bold'><span><RiUserFollowLine /></span>&nbsp;MOST FOLLOWED</p>
             </div>
             <div className='cursor-pointer border m-1 p-2' onClick={() => handleClickOngoing()}>
               <p className=' flex font-bold'><span><MdSmartDisplay /></span>&nbsp;ONGOING MANGA</p>
