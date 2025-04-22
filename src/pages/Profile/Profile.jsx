@@ -1,11 +1,9 @@
-//image
 import DefaultBG from "../../assets/default_bg_profile.jpg";
 import DefaultAvt from "../../assets/default_avatar.jpg";
-import { FaCrown, FaArrowRight } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+import { FaCrown, FaUser, FaBook, FaHeart, FaCog, FaBars } from "react-icons/fa";
 
 //import api
-import { apiAuth } from "../../services/api";
+import { apiAuth, api } from "../../services/api";
 
 import { useEffect, useState } from "react";
 
@@ -13,6 +11,14 @@ import { useEffect, useState } from "react";
 import Spinner from "../../components/Spinner";
 //import modal
 import UpdateUserModal from "./UpdateUserModal";
+
+//import components
+import FavoriteBooks from "./FavoriteBooks";
+import AboutMe from "./AboutMe";
+import Settings from "./Setting";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
 
 const aboutUser = [
   "Có thể dành cả ngày trong một hiệu sách mà không thấy chán.",
@@ -27,55 +33,16 @@ const aboutUser = [
   "Ước gì có thêm thời gian mỗi ngày chỉ để đọc nhiều sách hơn."
 ];
 
-const books = [
-  {
-    _id: 1,
-    name: "Atomic Habits",
-    author: "James Clear",
-    picture: "/images/book_cover.png",
-    description: "A practical guide to building good habits, breaking bad ones, and mastering the tiny behaviors that lead to remarkable results."
-  },
-  {
-    _id: 2,
-    name: "The Alchemist",
-    author: "Paulo Coelho",
-    picture: "/images/book_cover.png",
-    description: "A philosophical novel about a shepherd's journey to fulfill his personal legend and discover the true meaning of life."
-  },
-  {
-    _id: 3,
-    name: "Deep Work",
-    author: "Cal Newport",
-    picture: "/images/book_cover.png",
-    description: "A book about the benefits of focused work in a distracted world and how to cultivate deep concentration."
-  },
-  {
-    _id: 4,
-    name: "1984",
-    author: "George Orwell",
-    picture: "/images/book_cover.png",
-    description: "A dystopian novel that explores a totalitarian future where government surveillance and control suppress individual freedom."
-  },
-  {
-    _id: 5,
-    name: "Sapiens: A Brief History of Humankind",
-    author: "Yuval Noah Harari",
-    picture: "/images/book_cover.png",
-    description: "An exploration of the history of human evolution, societies, and the forces that shaped our world today."
-  },
-  {
-    _id: 6,
-    name: "The Subtle Art of Not Giving a F*ck",
-    author: "Mark Manson",
-    picture: "/images/book_cover.png",
-    description: "A self-help book that encourages readers to focus on what truly matters and let go of unimportant worries."
-  }
-];
-
 const Profile = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [user, setUser] = useState(null);
+  const [favoriteBooks, setFavoriteBooks] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('profile');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -93,137 +60,248 @@ const Profile = () => {
     fetchUser();
   }, []);
 
+  useEffect(() => {
+    const fetchFavorite = async () => {
+      try {
+        const response = await apiAuth.get('/api/reader/favorite/getFavorite');
+        if (response.data.success) {
+          setFavoriteBooks(response.data.data);
+        }
+      } catch (error) {
+        console.error("Khong tìm thấy favorite:", error);
+      }
+    };
+
+    fetchFavorite();
+  }, [])
+
+  // Close sidebar when selecting an option on mobile
+  const handleSectionClick = (section) => {
+    setActiveSection(section);
+    if (window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
+  };
+
+  //Handle click on continue Reading favorite Book
+  const handleContinueReading = (book) => {
+    try {
+      if (book.type === 'manga') {
+        navigate(`/bookDetail/${book._id}/${book.mangaid}`);
+      }
+      else {
+        navigate(`/novel/${book._id}`);
+      }
+    } catch (error) {
+      toast.error("An error occur during continue reading:", error);
+    }
+  }
+
+  //Handle click on remove favorite book
+  const handleDeleteFavoritebook = async (bookId) => {
+    try {
+      const response = await apiAuth.delete('/api/reader/favorite/deleteFavorite', {
+        data: { bookId: bookId }
+      });
+      if (response.data.success) {
+        console.log(response.data.data);
+        // Update the favoriteBooks state to remove the deleted book
+        setFavoriteBooks(prevBooks => prevBooks.filter(book => book._id !== bookId));
+        toast.success('Delete favorite book sucessfully');
+      }
+      else {
+        toast.error('Error in deleting davorite book');
+      }
+    } catch (error) {
+      toast.error("An error occur during delete favorite book:", error);
+    }
+  }
+
+  //Handle logout
+  const handleLogout = async () => {
+    try {
+      const response = await api.post("/api/reader/account/logout");
+      if (response.data.success) {
+        dispatch(logout());
+        navigate("/login")
+      }
+    } catch (error) {
+      toast.error("An error occur during logout:", error);
+    }
+  }
+
   //Spinner to load while fetching data
   if (isLoading) {
     return <Spinner />;
   }
 
-  return (
-    <div className="w-full min-h-screen bg-[#d9d9d9] flex flex-col items-center gap-6">
-      <div className="w-full sm:w-4/5 min-h-1/2 flex flex-col bg-white pb-5 rounded-b-2xl">
-        {/* Background Profile */}
-        <div className="relative h-40">
-          <img className="w-full h-full object-cover object-center" src={user?.bgImg?.url || DefaultBG} alt="background-profile" />
+  // Sidebar menu items
+  const sidebarItems = [
+    { id: 'profile', label: 'Trang cá nhân', icon: <FaUser /> },
+    { id: 'about', label: 'Về tôi', icon: <FaBook /> },
+    { id: 'favorite', label: 'Sách yêu thích', icon: <FaHeart /> },
+    { id: 'settings', label: 'Cài đặt', icon: <FaCog /> }
+  ];
 
-          {/* Avatar */}
-          <img
-            className="absolute sm:left-1/2 left-1/4 bottom-[-80px] transform -translate-x-1/2 rounded-full h-48 w-48 border-4 border-white"
-            src={user?.avatar?.url || DefaultAvt}
-            alt="User Avatar"
-          />
-        </div>
+  // Profile Header Component
+  const ProfileHeader = () => (
+    <div className="w-full min-h-1/2 flex flex-col bg-white pb-5 rounded-2xl">
+      {/* Background Profile */}
+      <div className="relative h-32 sm:h-40">
+        <img className="w-full h-full object-cover object-center" src={user?.bgImg?.url || DefaultBG} alt="background-profile" />
 
-        {/* Username */}
-        <div className="flex flex-row relative">
-          <h1 className="mx-12 mt-20 sm:text-center text-3xl font-bold flex-1">
-            {user?.username}
-          </h1>
+        {/* Avatar */}
+        <img
+          className="absolute left-1/2 -bottom-16 sm:-bottom-24 transform -translate-x-1/2 rounded-full h-32 w-32 sm:h-48 sm:w-48 border-4 border-white"
+          src={user?.avatar?.url || DefaultAvt}
+          alt="User Avatar"
+        />
+      </div>
 
-          {/* upgrade button */}
-          <button className="p-[3px] cursor-pointer absolute sm:right-5 right-1 bottom-0 rounded-full bg-black">
+      {/* Username */}
+      <div className="flex flex-col sm:flex-row relative mt-20 sm:mt-24">
+        <h1 className="text-center text-2xl sm:text-3xl font-bold flex-1">
+          {user?.username}
+        </h1>
+        {/* upgrade button */}
+        <div className="flex justify-center mt-4 sm:mt-0 sm:justify-end sm:absolute sm:right-5 sm:bottom-0">
+          <button className="p-[3px] cursor-pointer rounded-full bg-black relative"> {/* Added relative here */}
             <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg" />
-            <div className="flex items-center gap-2 sm:px-4 px-2 py-2 font-bold bg-black rounded-[6px]  relative group transition duration-200 text-white hover:bg-transparent">
+            <div className="flex items-center gap-2 px-4 py-2 font-bold bg-black rounded-[6px] relative group transition duration-200 text-white hover:bg-transparent">
               <FaCrown className="text-yellow-400 group-hover:animate-pulse group-hover:text-yellow-300 w-5" />
               Upgrade
             </div>
           </button>
         </div>
+      </div>
 
-        {/* infomation */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="p-4 flex flex-row items-center gap-4">
-            <img src="/images/email.png" alt="email logo" className="w-8 h-8" />
-            <div className="flex-1 text-xl">
-              {user?.email}
-            </div>
-          </div>
-
-          <div className="p-4 flex flex-row items-center gap-4">
-            <img src="/images/phone.png" alt="email logo" className="w-8 h-8" />
-            <div className={`flex-1 text-xl ${user?.phone ? "" : "text-gray-500 italic"}`}>
-              {user?.phone ? user.phone : "Thêm số điện thoại"}
-            </div>
-          </div>
-
-          <div className="p-4 flex flex-row items-center gap-4">
-            <img src="/images/medal.png" alt="email logo" className="w-8 h-8" />
-            <div className="flex-1 text-xl">New member</div>
+      {/* information */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 px-4">
+        <div className="p-2 sm:p-4 flex flex-row items-center gap-2 sm:gap-4">
+          <img src="/images/email.png" alt="email logo" className="w-6 h-6 sm:w-8 sm:h-8" />
+          <div className="flex-1 text-sm sm:text-xl overflow-hidden text-ellipsis">
+            {user?.email}
           </div>
         </div>
 
-        {/* Edit and Exit section */}
-        <div className="flex flex-row justify-center gap-10 mt-4">
-          <button
-            type="button"
-            className="text-base cursor-pointer text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-bold rounded-full px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-            onClick={() => setIsModalOpen(true)}
-          >
-            ✏️ Chỉnh sửa
-          </button>
+        <div className="p-2 sm:p-4 flex flex-row items-center gap-2 sm:gap-4">
+          <img src="/images/phone.png" alt="phone logo" className="w-6 h-6 sm:w-8 sm:h-8" />
+          <div className={`flex-1 text-sm sm:text-xl ${user?.phone ? "" : "text-gray-500 italic"}`}>
+            {user?.phone ? user.phone : "Thêm số điện thoại"}
+          </div>
+        </div>
 
-          <button type="button" className="text-green-700 font-bold hover:text-white rounded-full border-3 cursor-pointer border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 text-sm px-5 py-2.5 text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
-            🚪Đăng xuất
-          </button>
+        <div className="p-2 sm:p-4 flex flex-row items-center gap-2 sm:gap-4">
+          <img src="/images/medal.png" alt="medal logo" className="w-6 h-6 sm:w-8 sm:h-8" />
+          <div className="flex-1 text-sm sm:text-xl">New member</div>
         </div>
       </div>
 
-      {/* About me */}
-      <div className="w-full sm:w-4/5 min-h-1/2 flex flex-col bg-white p-5 rounded-2xl">
-        <h2 className="text-3xl font-bold text-blue-700 flex flex-row items-center gap-3 mb-4">
-          <div>About Me</div>
-          <img src="/images/info.png" alt="info about me" className="w-12 h-12" />
-        </h2>
+      {/* Edit and Exit section */}
+      <div className="flex flex-row justify-center gap-4 sm:gap-10 mt-4">
+        <button
+          type="button"
+          className="text-sm sm:text-base cursor-pointer text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-bold rounded-full px-3 sm:px-5 py-2 sm:py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+          onClick={() => setIsModalOpen(true)}
+        >
+          ✏️ Chỉnh sửa
+        </button>
 
-        <ul>
-          {aboutUser.map((fact, index) => (
-            <li key={index} className="font-normal text-xl" >- {fact}</li>
-          ))}
-        </ul>
+        <button onClick={handleLogout} type="button" className="text-green-700 font-bold hover:text-white rounded-full border-2 cursor-pointer border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 text-sm px-3 sm:px-5 py-2 sm:py-2.5 text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
+          🚪Đăng xuất
+        </button>
+      </div>
+    </div>
+  );
+
+
+  // Render the active section content
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'profile':
+        return <ProfileHeader />;
+      case 'about':
+        return <AboutMe aboutUser={aboutUser} />;
+      case 'favorite':
+        return <FavoriteBooks
+          books={favoriteBooks}
+          handleContinueReading={handleContinueReading}
+          handleDeleteFavoritebook={handleDeleteFavoritebook}
+        />;
+      case 'settings':
+        return <Settings />;
+      default:
+        return <ProfileHeader />;
+    }
+  };
+
+  return (
+    <div className="w-full min-h-screen bg-[#d9d9d9]">
+      {/* Mobile Navigation Header */}
+      <div className="md:hidden flex items-center justify-between bg-white p-4 shadow-md">
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="text-gray-700 focus:outline-none"
+        >
+          <FaBars size={24} />
+        </button>
+        <h1 className="text-xl font-bold">{sidebarItems.find(item => item.id === activeSection)?.label}</h1>
+        <img
+          src={user?.avatar?.url || DefaultAvt}
+          alt="User Avatar"
+          className="h-8 w-8 rounded-full"
+        />
       </div>
 
-      {/* My library */}
-      <div className="w-full sm:w-4/5 min-h-1/2 flex flex-col bg-white p-5 rounded-2xl">
-        <h2 className="text-3xl font-bold text-purple-700 flex flex-row items-center gap-3 mb-4 justify-between">
-          <div className="flex flex-row items-center gap-2">
-            <div>Favorite Books</div>
-            <img src="/images/fav_book.png" alt="info about me" className="w-12 h-12" />
+      <div className="flex flex-row relative">
+        {/* Sidebar - hidden on mobile by default */}
+        <div
+          className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            } md:translate-x-0 fixed md:static z-30 w-64 bg-white shadow-md md:pt-8 min-h-screen transition-transform duration-300 ease-in-out top-0 md:top-auto`}
+        >
+          <div className="flex flex-col items-center mb-6">
+            <img
+              src={user?.avatar?.url || DefaultAvt}
+              alt="User Avatar"
+              className="rounded-full h-16 w-16 md:h-20 md:w-20 border-2 border-purple-500"
+            />
+            <h2 className="text-lg md:text-xl font-bold mt-2">{user?.username}</h2>
           </div>
 
-          <button type="button" className="cursor-pointer text-white bg-purple-700 hover:bg-purple-800 focus:ring-4  font-bold rounded-full text-sm p-2.5 text-center inline-flex items-center">
-            <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
-            </svg>
-            <span className="sr-only">xem them</span>
-          </button>
-        </h2>
-
-        <h3 className="text-xl font-normal mb-3">Which boook am I interested in:</h3>
-
-        {/* Favorite Book list */}
-
-        <div className="flex flex-row flex-wrap gap-3">
-          {books.map((book, index) => (
-            <a key={index} href="#" className="flex flex-col items-center bg-white border border-gray-200 rounded-2xl shadow-sm md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
-              <img className="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src={book.picture} alt="error book" />
-              <div className="flex flex-col justify-between p-4 leading-normal">
-                <h4 className="mb-2 text-3xl font-bold tracking-tight text-(--secondary-color) dark:text-white">{book.name}</h4>
-                <p className="mb-3 font-normal text-green-700 ">{book.author}</p>
-                <p className="mb-3 font-normal text-black ">{book.description}</p>
-
-                <div className="flex flex-row justify-center gap-10 mt-4">
-                  <button type="button" className="flex flex-row items-center gap-2 text-base cursor-pointer text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-bold rounded-full px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                    <div>Xem tiếp</div>
-                    <FaArrowRight />
+          <nav>
+            <ul>
+              {sidebarItems.map(item => (
+                <li key={item.id}>
+                  <button
+                    onClick={() => handleSectionClick(item.id)}
+                    className={`flex cursor-pointer items-center w-full px-4 md:px-6 py-2 md:py-3 text-left transition-colors ${activeSection === item.id
+                      ? 'bg-purple-100 text-purple-700 border-r-4 border-purple-700 font-bold'
+                      : 'text-gray-700 hover:bg-purple-50'
+                      }`}
+                  >
+                    <span className="mr-3">{item.icon}</span>
+                    {item.label}
                   </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
 
-                  <button type="button" className="flex flex-row items-center gap-2 text-red-700 font-bold hover:text-white rounded-full border-3 cursor-pointer border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-800">
-                    <div>Xóa</div>
-                    <MdDelete className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-            </a>
-          ))}
+        {/* Overlay for mobile sidebar */}
+        {sidebarOpen && (
+          <div
+            style={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}
+            className="fixed inset-0 z-20 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* Main Content */}
+        <div className="w-full md:flex-1 p-4 md:p-6">
+          <div className="max-w-5xl mx-auto mt-0 md:mt-0">
+            {renderContent()}
+          </div>
         </div>
       </div>
 
@@ -235,7 +313,7 @@ const Profile = () => {
         onUserUpdate={(updatedUser) => setUser(updatedUser)}
       />
     </div>
-  )
-}
+  );
+};
 
 export default Profile;

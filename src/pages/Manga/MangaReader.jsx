@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router'
 import axios from 'axios'
 import loadingGif from '../../assets/loading.gif'
+import { api } from '../../services/api.js'
 
 function MangaReader() {
-    const { mangaId, chapterId, mangaTitle, chapterNumber, chapterTitle } = useParams()
+    const { mangaid, chapterid } = useParams()
     const navigate = useNavigate()
     const location = useLocation()
-    const chapters = location.state.chapters || []
+    const { _id, chapters, mangatitle, chapternumber, chaptertitle } = location.state || {}
+    // const chapters = location.state.chapters || []
     const [pics, setPics] = useState([])
     const [loading, setLoading] = useState(true)
     const comments = [
@@ -21,46 +23,69 @@ function MangaReader() {
     }
 
     const handleNextChapter = () => {
-        const currentIndex = chapters.findIndex((chapter) => chapter.id === chapterId)
+        console.log("check chapters: ", chapters)
+        console.log("check chapterId: ", chapterid)
+        const currentIndex = chapters.findIndex((chapter) => chapter.chapterid === chapterid)
+        console.log("check currentIndex: ", currentIndex)
         if (currentIndex !== -1 && currentIndex < chapters.length - 1) {
             const nextChapter = chapters[currentIndex + 1]
+            console.log("check nextChapter: ", nextChapter)
             setLoading(true)
-            navigate(`/mangaReader/${mangaId}/${mangaTitle}/${nextChapter.chapter}/${nextChapter.title}/${nextChapter.id}`, { state: { chapters } })
+            let chapternumber = nextChapter.chapter
+            let chaptertitle = nextChapter.title
+            //navigate(`/mangaReader/${infoManga.mangaid}/${mangaTitle}/${chapterNumber}/${chapterTitle}/${chapterid}`, { state: { chapters } })
+            navigate(`/mangaReader/${mangaid}/${nextChapter.chapterid}`, { state: { _id, chapters, mangatitle, chapternumber, chaptertitle } })
         }
     }
 
     const handlePreviousChapter = () => {
-        const currentIndex = chapters.findIndex((chapter) => chapter.id === chapterId)
+        console.log("check chapters: ", chapters)
+        console.log("check chapterId: ", chapterid)
+        const currentIndex = chapters.findIndex((chapter) => chapter.chapterid === chapterid)
+        console.log("check currentIndex: ", currentIndex)
         if (currentIndex > 0) {
             const previousChapter = chapters[currentIndex - 1]
+            console.log("check previousChapter: ", previousChapter)
             setLoading(true)
-            navigate(`/mangaReader/${mangaId}/${mangaTitle}/${previousChapter.chapter}/${previousChapter.title}/${previousChapter.id}`, { state: { chapters } })
+            let chapternumber = previousChapter.chapter
+            let chaptertitle = previousChapter.title
+            navigate(`/mangaReader/${mangaid}/${previousChapter.chapterid}`, { state: { _id, chapters, mangatitle, chapternumber, chaptertitle } })
         }
     }
 
     const handleBackToDetails = () => {
-        navigate(`/bookDetail/${mangaId}`);
+        navigate(`/bookDetail/${_id}/${mangaid}`);
     }
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/mangadex/chapter/${chapterId}/images`)
+        console.log("check chapterid: ", chapterid)
+        api.get(`/api/manga/${chapterid}/images`)
             .then((res) => {
-                setPics(res.data.images)
+                console.log("check res: ", res.data.data)
+                setPics(res.data.data[0].images)
             }).catch((err) => {
                 console.log(err)
             }).finally(() => {
                 setLoading(false)
             })
-    }, [chapterId])
+        // api.get(`/mangadex/chapter/${chapterid}/images`)
+        //     .then((res) => {
+        //         setPics(res.data.images)
+        //     }).catch((err) => {
+        //         console.log(err)
+        //     }).finally(() => {
+        //         setLoading(false)
+        //     })
+    }, [chapterid])
 
     return (
         <>
             <div className='flex flex-col justify-center items-center md:ml-[200px] md:mr-[200px]'>
                 <div className='flex flex-col'>
-                    <p className='text-3xl md:text-5xl font-bold text-black text-center cursor-pointer' onClick={handleBackToDetails}>{mangaTitle}</p>
+                    <p className='text-3xl md:text-5xl font-bold text-black text-center cursor-pointer' onClick={handleBackToDetails}>{mangatitle == undefined ? "" : mangatitle}</p>
                 </div>
                 {/* This div will contain 2 button */}
-                <p className='md:text-lg mt-2'>Chương {chapterNumber}: {chapterTitle}</p>
+                <p className='md:text-lg mt-2'>Chương {chapternumber}: {chaptertitle}</p>
                 <div className='flex flex-col justify-center'>
                     <button onClick={handleNextChapter} className='p-[10px] bg-green-700 text-white font-bold md:w-[500px] w-[200px] rounded mt-3 cursor-pointer'>Chương sau</button>
                     <button onClick={handlePreviousChapter} className='p-[10px] font-bold md:w-[500px] w-[200px] rounded border mt-3 cursor-pointer'>Chương trước</button>
@@ -106,7 +131,7 @@ function MangaReader() {
                                         <img src={comment.avatar} alt={comment.user} className='w-10 h-10 rounded-full' />
                                         <p className='ml-1 font-semibold'>{comment.user}</p>
                                     </div>
-                                    <div className='mt-2 w-[100%] border p-2 rounded-md mt-2'>
+                                    <div className='w-[100%] border p-2 rounded-md mt-2'>
                                         <p>{comment.content}</p>
                                     </div>
                                 </div>

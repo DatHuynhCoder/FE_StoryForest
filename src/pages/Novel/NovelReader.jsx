@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { FaComment } from "react-icons/fa";
 import { useLocation, useParams, useNavigate } from 'react-router';
 import './NovelReader.css'; // Import the CSS file
-import { api } from '../../services/api';
+import { api, apiAuth } from '../../services/api';
 import Spinner from '../../components/Spinner';
+import { toast } from 'react-toastify';
 
 function NovelReader() {
-    const { novelid, noveltitle, chapterid, chaptertitle } = useParams()
+    const { novelid, chapterid } = useParams()
     const navigate = useNavigate()
     const location = useLocation()
-    const chapters = location.state.chapters || []
+    const { chapters, noveltitle, chaptertitle } = location.state || {}
     const [novelContent, setNovelContent] = useState({
         novelid: "67eabac46f25807d87d7acc1",
         chapter_title: "Awakening",
@@ -35,8 +36,9 @@ function NovelReader() {
         if (currentIndex !== -1 && currentIndex < chapters.length - 1) {
             const nextChapter = chapters[currentIndex + 1]
             setLoading(true)
+            let chaptertitle = nextChapter.chapter_title
             // /novel/:novelid/:noveltitle/:chapterid/:chaptertitle
-            navigate(`/novel/${novelid}/${noveltitle}/${nextChapter._id}/${nextChapter.chapter_title}`, { state: { chapters } })
+            navigate(`/novelReader/${novelid}/${nextChapter._id}`, { state: { chapters, noveltitle, chaptertitle } })
         }
     }
 
@@ -46,9 +48,189 @@ function NovelReader() {
             const previousChapter = chapters[currentIndex - 1]
             setLoading(true)
             // /novel/:novelid/:noveltitle/:chapterid/:chaptertitle
-            navigate(`/novel/${novelid}/${noveltitle}/${previousChapter._id}/${previousChapter.chapter_title}`, { state: { chapters } })
+            let chaptertitle = previousChapter.chapter_title
+            navigate(`/novelReader/${novelid}/${previousChapter._id}`, { state: { chapters, noveltitle, chaptertitle } })
         }
     }
+    
+    // Store the reading state in a ref that persists between renders
+    const readingStateRef = useRef({
+        isReading: false,
+        stopReading: null
+    });
+
+    // Handle Read entire Chapter
+    const handleReadChapter = () => {
+        const contentList = [...novelContent.chapter_content];
+        let currentIndex = 0;
+        let currentAudio = null;
+        let isStopped = false;
+        let isLoading = false;
+
+
+        // Function to preload the next paragraph while current one is playing
+        const preloadNextAudio = async (text) => {
+            try {
+                const response = await apiAuth.post(
+                    '/api/vipreader/texttospeak',
+                    { text },
+                    { responseType: 'blob' }
+                );
+
+                if (isStopped) return null;
+
+                const audioBlob = new Blob([response.data], { type: 'audio/mpeg' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+
+                // Force preloading the audio file
+                audio.load();
+
+                return { audio, audioUrl };
+            } catch (error) {
+                return null;
+            }
+        };
+
+        // Function to play audio and handle when it ends
+        const playAudio = (audio, audioUrl) => {
+            if (isStopped) {
+                URL.revokeObjectURL(audioUrl);
+                return;
+            }
+
+            currentAudio = audio;
+
+            // Set up event listeners
+            audio.onended = () => {
+                URL.revokeObjectURL(audioUrl);
+                currentAudio = null;
+
+                // Move to next paragraph
+                if (!isStopped) {
+                    playNextParagraph();
+                }
+            };
+
+            audio.onerror = () => {
+                URL.revokeObjectURL(audioUrl);
+                currentAudio = null;
+
+                // Continue with next paragraph
+                if (!isStopped) {
+                    playNextParagraph();
+                }
+            };
+
+            // Play the audio
+            audio.play().catch(() => {
+                URL.revokeObjectURL(audioUrl);
+                currentAudio = null;
+                playNextParagraph();
+            });
+        };
+
+        // Function to create and play the audio for a paragraph
+        const playParagraph = async (text, nextIndex) => {
+            if (isStopped) return;
+
+            isLoading = true;
+
+            try {
+                const response = await apiAuth.post(
+                    '/api/vipreader/texttospeak',
+                    { text },
+                    { responseType: 'blob' }
+                );
+
+                if (isStopped) return;
+
+                const audioBlob = new Blob([response.data], { type: 'audio/mpeg' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+
+                isLoading = false;
+
+                // If there's a valid next paragraph, preload it while current is playing
+                if (nextIndex < contentList.length) {
+                    const nextParagraph = contentList[nextIndex];
+                    if (nextParagraph && nextParagraph.trim() !== '') {
+                        preloadNextAudio(nextParagraph); // Start preloading next paragraph
+                    }
+                }
+
+                playAudio(audio, audioUrl);
+
+            } catch (error) {
+                isLoading = false;
+
+                // Continue with next paragraph
+                if (!isStopped) {
+                    playNextParagraph();
+                }
+            }
+        };
+
+        // Function to play the next paragraph
+        const playNextParagraph = () => {
+            if (isStopped || currentIndex >= contentList.length) {
+                if (currentIndex >= contentList.length) {
+                    toast.success("Đã đọc xong chương");
+                }
+                stopReading();
+                return;
+            }
+
+            const paragraph = contentList[currentIndex];
+            const nextIndex = currentIndex + 1;
+            currentIndex = nextIndex;
+
+            // Skip empty paragraphs
+            if (!paragraph || paragraph.trim() === '') {
+                playNextParagraph();
+                return;
+            }
+
+            playParagraph(paragraph, nextIndex);
+        };
+
+        // Function to stop reading
+        const stopReading = () => {
+            isStopped = true;
+            readingStateRef.current.isReading = false;
+
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+        };
+
+        // Check if already reading and stop previous session
+        if (readingStateRef.current.isReading && readingStateRef.current.stopReading) {
+            readingStateRef.current.stopReading();
+        }
+
+        // Start reading the chapter
+        toast.info("Bắt đầu đọc chương");
+        readingStateRef.current.isReading = true;
+        readingStateRef.current.stopReading = stopReading;
+
+        // Start reading from the first paragraph
+        playNextParagraph();
+
+        // Return the stop function
+        return { stopReading };
+    };
+
+    // Add this effect in your component to stop reading when component unmounts
+    useEffect(() => {
+        return () => {
+            // Cleanup function - stop any ongoing reading when component unmounts
+            if (readingStateRef.current.isReading && readingStateRef.current.stopReading) {
+                readingStateRef.current.stopReading();
+            }
+        };
+    }, []);
 
     const handleBackToDetails = () => {
         navigate(`/novel/${novelid}`)
@@ -56,8 +238,6 @@ function NovelReader() {
 
     useEffect(() => {
         api.get(`/api/novel/${novelid}/${chapterid}`).then(res => {
-            console.log('check chapter info: ', res.data)
-            console.log('check chapters array:', chapters)
             setNovelContent(res.data.data[0])
         }).catch(err => console.log(err)).finally(() => setLoading(false))
     }, [chapterid])
@@ -77,6 +257,7 @@ function NovelReader() {
                     <p className='md:text-lg mt-2'>{chaptertitle}</p>
                 </div>
                 <div className='flex flex-col justify-center sticky-top'>
+                    <button onClick={handleReadChapter} type="button" className="cursor-pointer text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 ">Đọc chapter 🔊</button>
                     <button onClick={() => handleNextChapter()} className='p-[10px] bg-green-700 text-white font-bold md:w-[500px] w-[200px] rounded mt-3 cursor-pointer'>Next chapter</button>
                     <button onClick={() => handlePreviousChapter()} className='p-[10px] font-bold md:w-[500px] w-[200px] rounded border mt-3 cursor-pointer'>Previous chapter</button>
                 </div>
