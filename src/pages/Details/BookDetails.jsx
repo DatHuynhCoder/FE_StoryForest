@@ -9,6 +9,7 @@ function BookDetails() {
   const navigate = useNavigate()
   //get user from redux store
   const user = useSelector((state) => state.user.user)
+  console.log("check user: ", user)
   const { _id, mangaid } = useParams()
   const [loading, setLoading] = useState(true)
   const [infoManga, setInfoManga] = useState({
@@ -44,6 +45,21 @@ function BookDetails() {
     }
   ])
   const tags = ['Action', 'Adventure', 'Comedy', 'Drama', 'Fantasy', 'Mystery', 'Psychological', 'Romance', 'Sci-fi', 'Slice of Life', 'Supernatural']
+
+  const [bookcomments, setBookComments] = useState([{
+    _id: "67f9e19f83c490c21b7a8958",
+    content: "This is a comment",
+    rating: 5,
+    chapternumber: "1",
+    chaptertitle: "Prologue",
+    chapterid: "1a8bc908-7847-498f-a71f-69762713e829",
+    userid: "67f298a0c0aa3501386b7afb",
+    username: "User1",
+    bookid: "67f298a0c0aa3501386b7afb",
+    createAt: "2025-04-12T02:00:00.436Z",
+    updateAt: "2025-04-12T02:00:00.436Z",
+    __v: 0
+  }])
   const comments = [
     { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User1', content: 'This is a comment' },
     { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User2', content: 'This is a comment' },
@@ -66,13 +82,13 @@ function BookDetails() {
   //handle add to favorite
   const handleAddFavorite = async () => {
     // check if user is logged in
-    if(!user){
+    if (!user) {
       toast.error("Vui lòng đăng nhập để thêm vào thư viện")
       return
     }
 
     try {
-      const response = await apiAuth.post('/api/reader/favorite/addFavorite', {bookId: _id});
+      const response = await apiAuth.post('/api/reader/favorite/addFavorite', { bookId: _id });
       if (response.data.success) {
         toast.success("Thêm vào thư viện thành công")
       } else {
@@ -83,13 +99,13 @@ function BookDetails() {
       toast.error("Thêm vào thư viện thất bại")
     }
   }
-
+  // get book details and chapters
   useEffect(() => {
     api.get(`api/manga/${_id}`)
       .then((res) => {
-        console.log("check /api/manga/id/mangaid", res.data.data);
+        console.log("check /api/manga/:id", res.data.data);
         setInfoManga(res.data.data.manga);
-        setChapters(res.data.data.chapters);
+        setChapters(res.data.data.chapters.filter((chapter) => chapter.title !== null).filter((chapter) => chapter.pages !== 0).sort((a, b) => parseInt(a.chapter) - parseInt(b.chapter)));
       })
       .catch((err) => {
         console.log(err);
@@ -98,6 +114,20 @@ function BookDetails() {
         setLoading(false)
       })
   }, [_id])
+  // get book comments
+  useEffect(() => {
+    api.get(`api/reader/review/book/${_id}`)
+      .then((res) => {
+        console.log("check /api/reader/review/book/:id", res.data.data);
+        setBookComments(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+        // setLoading(false)
+      }).finally(() => {
+        setLoading(false)
+      })
+  }, [])
 
   if (loading) {
     return (<Spinner />)
@@ -130,8 +160,8 @@ function BookDetails() {
 
           <div className='flex-col px-4 md:ml-10 mt-6 md:mt-0'>
             <div className='flex flex-col sm:flex-row justify-center md:justify-start space-y-2 sm:space-y-0 sm:space-x-3 mb-4'>
-              <div onClick={handleAddFavorite} className='rounded bg-green-700 p-2 md:p-3 text-white text-center cursor-pointer font-bold'>Thêm vào thư viện</div>
-              <div onClick={handleStartReading} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold'>Bắt đầu đọc</div>
+              <div onClick={handleAddFavorite} className='rounded bg-green-700 p-2 md:p-3 text-white text-center cursor-pointer font-bold'>Add to favourite</div>
+              <div onClick={handleStartReading} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold'>Start reading</div>
             </div>
 
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>
@@ -157,10 +187,10 @@ function BookDetails() {
       <div className='flex flex-col md:flex-row justify-center pl-10 pr-10 md:pl-20 md:pr-20'>
         {/* This div is for the chapter list */}
         <div className='md:pt-20 md:flex-2 md:mr-10 mt-3 md:mt-0'>
-          <p className='font-bold text-green-700'>Danh sách chương</p>
+          <p className='font-bold text-green-700'>Chapters</p>
           <ul className='h-64 overflow-y-scroll'>
-            {chapters.filter((chapter) => chapter.pages !== 0 && chapter.title !== '').map((chapter) => (
-              <li key={chapter.title} onClick={() => handleClickedChapter(chapter.chapterid, infoManga.title, chapter.chapter, chapter.title)}>
+            {chapters.map((chapter) => (
+              <li key={chapter._id} onClick={() => handleClickedChapter(chapter.chapterid, infoManga.title, chapter.chapter, chapter.title)}>
                 <div className='p-2 border rounded-md m-1 bg-white'>
                   <p className='line-clamp-1'>Chap&nbsp;{chapter.chapter}: {chapter.title}</p>
                   <p className='text-gray-400'>{chapter.date}</p>
@@ -172,16 +202,14 @@ function BookDetails() {
         <div className='hidden md:block md:flex-1'></div>
         {/* This div is for the comments */}
         <div className='md:pt-20 md:flex-2 mt-3 md:mt-0'>
-          <p className='font-bold text-green-700'>Bình luận</p>
+          <p className='font-bold text-green-700'>Comments</p>
           <ul>
-            {comments.map((comment, index) => (
-              <li key={index}>
+            {bookcomments.map((comment, index) => (
+              <li key={comment._id}>
                 <div className='mt-3'>
-                  <div className='flex items-center'>
-                    <img src={comment.avatar} alt={comment.user} className='w-10 h-10 rounded-full' />
-                    <p className='ml-1'>{comment.user}</p>
-                  </div>
                   <div className='w-[100%] border p-2 rounded-md mt-2'>
+                    <p className='ml-1 font-bold'>{comment.username}</p>
+                    <p className='text-gray-500'>Chapter {comment.chapternumber}: {comment.chaptertitle}</p>
                     <p>{comment.content}</p>
                   </div>
                 </div>
