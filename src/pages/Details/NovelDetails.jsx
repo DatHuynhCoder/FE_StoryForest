@@ -140,6 +140,10 @@ function NovelDetails() {
               <div onClick={() => handleStartReading(infoNovel.title, chapters[0]._id, 1, chapters[0].chapter_title)} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold'>Start reading</div>
             </div>
 
+            <div>
+              <p className='font-semibold'> &nbsp;{infoNovel.followers} followed</p>
+            </div>
+
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>
               {infoNovel.tags.map((tag) => (
                 <div className='border rounded-md m-1 p-1 bg-white' key={tag}>
