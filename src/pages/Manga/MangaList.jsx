@@ -94,8 +94,8 @@ function MangaList() {
       })
   }
 
-  const handleClickOnManga = (_id, mangaid) => {
-    navigate(`/bookDetail/${_id}/${mangaid}`)
+  const handleClickOnManga = (_id) => {
+    navigate(`/manga/${_id}`)
   }
 
   useEffect(() => {
@@ -164,7 +164,7 @@ function MangaList() {
                   <img src={manga.bookImg.url} alt="" className='w-30 m-auto' loading='lazy' />
                 </div>
                 <div className='flex-4'>
-                  <p onClick={() => handleClickOnManga(manga._id, manga.mangaid)} className='text-lg md:text-xl font-bold text-green-500 text-center hover:underline cursor-pointer'>{manga.title}</p>
+                  <p onClick={() => handleClickOnManga(manga._id)} className='text-lg md:text-xl font-bold text-green-500 text-center hover:underline cursor-pointer'>{manga.title}</p>
                   <div className='flex'>
                     <div className='flex flex-col flex-2'>
                       {manga.tags.slice(1, 5).map((tag, index) => (

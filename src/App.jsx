@@ -65,8 +65,8 @@ function App() {
           </Route>
           <Route path="/" element={<Home />} />
           <Route path="/manga" element={<MangaList />} />
+          <Route path="/manga/:_id" element={<BookDetails />} />
           <Route path="/mangaReader/:mangaid/:chapterid" element={<MangaReader />} />
-          <Route path="/bookDetail/:_id/:mangaid" element={<BookDetails />} />
           <Route path="/novel" element={<NovelList />} />
           <Route path="/novel/:_id" element={<NovelDetails />} />
           <Route path="/novelReader/:_id/:chapterid" element={<NovelReader />} />

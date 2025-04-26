@@ -117,7 +117,7 @@ function MangaReader() {
   }
 
   const handleBackToDetails = () => {
-    navigate(`/bookDetail/${_id}/${mangaid}`);
+    navigate(`/manga/${_id}`);
   }
 
   const [openChapterDrawer, setOpenChapterDrawer] = useState(false);
@@ -233,7 +233,7 @@ function MangaReader() {
         {/* This div will contain 2 button */}
         <p className='md:text-lg mt-2'>Chapter {chapternumber}: {chaptertitle}</p>
         <div className='flex flex-col justify-center'>
-          <button onClick={handleNextChapter} className='p-[10px] bg-green-700 text-white font-bold md:w-[500px] w-[200px] rounded mt-3 cursor-pointer'>Next chapter</button>
+          <button onClick={handleNextChapter} className='p-[10px] bg-green-600 text-white font-bold md:w-[500px] w-[200px] rounded mt-3 cursor-pointer'>Next chapter</button>
           <button onClick={handlePreviousChapter} className='p-[10px] font-bold md:w-[500px] w-[200px] rounded border mt-3 cursor-pointer'>Previous chapter</button>
         </div>
         {/* This div will contain the manga images */}
@@ -285,7 +285,7 @@ function MangaReader() {
                 onClick={() => setOpenCommentDrawer(false)}>
                 Close
               </p>
-              <p className="inline-flex items-center rounded-lg bg-cyan-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-cyan-800 focus:outline-none focus:ring-4 focus:ring-cyan-300 dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800 cursor-pointer"
+              <p className="inline-flex items-center rounded-lg bg-green-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-cyan-300 dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800 cursor-pointer"
                 onClick={() => { handleSendComment() }}
               >
                 Send&nbsp;
