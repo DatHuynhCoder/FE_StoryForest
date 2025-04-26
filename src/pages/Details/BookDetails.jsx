@@ -10,7 +10,7 @@ function BookDetails() {
   //get user from redux store
   const user = useSelector((state) => state.user.user)
   console.log("check user: ", user)
-  const { _id, mangaid } = useParams()
+  const { _id } = useParams()
   const [loading, setLoading] = useState(true)
   const [infoManga, setInfoManga] = useState({
     artist: ['REDICE Studio (레드아이스 스튜디오)', 'Jang Sung-Rak (장성락)'],
@@ -162,6 +162,9 @@ function BookDetails() {
             <div className='flex flex-col sm:flex-row justify-center md:justify-start space-y-2 sm:space-y-0 sm:space-x-3 mb-4'>
               <div onClick={handleAddFavorite} className='rounded bg-green-700 p-2 md:p-3 text-white text-center cursor-pointer font-bold'>Add to favourite</div>
               <div onClick={handleStartReading} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold'>Start reading</div>
+            </div>
+            <div>
+              <p className='font-semibold'> &nbsp;{infoManga.followers} followed</p>
             </div>
 
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>
