@@ -91,6 +91,10 @@ function BookDetails() {
       const response = await apiAuth.post('/api/reader/favorite/addFavorite', { bookId: _id });
       if (response.data.success) {
         toast.success("Thêm vào thư viện thành công")
+        setInfoManga(prev => ({
+          ...prev,
+          followers: prev.followers + 1
+        }));
       } else {
         toast.error("Thêm vào thư viện thất bại")
       }

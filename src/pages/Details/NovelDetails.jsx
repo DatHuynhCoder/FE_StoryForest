@@ -66,6 +66,10 @@ function NovelDetails() {
       const response = await apiAuth.post('/api/reader/favorite/addFavorite', { bookId: _id });
       if (response.data.success) {
         toast.success("Thêm vào thư viện thành công")
+        setInfoNovel(prev => ({
+          ...prev,
+          followers: prev.followers + 1
+        }))
       } else {
         toast.error("Thêm vào thư viện thất bại")
       }
@@ -138,6 +142,10 @@ function NovelDetails() {
             <div className='flex flex-col sm:flex-row justify-center md:justify-start space-y-2 sm:space-y-0 sm:space-x-3 mb-4'>
               <div onClick={handleAddFavorite} className='rounded bg-green-700 p-2 md:p-3 text-white text-center cursor-pointer font-bold'>Add to favourite</div>
               <div onClick={() => handleStartReading(infoNovel.title, chapters[0]._id, 1, chapters[0].chapter_title)} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold'>Start reading</div>
+            </div>
+
+            <div>
+              <p className='font-semibold'> &nbsp;{infoNovel.followers} followed</p>
             </div>
 
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>
