@@ -164,11 +164,8 @@ function Header() {
 				{/* Authentication Section */}
 				<div className="col-start-5 col-end-9 row-start-1 md:row-span-2 md:col-start-7 grid grid-cols-1 items-center md:pl-5 md:pr-5 pl-1 pr-1 w-full">
 					{user ? (
-						<div className="relative w-full">
-							<div
-								className="flex items-center gap-3 w-full hover:text-[#095533] cursor-pointer"
-								onClick={() => setIsOpenProfile(!isOpenProfile)}
-							>
+						<div className="relative w-full" onClick={() => setIsOpenProfile(!isOpenProfile)}>
+							<div className="flex items-center gap-3 w-full hover:text-[#095533] cursor-pointer">
 								<img src={user.avatar?.url || DefaultAvt} alt="avatar" className="w-12 h-12 rounded-full" />
 								<span className="font-semibold truncate max-w-[100px] overflow-hidden whitespace-nowrap">
 									{user.username}
@@ -176,9 +173,8 @@ function Header() {
 							</div>
 
 							{/* Dropdown below */}
-							{isOpenProfile && (
 								<div
-									className={`absolute top-full mt-2 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600`}
+									className={`absolute ${toggleProfile} top-full mt-2 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600`}
 								>
 									<div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
 										<div className="font-medium">User</div>
@@ -210,7 +206,6 @@ function Header() {
 										</div>
 									</div>
 								</div>
-							)}
 						</div>
 					) : (
 						<div className="flex gap-2 justify-center">
