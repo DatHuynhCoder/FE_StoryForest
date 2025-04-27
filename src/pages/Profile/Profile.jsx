@@ -18,47 +18,19 @@ import AboutMe from "./AboutMe";
 import Settings from "./Setting";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
-import { useDispatch } from "react-redux";
-
-const aboutUser = [
-  "Có thể dành cả ngày trong một hiệu sách mà không thấy chán.",
-  "Thích mùi giấy mới và cả mùi sách cũ.",
-  "Luôn mang theo ít nhất một cuốn sách khi đi du lịch.",
-  "Sở hữu một danh sách 'Sách cần đọc' dài bất tận.",
-  "Tin rằng sách giấy có cảm giác khác biệt hơn so với ebook.",
-  "Thích đọc sách với một tách trà hoặc cà phê bên cạnh.",
-  "Đôi khi mua sách chỉ vì bìa đẹp, chưa chắc đã đọc ngay.",
-  "Có thói quen đánh dấu hoặc ghi chú những câu hay trong sách.",
-  "Yêu thích cảm giác hoàn thành một cuốn sách nhưng cũng thấy buồn vì nó đã kết thúc.",
-  "Ước gì có thêm thời gian mỗi ngày chỉ để đọc nhiều sách hơn."
-];
+import { useDispatch, useSelector } from "react-redux";
 
 const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [user, setUser] = useState(null);
+  const user = useSelector((state) => state.user.user);
   const [favoriteBooks, setFavoriteBooks] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('profile');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await apiAuth.get("/api/reader/account");
-        if (response.data.success) {
-          setUser(response.data.data);
-        }
-      } catch (error) {
-        console.error("Khong tìm thấy người dùng:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchUser();
-  }, []);
 
   useEffect(() => {
     const fetchFavorite = async () => {
@@ -87,7 +59,7 @@ const Profile = () => {
   const handleContinueReading = (book) => {
     try {
       if (book.type === 'manga') {
-        navigate(`/bookDetail/${book._id}/${book.mangaid}`);
+        navigate(`/manga/${book._id}`);
       }
       else {
         navigate(`/novel/${book._id}`);
@@ -131,7 +103,7 @@ const Profile = () => {
   }
 
   //Spinner to load while fetching data
-  if (isLoading) {
+  if (!user) {
     return <Spinner />;
   }
 
@@ -147,7 +119,7 @@ const Profile = () => {
   const ProfileHeader = () => (
     <div className="w-full min-h-1/2 flex flex-col bg-white pb-5 rounded-2xl">
       {/* Background Profile */}
-      <div className="relative h-32 sm:h-40">
+      <div className="relative h-50 sm:h-70">
         <img className="w-full h-full object-cover object-center" src={user?.bgImg?.url || DefaultBG} alt="background-profile" />
 
         {/* Avatar */}
@@ -180,6 +152,7 @@ const Profile = () => {
         <div className="p-2 sm:p-4 flex flex-row items-center gap-2 sm:gap-4">
           <img src="/images/email.png" alt="email logo" className="w-6 h-6 sm:w-8 sm:h-8" />
           <div className="flex-1 text-sm sm:text-xl overflow-hidden text-ellipsis">
+            <span className="font-bold">Email: </span>
             {user?.email}
           </div>
         </div>
@@ -187,13 +160,17 @@ const Profile = () => {
         <div className="p-2 sm:p-4 flex flex-row items-center gap-2 sm:gap-4">
           <img src="/images/phone.png" alt="phone logo" className="w-6 h-6 sm:w-8 sm:h-8" />
           <div className={`flex-1 text-sm sm:text-xl ${user?.phone ? "" : "text-gray-500 italic"}`}>
-            {user?.phone ? user.phone : "Thêm số điện thoại"}
+            <span className="font-bold">Phone: </span>
+            {user?.phone ? user.phone : "Add a phone number"}
           </div>
         </div>
 
         <div className="p-2 sm:p-4 flex flex-row items-center gap-2 sm:gap-4">
           <img src="/images/medal.png" alt="medal logo" className="w-6 h-6 sm:w-8 sm:h-8" />
-          <div className="flex-1 text-sm sm:text-xl">New member</div>
+          <div className="flex-1 text-sm sm:text-xl">
+            <span className="font-bold">Achivement: </span>
+            {user?.achivement}
+          </div>
         </div>
       </div>
 
@@ -221,7 +198,7 @@ const Profile = () => {
       case 'profile':
         return <ProfileHeader />;
       case 'about':
-        return <AboutMe aboutUser={aboutUser} />;
+        return <AboutMe aboutUser={user?.about} />;
       case 'favorite':
         return <FavoriteBooks
           books={favoriteBooks}
