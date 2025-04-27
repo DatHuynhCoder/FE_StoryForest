@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "../../redux/userSlice";
 
-const UpdateUserModal = ({ isOpen, onClose, user, onUserUpdate }) => {
+const UpdateUserModal = ({ isOpen, onClose, user }) => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     username: "",
@@ -115,9 +115,9 @@ const UpdateUserModal = ({ isOpen, onClose, user, onUserUpdate }) => {
       });
       
       if (response.data.success) {
+        console.log(response.data)
         toast.success("Update user successfully")
         dispatch(updateUser(response.data.data));
-        onUserUpdate(response.data.data);
         onClose();
       }
     } catch (error) {

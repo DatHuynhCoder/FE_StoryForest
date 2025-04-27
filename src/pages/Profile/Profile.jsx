@@ -25,8 +25,7 @@ const Profile = () => {
   const dispatch = useDispatch();
 
   const user = useSelector((state) => state.user.user);
-  const [favoriteBooks, setFavoriteBooks] = useState();
-  const [isLoading, setIsLoading] = useState(true);
+  const [favoriteBooks, setFavoriteBooks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('profile');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -287,7 +286,6 @@ const Profile = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         user={user}
-        onUserUpdate={(updatedUser) => setUser(updatedUser)}
       />
     </div>
   );
