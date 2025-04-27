@@ -58,27 +58,27 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        
+
         <Route element={<Layout />}>
           <Route element={<ProtectedRoute allowedRoles={['reader']} />}>
             <Route path="/profile" element={<Profile />} />
           </Route>
           <Route path="/" element={<Home />} />
           <Route path="/manga" element={<MangaList />} />
+          <Route path="/manga/:_id" element={<BookDetails />} />
           <Route path="/mangaReader/:mangaid/:chapterid" element={<MangaReader />} />
-          <Route path="/bookDetail/:_id/:mangaid" element={<BookDetails />} />
           <Route path="/novel" element={<NovelList />} />
-          <Route path="/novel/:novelid" element={<NovelDetails />} />
-          <Route path="/novelReader/:novelid/:chapterid" element={<NovelReader />} />
+          <Route path="/novel/:_id" element={<NovelDetails />} />
+          <Route path="/novelReader/:_id/:chapterid" element={<NovelReader />} />
           <Route path='/result/:keyword' element={<ResultPage />} />
-    
+
         </Route>
 
 
 
         <Route element={<AdminLayout />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          
+
           <Route path="/admin/user-management" element={<UserManagement />}> </Route>
           <Route path="/admin/user-management/users/:id" element={<UserInformations />} />
           <Route path="/admin/user-management/staff/:id" element={<StaffInformations />} />
@@ -86,19 +86,19 @@ function App() {
         </Route>
 
         <Route element={<StaffLayout />}>
-          <Route path="/staff/story-management" element={<StoryManagement />}> </Route>  
-          <Route path="/staff/story-management/edit-story/:id_story" element={<EditStory />}> </Route> 
-          <Route path="/staff/story-management/edit-story/:id_story/:id_chapter" element={<EditChapter />}> </Route> 
-          <Route path="/staff/story-management/edit-story/:id_story/add-chapter" element={<AddChapter />}> </Route> 
-          <Route path="/staff/story-management/detail-story/:id" element={<DetailStory />}> </Route> 
-          <Route path="/staff/story-management/add-story" element={<AddNewStory />}> </Route> 
-          
-          <Route path="/staff/author-management" element={<AuthorManagement />}> </Route>  
-          <Route path="/staff/author-management/detail-author/:author_id" element={<AuthorDetail />}> </Route>  
-          <Route path="/staff/author-management/edit-author/:author_id" element={<AuthorEdit />}> </Route>  
-          <Route path="/staff/author-management/add-author" element={<AddAuthor />}> </Route>  
+          <Route path="/staff/story-management" element={<StoryManagement />}> </Route>
+          <Route path="/staff/story-management/edit-story/:id_story" element={<EditStory />}> </Route>
+          <Route path="/staff/story-management/edit-story/:id_story/:id_chapter" element={<EditChapter />}> </Route>
+          <Route path="/staff/story-management/edit-story/:id_story/add-chapter" element={<AddChapter />}> </Route>
+          <Route path="/staff/story-management/detail-story/:id" element={<DetailStory />}> </Route>
+          <Route path="/staff/story-management/add-story" element={<AddNewStory />}> </Route>
 
-          <Route path="/staff/vip-management" element={<VipManagement />}> </Route>  
+          <Route path="/staff/author-management" element={<AuthorManagement />}> </Route>
+          <Route path="/staff/author-management/detail-author/:author_id" element={<AuthorDetail />}> </Route>
+          <Route path="/staff/author-management/edit-author/:author_id" element={<AuthorEdit />}> </Route>
+          <Route path="/staff/author-management/add-author" element={<AddAuthor />}> </Route>
+
+          <Route path="/staff/vip-management" element={<VipManagement />}> </Route>
         </Route>
 
       </Routes>

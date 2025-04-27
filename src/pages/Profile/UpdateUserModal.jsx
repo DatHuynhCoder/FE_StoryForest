@@ -108,7 +108,7 @@ const UpdateUserModal = ({ isOpen, onClose, user, onUserUpdate }) => {
       }
       
       //call api to update user data in backend
-      const response = await apiAuth.put("/api/reader/account", submitData, {
+      const response = await apiAuth.patch("/api/reader/account", submitData, {
         headers: {
           "Content-Type": "multipart/form-data"
         }
