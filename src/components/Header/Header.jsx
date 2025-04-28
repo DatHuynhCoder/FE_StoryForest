@@ -174,7 +174,14 @@ function Header() {
 							// onFocus={() => setToggle(true)}
 							
 							
-						/></div>
+						/>
+						<div style={{display:'flex', justifyContent:'flex-end', }}>
+						<button style={{justifySelf:'flex-end', border:'1px solid', width:'30%', backgroundImage: 'linear-gradient(to right, #d9ff00, #38e397)', borderRadius:20}} className="active:brightness-75">Search</button>
+						</div>
+						
+					
+						</div>
+						
 				</div>
 				{/* Authentication Section */}
 				<div className="col-start-5 col-end-9 row-start-1 md:row-span-2 md:col-start-7 grid grid-cols-1 items-center md:pl-5 md:pr-5 pl-1 pr-1 w-full">
