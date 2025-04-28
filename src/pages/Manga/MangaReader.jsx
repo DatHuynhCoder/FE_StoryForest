@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { useParams, useLocation, useNavigate } from 'react-router'
+import { useParams, useLocation, useNavigate, Link } from 'react-router'
 import axios from 'axios'
 import loadingGif from '../../assets/loading.gif'
-import { api } from '../../services/api.js'
+import defaultAvt from '../../assets/default_avatar.jpg'
+import { api, apiAuth } from '../../services/api.js'
 import { useSelector } from 'react-redux'
 // icons
 import { FaHome } from "react-icons/fa";
@@ -23,7 +24,16 @@ function MangaReader() {
   const location = useLocation()
   const { _id, chapters, mangatitle, chapternumber, chaptertitle } = location.state || {}
   // const chapters = location.state.chapters || []
-  const user = useSelector((state) => state.user.user) || {}
+  const user = useSelector((state) => state.user.user) || {
+    createdAt: "unknown",
+    email: "unknown",
+    password: "unknown",
+    role: "unknown",
+    updatedAt: "unknown",
+    username: "unknown",
+    __v: 0,
+    _id: "unknown"
+  }
   // createdAt: "2025-04-25T03:35:51.024Z"
   // email: "a@a.com"
   // password: "$2b$10$265OXC4kEdoolKRBBMH2Z.LhTUOZWnLQb6GMoqRkI9rnlhEp/UF7K"
@@ -37,11 +47,29 @@ function MangaReader() {
   const [pics, setPics] = useState([])
   const [loading, setLoading] = useState(true)
   const [chaptercomments, setChaptercomments] = useState([
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User1', content: 'This is a comment' },
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User2', content: 'This is a comment' },
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User3', content: 'This is a comment' },
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User4', content: 'This is a comment' },
+    {
+      bookid: "67f298a0c0aa3501386b7aff",
+      chapterid: "b4b305b8-6dfb-4292-b254-d1b577c725d2",
+      chapternumber: "2",
+      chaptertitle: "Pros and a Pro",
+      content: "hmm",
+      createdAt: "2025-04-28T11:02:15.878Z",
+      rating: 5,
+      updatedAt: "2025-04-28T11:02:15.878Z",
+      userid: {
+        avatar: {
+          public_id: "StoryForest/Account/bz3d7yjgnvoc0gdlzxpr",
+          url: "https://res.cloudinary.com/dvtcbryg5/image/upload/v1745854495/StoryForest/Account/bz3d7yjgnvoc0gdlzxpr.jpg"
+        },
+        username: "otaku-kun",
+        _id: "680b0317446eb05ee1287838",
+      },
+      username: "a",
+      __v: 0,
+      _id: "680f6037e4b5d019dc77a47b"
+    },
   ])
+  console.log("check chaptercomments: ", chaptercomments)
   const [comment, setComment] = useState('')
 
   const fetchCommentByChapterId = async () => {
@@ -63,13 +91,12 @@ function MangaReader() {
       alert('Please login to comment')
       return
     }
-    api.post(`/api/reader/review/create`, {
+    apiAuth.post(`/api/reader/review/create`, {
       content: comment.slice(0, 40),
       rating: 5, // temp
       chapternumber: chapternumber,
       chaptertitle: chaptertitle,
       chapterid: chapterid,
-      userid: user._id,
       username: user.username,
       bookid: _id
     }).then(res => {
@@ -285,33 +312,35 @@ function MangaReader() {
                 onClick={() => setOpenCommentDrawer(false)}>
                 Close
               </p>
-              <p className="inline-flex items-center rounded-lg bg-green-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-cyan-300 dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800 cursor-pointer"
-                onClick={() => { handleSendComment() }}
-              >
-                Send&nbsp;
-                <svg
-                  className="ms-2 h-3.5 w-3.5 rtl:rotate-180"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 14 10"
+              {user._id !== "unknown" ?
+                <p className="inline-flex items-center rounded-lg bg-green-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-cyan-300 dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800 cursor-pointer"
+                  onClick={() => { handleSendComment() }}
                 >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M1 5h12m0 0L9 1m4 4L9 9"
-                  />
-                </svg>
-              </p>
+                  Send&nbsp;
+                  <svg
+                    className="ms-2 h-3.5 w-3.5 rtl:rotate-180"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 14 10"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M1 5h12m0 0L9 1m4 4L9 9"
+                    />
+                  </svg>
+                </p> : <p></p>}
             </div>
             <div>
-              <textarea
-                className='border p-2 mt-3 bg-gray-200 rounded-md w-[100%] h-[100px]'
-                placeholder='Write something ... (max 40 characters)'
-                onChange={(e) => setComment(e.target.value)}
-              ></textarea>
+              {user._id !== "unknown" ?
+                <textarea
+                  className='border p-2 mt-3 bg-gray-200 rounded-md w-[100%] h-[100px]'
+                  placeholder='Write something ... (max 40 characters)'
+                  onChange={(e) => setComment(e.target.value)}
+                ></textarea> : <p className='w-[100%]'>Please <Link to="/login" className='text-green-500'>login </Link>to comment</p>}
               {/* <div>
                 <Rating>
                   <RatingStar />
@@ -324,9 +353,13 @@ function MangaReader() {
             </div>
             <div>
               {chaptercomments.map((comment, index) => (
-                <div className='mt-3' key={index}>
+                <div className='mt-3' key={comment._id}>
                   <div className='w-[100%] border p-2 rounded-md mt-2'>
-                    <p className='ml-1 font-semibold text-black'>{comment.username}</p>
+                    <div className='flex'>
+                      <img src={comment.userid?.avatar?.url || defaultAvt} alt="avatar" className='w-10 h-10 rounded-full' />
+                      <p className='ml-1 font-semibold text-black'>{comment.userid.username}</p>
+                    </div>
+                    <p className='text-gray-500'>{comment.createdAt.slice(0, 10)}</p>
                     <p className='text-black w-[100%]'>{comment.content}</p>
                   </div>
                 </div>
@@ -344,6 +377,7 @@ function MangaReader() {
                   scrollToTop()
                   let chapternumber = chapter.chapter
                   let chaptertitle = chapter.title
+                  setLoading(true)
                   navigate(`/mangaReader/${mangaid}/${chapter.chapterid}`, { state: { _id, chapters, mangatitle, chapternumber, chaptertitle } })
                 }}>
                   Chapter {chapter.chapter}: {chapter.title}

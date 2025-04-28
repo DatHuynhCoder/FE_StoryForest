@@ -4,6 +4,7 @@ import { api, apiAuth } from '../../services/api'
 import Spinner from '../../components/Spinner'
 import { toast } from 'react-toastify'
 import { useSelector } from 'react-redux'
+import defaultAvt from '../../assets/default_avatar.jpg'
 
 function BookDetails() {
   const navigate = useNavigate()
@@ -244,7 +245,7 @@ function BookDetails() {
         <div className='md:pt-20 md:flex-2 md:mr-10 mt-3 md:mt-0'>
           <p className='font-bold text-green-700'>Chapters</p>
           <ul className='h-64 overflow-y-scroll'>
-            {chapters.map((chapter) => (
+            {chapters.sort((a, b) => parseInt(a.chapter) - parseInt(b.chapter)).map((chapter) => (
               <li key={chapter._id} onClick={() => handleClickedChapter(chapter.chapterid, infoManga.title, chapter.chapter, chapter.title)}>
                 <div className='p-2 border rounded-md m-1 bg-white'>
                   <p className='line-clamp-1'>Chap&nbsp;{chapter.chapter}: {chapter.title}</p>
@@ -263,7 +264,10 @@ function BookDetails() {
               <li key={comment._id}>
                 <div className='mt-3'>
                   <div className='w-[100%] border p-2 rounded-md mt-2'>
-                    <p className='ml-1 font-bold'>{comment.username}</p>
+                    <div className='flex'>
+                      <img src={comment.userid?.avatar?.url || defaultAvt} alt="avatar" className='w-10 h-10 rounded-full' />
+                      <p className='ml-1 font-semibold text-black'>{comment.userid.username}</p>
+                    </div>
                     <p className='text-gray-500'>Chapter {comment.chapternumber}: {comment.chaptertitle}</p>
                     <p>{comment.content}</p>
                   </div>
