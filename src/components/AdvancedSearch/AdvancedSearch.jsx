@@ -3,20 +3,37 @@ import styles from '../AdvancedSearch/AdvancedSearch.module.css'
 import { api } from '../../services/api'
 import { FaCaretUp } from "react-icons/fa";
 
-function AdvancedSearch({setOpen}) {
+function AdvancedSearch({setOpen, setToggle, toggle}) {
   // Các thể loại Manga dùng để lọc
   const mangaGenres = [
-    "Hành động", "Phiêu lưu", "Hài hước", "Chính kịch", "Giả tưởng", "Lãng mạn",
-    "Kinh dị", "Bí ẩn", "Khoa học viễn tưởng", "Đời thường"
+    "GameLit", "Portal Fantasy / Isekai", "Anti-Hero Lead", "War and Military", "Grimdark", "Action",
+    "Adventure", "Fantasy", "Sci-fi", "Artificial Intelligence", "Attractive Lead", "Cyberpunk",
+    "Dystopia", "Hard Sci-fi", "Low Fantasy", "Magic", "Male Lead", "Reincarnation",
+    "Supernatural", "Slice of Life", "Drama", "Gender Bender", "LitRPG", "Psychological",
+    "Female Lead", "High Fantasy", "Urban Fantasy", "Super Heroes", "Comedy", "Soft Sci-fi",
+    "Progression", "Non-Human Lead", "Strong Lead", "Xianxia", "School Life", "Multiple Lead Characters",
+    "Ruling Class", "Steampunk", "Romance", "Time Travel", "Dungeon", "Horror",
+    "Martial Arts", "Contemporary", "Secret Identity", "Wuxia", "Harem", "Historical",
+    "Post Apocalyptic", "Tragedy", "First Contact", "Strategy", "Genetically Engineered", "Mystery",
+    "Space Opera", "Mythos", "Villainous Lead", "Satire", "Technologically Engineered"
   ];
+  
 
   // Các thể loại Novel dùng để lọc
   const novelGenres = [
-    "Hành động", "Phiêu lưu", "Giả tưởng", "Siêu nhiên", "Isekai", "Chuyển sinh",
-    "Du hành thời gian", "Lãng mạn", "Lãng mạn lịch sử", "Lãng mạn học đường", "Tâm lý",
-    "Chính kịch", "Đời thường", "Kinh dị", "Bí ẩn", "Giật gân", "Khoa học viễn tưởng",
-    "Lịch sử", "Châm biếm", "Miền Tây"
+    "Award Winning", "Monsters", "Action", "Long Strip", "Adventure", "Magic", "Drama",
+    "Fantasy", "Web Comic", "Supernatural", "Adaptation", "Full Color", "Romance",
+    "Comedy", "School Life", "Slice of Life", "Gyaru", "Reincarnation", "Demons",
+    "Martial Arts", "Harem", "Isekai", "Samurai", "Sci-Fi", "Military",
+    "Monster Girls", "Psychological", "Sexual Violence", "Philosophical", "Gore", "Horror",
+    "Tragedy", "Superhero", "Mystery", "Mecha", "Video Games", "Villainess",
+    "Delinquents", "Survival", "Ghosts", "Thriller", "Historical", "Medical",
+    "Animals", "Police", "Crossdressing", "Post-Apocalyptic", "Crime", "Time Travel",
+    "Loli", "Genderswap", "Ninja", "Cooking", "Vampires", "Mafia",
+    "Girls' Love", "Music", "Zombies", "Shota", "Reverse Harem", "Aliens",
+    "Sports", "Magical Girls", "Office Workers", "Doujinshi"
   ];
+  
 
   // Dữ liệu mẫu để test kết quả hiển thị
   const testResults = [{ 
@@ -31,8 +48,6 @@ function AdvancedSearch({setOpen}) {
   const [option, setOption] = useState(1); // 1: Manga, 2: Novel, 3: Tìm kiếm nâng cao
   const [genres, setGenres] = useState(mangaGenres); // Danh sách thể loại hiện tại
   const [isOpenedAdvancedForm, setIsOpenedAdvancedForm] = useState(false); // Trạng thái mở form nâng cao
-  const [inputCharacters, setInputCharacters] = useState(''); // Input tên nhân vật
-  const [inputMangaNovelName, setInputMangaNovelName] = useState(''); // Input tên truyện
   const [inputDescription, setInputDescription] = useState(''); // Input mô tả
 
   // Xử lý chọn loại tìm kiếm (Manga, Novel, hoặc Tìm kiếm nâng cao)
@@ -99,11 +114,7 @@ function AdvancedSearch({setOpen}) {
             isOpenedAdvancedForm ? (
               // Hiển thị form tìm kiếm nâng cao
               <form className={styles.advanced_form} onSubmit={handleSubmitingAdvancedForm}>
-                <label htmlFor='characterNames' className={styles.label}>Tên nhân vật:</label>
-                <input type="text" id="characterNames" name="characterNames" className={styles.input} value={inputCharacters} onChange={(e) => setInputCharacters(e.target.value)} />
-                
-                <label htmlFor='mangaNovelName' className={styles.label}>Tên truyện:</label>
-                <input type="text" id="mangaNovelName" name="mangaNovelName" className={styles.input} value={inputMangaNovelName} onChange={(e) => setInputMangaNovelName(e.target.value)} />
+              
                 
                 <label htmlFor='mangaNovelDescription' className={styles.label}>Nội dung:</label>
                 <textarea id="mangaNovelDescription" name="mangaNovelDescription" className={styles.description} value={inputDescription} onChange={(e) => setInputDescription(e.target.value)}></textarea>
@@ -131,7 +142,7 @@ function AdvancedSearch({setOpen}) {
         </div>
       </div>
 
-      {/* Kết quả tìm kiếm (hiện đang ẩn - chỉ dùng test)
+      Kết quả tìm kiếm (hiện đang ẩn - chỉ dùng test)
       {testResults.map((item) => (
         <div className={styles.container_item}>
           <img src={item.thumnail} alt="thumbnail" className={styles.thumbnail} />
@@ -141,7 +152,7 @@ function AdvancedSearch({setOpen}) {
             <p className={styles.description_item}><b>Nội dung: </b>{item.description}</p>
           </div>
         </div>
-      ))} */}
+      ))}
     </>
   );
 }

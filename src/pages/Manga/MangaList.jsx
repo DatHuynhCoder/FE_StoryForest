@@ -155,9 +155,12 @@ function MangaList() {
 
   return (
     <>
-      <div className='bg-[url("https://static.vecteezy.com/system/resources/previews/042/623/256/non_2x/high-trees-in-forest-illustration-jungle-landscape-vector.jpg")] bg-no-repeat bg-cover fixed left-0 w-full'>
-        <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white h-screen pb-30'>
-          <div className='flex-3 pb-18 border overflow-y-auto h-full'>
+      {/* <div className='bg-[url("https://static.vecteezy.com/system/resources/previews/042/623/256/non_2x/high-trees-in-forest-illustration-jungle-landscape-vector.jpg")] bg-no-repeat bg-cover fixed left-0 w-full'> */}
+      <div className='overflow-y-auto bg-[url("https://static.vecteezy.com/system/resources/previews/042/623/256/non_2x/high-trees-in-forest-illustration-jungle-landscape-vector.jpg")] bg-no-repeat bg-cover left-0 w-full'>
+        {/* <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white h-screen pb-30'> */}
+        <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white'>
+          {/* <div className='flex-3 pb-18 border overflow-y-auto h-full'> */}
+          <div className='flex-3 pb-18 border h-full'>
             {listManga.length !== 0 ? listManga.map(manga => (
               <div className='flex md:flex-row flex-col p-5 border-b' key={manga._id}>
                 <div className='flex-1'>

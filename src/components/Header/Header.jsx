@@ -8,6 +8,8 @@ import { toast } from 'react-toastify';
 import { api } from '../../services/api';
 import { logout } from '../../redux/userSlice';
 import AdvancedSearch from '../AdvancedSearch/AdvancedSearch';
+import Tags from '../Tags/Tags';
+import AiIcon from '../../assets/AiIcon.png'
 
 
 
@@ -17,12 +19,7 @@ function Header() {
 	//get user from redux
 	const user = useSelector((state) => state.user.user);
 
-	const [sample, setSample] = useState([
-		{ id: 1, name: "Thể loại" },
-		{ id: 2, name: "Truyện tranh" },
-		{ id: 3, name: "Truyện chữ" },
-		{ id: 4, name: "Khác" },
-	])
+
 
 	const [search, setSearch] = useState("")
 
@@ -32,7 +29,11 @@ function Header() {
 	const toggleMenu = isOpen ? "" : "hidden";
 	const toggleProfile = isOpenProfile ? "" : "hidden";
 
-	const [toggleAdvancedSearch, setToggleAdvancedSearch] = useState(false)
+	const [toggle, setToggle] = useState(false)
+	const [type, setType] = useState('')
+	const [page, setPage] = useState('Trang chủ')
+	const [synopsis, setSynopsis] = useState('')
+	const [togggleSynopsis, setTogggleSynopsis] = useState(false)
 
 	const handleLogout = async () => {
 		try {
@@ -100,7 +101,7 @@ function Header() {
 						setNovelList(res2.data.data);
 					})
 			})
-	}, []);
+	}, [type]);
 	const handleSearch = () => {
 		if (search) {
 			navigate(`/result/${search}`)
@@ -117,49 +118,63 @@ function Header() {
 	return (
 		<>
 			{/* containter-header */}
-			<div className='grid grid-cols-8 grid-rows-2 h-30 bg-[#FBFFE4] md:border-b-5 md:border-[#095533]'>
+			<div className='grid grid-cols-8 grid-rows-2 h-auto bg-[#FBFFE4] md:border-b-5 md:border-[#095533]'>
 				{/* containter-header-logo */}
 				<div className='col-start-1 col-end-5 row-start-1 md:col-end-3 md:row-span-2 flex justify-start'>
 					<Link to={"/"} className='inline-block h-full w-full'>
-						<img className="h-full" src={logo} alt='logo' />
+						<img className="h-30 ml-10" src={logo} alt='logo' />
 					</Link>
 				</div>
 				{/* container-header-main */}
-				<div className='grid grid-cols-7 col-start-1 bg-[#095533] md:bg-[#FBFFE4] col-end-9 row-start-2 md:col-start-3 md:col-end-7 md:row-start-1 md:row-span-2 md:grid-rows-2 md:grid-cols-1  '>
+				<div className='grid grid-cols-3 col-start-1 bg-[#095533] md:bg-[#FBFFE4] col-end-9 row-start-2 md:col-start-3 md:col-end-7 md:row-start-1 md:row-span-2 md:grid-rows-2 md:grid-cols-1  '>
 					{/* container-header-navigation */}
 					<div className='col-span-3 '>
 						<div className='grid grid-cols-6 md:rounded-b-lg h-full bg-[#095533]'>
 							<button className='md:hidden text-lg text-white cursor-pointer' onClick={() => setIsOpen(!isOpen)}>=
 								<menu className={`absolute flex-col flex border-1 text-black bg-[#FBFFE4] w-1/3 items-start pl-2 ${toggleMenu} z-100`}>
-									<NavLink className='hover:underline hover:underline-offset-6' to="/">Thể loại</NavLink>
-									<NavLink className='hover:underline hover:underline-offset-6' to="/manga">Truyện tranh</NavLink>
-									<NavLink className='hover:underline hover:underline-offset-6' to="/novel">Truyện chữ</NavLink>
-									<NavLink className='hover:underline hover:underline-offset-6' to="/">Khác</NavLink>
+									{/* <NavLink className='hover:underline hover:underline-offset-6' to="/advanced-search">Thể loại</NavLink> */}
+									<NavLink className='hover:underline hover:underline-offset-6' to="/" onClick={()=>{setPage('Trang chủ'), setType('')}} style={page == 'Trang chủ' ? {textDecoration:'underline'}:{}}>Trang chủ</NavLink>
+									<NavLink className='hover:underline hover:underline-offset-6' to="/manga" onClick={()=>{setPage('Truyện tranh'), setType('manga'), setToggle(false)}} style={page == 'Truyện tranh' ? {textDecoration:'underline'}:{}}>Truyện tranh</NavLink>
+									<NavLink className='hover:underline hover:underline-offset-6' to="/novel" onClick={()=>{setPage('Truyện chữ'), setType('novel'), setToggle(false)}} style={page == 'Truyện chữ' ? {textDecoration:'underline'}:{}}>Truyện chữ</NavLink>
+				
 								</menu>
 							</button>
-							<p className=' col-span-5 flex justify-start items-center pl-1 md:hidden text-white font-semibold'>Trang chủ</p>
-							<ul className=' justify-around hidden md:grid md:col-span-7 md:grid-cols-5 '>
-								<li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/">Trang chủ</NavLink></li>
-								<li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/">Thể loại</NavLink></li>
-								<li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/manga">Truyện tranh</NavLink></li>
-								<li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/novel">Truyện chữ</NavLink></li>
-								<li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/">Khác</NavLink></li>
+							<p className=' col-span-5 flex justify-start items-center pl-1 md:hidden text-white font-semibold'>{page}</p>
+							<ul className=' justify-around hidden md:grid md:col-span-7 md:grid-cols-3 '>
+								<li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/" onClick={()=>setType('')}>Trang chủ</NavLink></li>
+								{/* <li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/advanced-search">Thể loại</NavLink></li> */}
+								<li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/manga" onClick={()=>{setType('manga'), setToggle(false)}}>Truyện tranh</NavLink></li>
+								<li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/novel" onClick={()=>{setType('novel'), setToggle(false)}}>Truyện chữ</NavLink></li>
+								{/* <li className='flex justify-center items-center text-white font-semibold hover:bg-[#1F7D53] md:rounded-b-lg'><NavLink to="/">Khác</NavLink></li> */}
 							</ul>
 						</div>
 
 					</div>
 					{/* container-header-serchbox */}
-					<div className='col-span-4 flex justify-center items-center p-1 pr-2 md:bg-[#FBFFE4]'>
+					<div className='col-span-4 flex justify-center items-center md:bg-[#FBFFE4] m-1 border' >
 						<input
-							className=' border-2 border-[#095533] h-3/4 w-full p-1 bg-white rounded-lg' placeholder='Bạn muốn tìm truyện gì' value={search}
+							className=' border-2 border-[#095533] w-full p-1 bg-white rounded-lg mr-2' placeholder='Bạn muốn tìm truyện gì' value={search}
 							onChange={(e) => setSearch(e.target.value)}
 							onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
 
-							onFocus={() => setToggleAdvancedSearch(true)}
+							// onFocus={() => setToggle(true)}
 							
 							
 						/>
+						<img src={AiIcon} width={40} onClick={()=>setTogggleSynopsis(!togggleSynopsis)}/>
 					</div>
+					<div className='col-span-4 flex-column justify-center items-center md:bg-[#FBFFE4] m-1 border hidden' style={togggleSynopsis?{display:'block'} : {}}>	
+						<label style={{fontWeight:'bold'}} className='text-white md:text-black'>
+						Synopsis:</label>
+							<textarea
+							className=' border-2 border-[#095533] w-full bg-white rounded-lg mr-2 p-1' placeholder='Bạn muốn tìm truyện gì' value={synopsis} style={{resize:'none'}}
+							onChange={(e) => setSynopsis(e.target.value)}
+							onKeyDown={(e) => e.key === 'Enter' && alert(synopsis)}
+
+							// onFocus={() => setToggle(true)}
+							
+							
+						/></div>
 				</div>
 				{/* Authentication Section */}
 				<div className="col-start-5 col-end-9 row-start-1 md:row-span-2 md:col-start-7 grid grid-cols-1 items-center md:pl-5 md:pr-5 pl-1 pr-1 w-full">
@@ -234,6 +249,7 @@ function Header() {
 						<div className="relative flex">
 							{/* Manga searched result */}
 							<div className='flex-3 pb-18 border overflow-y-auto h-100'>
+								<div></div>
 								{search && listManga?.length !== 0 && listManga.filter(x => x.title.toLowerCase().includes(search.toLowerCase()) === true || x.synopsis.toLowerCase().includes(search.toLowerCase())).map((manga, index) => (
 									<div className='flex md:flex-row flex-col p-5 border-b' key={manga._id}>
 										<div className='flex-1'>
@@ -266,7 +282,7 @@ function Header() {
 				)
 			}
 
-			{toggleAdvancedSearch ? <AdvancedSearch setOpen ={setToggleAdvancedSearch}/> : (<></>)}
+			{type == '' ? (<></>) : (<Tags type={type} setToggle={setToggle} toggle = {toggle}/>)}
 		</>
 	);
 }
