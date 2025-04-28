@@ -9,9 +9,9 @@ function BookDetails() {
   const navigate = useNavigate()
   //get user from redux store
   const user = useSelector((state) => state.user.user)
-  console.log("check user: ", user)
   const { _id } = useParams()
   const [loading, setLoading] = useState(true)
+  const [isFavorite, setIsFavorite] = useState(false);
   const [infoManga, setInfoManga] = useState({
     artist: ['REDICE Studio (레드아이스 스튜디오)', 'Jang Sung-Rak (장성락)'],
     author: ['h-goon (현군)', 'Chugong (추공)', 'Gi So-Ryeong (기소령)'],
@@ -79,30 +79,50 @@ function BookDetails() {
     navigate(`/mangaReader/${infoManga.mangaid}/${chapters[0].chapterid}`, { state: { _id, chapters, mangatitle, chapternumber, chaptertitle } })
   }
 
-  //handle add to favorite
-  const handleAddFavorite = async () => {
-    // check if user is logged in
+  //delete or add to favorite
+  const handleToggleFavorite = async () => {
+    // Check if user is logged in
     if (!user) {
-      toast.error("Vui lòng đăng nhập để thêm vào thư viện")
+      toast.error("Login to be able to add favorite")
       return
     }
 
     try {
-      const response = await apiAuth.post('/api/reader/favorite/addFavorite', { bookId: _id });
-      if (response.data.success) {
-        toast.success("Thêm vào thư viện thành công")
-        setInfoManga(prev => ({
-          ...prev,
-          followers: prev.followers + 1
-        }));
+      if (isFavorite) {
+        // Remove from favorites
+        const response = await apiAuth.delete('/api/reader/favorite/deleteFavorite', {
+          data: { bookId: _id }
+        });
+        if (response.data.success) {
+          setIsFavorite(false);
+          toast.success('Delete favorite book successfully');
+          setInfoManga(prev => ({
+            ...prev,
+            followers: prev.followers - 1
+          }));
+        } else {
+          toast.error('Error in deleting favorite book');
+        }
       } else {
-        toast.error("Thêm vào thư viện thất bại")
+        // Add to favorites
+        const response = await apiAuth.post('/api/reader/favorite/addFavorite', { bookId: _id });
+        if (response.data.success) {
+          setIsFavorite(true);
+          toast.success("Add to favorite successfully")
+          setInfoManga(prev => ({
+            ...prev,
+            followers: prev.followers + 1
+          }));
+        } else {
+          toast.error("Error in adding to favorite")
+        }
       }
     } catch (error) {
       console.log(error)
-      toast.error("Thêm vào thư viện thất bại")
+      toast.error(isFavorite ? "Error removing from favorites" : "Error in adding to favorite")
     }
   }
+
   // get book details and chapters
   useEffect(() => {
     api.get(`api/manga/${_id}`)
@@ -132,6 +152,26 @@ function BookDetails() {
         setLoading(false)
       })
   }, [])
+
+  //get favorite status(in or notin)
+  useEffect(() => {
+    const getFavoriteStatus = async (req, res) => {
+      if (!user) return;
+
+      try {
+        const response = await apiAuth(`/api/reader/favorite/checkFavorite?bookId=${_id}`);
+        if (response.data.success) {
+          setIsFavorite(response.data.status);
+        } else {
+          toast.error("Cannot check favorite status")
+        }
+      } catch (error) {
+        console.log(error)
+        toast.error("Server error")
+      }
+    }
+    getFavoriteStatus();
+  }, [user, _id])
 
   if (loading) {
     return (<Spinner />)
@@ -164,7 +204,15 @@ function BookDetails() {
 
           <div className='flex-col px-4 md:ml-10 mt-6 md:mt-0'>
             <div className='flex flex-col sm:flex-row justify-center md:justify-start space-y-2 sm:space-y-0 sm:space-x-3 mb-4'>
-              <div onClick={handleAddFavorite} className='rounded bg-green-700 p-2 md:p-3 text-white text-center cursor-pointer font-bold'>Add to favourite</div>
+              {/* Favorite toggle button */}
+              <div
+                onClick={handleToggleFavorite}
+                className={`rounded p-2 md:p-3 text-white text-center cursor-pointer font-bold ${isFavorite ? 'bg-red-600' : 'bg-green-700'
+                  }`}
+              >
+                {isFavorite ? 'Remove from favorite' : 'Add to favorite'}
+              </div>
+
               <div onClick={handleStartReading} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold'>Start reading</div>
             </div>
             <div>
