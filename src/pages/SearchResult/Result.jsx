@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import styles from '../SearchResult/Result.module.css'
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import { api } from '../../services/api'
 
+
 function Result() {
+  const navigate = useNavigate();
   const [results, setResults] = useState([]);
   const {synopsis} = useParams()
   const fetchResults = () => {
@@ -15,9 +17,11 @@ function Result() {
   
   
       const updatedResults = res.data.map(item => ({
+        _id: item._id,
         title: item.title,
         genres: item.tags,
         description: item.synopsis,  
+        type: item.type,
 
         thumnail: item.cover_url, 
 
@@ -45,7 +49,14 @@ function Result() {
         {results.map((item) => (
               <div className={styles.container_item}>
                 <img src={item.thumnail} alt="thumbnail" className={styles.thumbnail} />
-                <div className={styles.container_content_item}>
+                <div className={styles.container_content_item} onClick={()=>{
+                  if(item.type == 'manga') {
+                    navigate(`/manga/${item._id}`)
+                  }
+                  else{
+                    navigate(`/novel/${item._id}`)
+                  }
+                }}>
                   <p><b>{item.title}</b></p>
                   <p><b>Tags: </b>{item.genres.join(', ')}</p>
                   <p className={styles.description_item}><b>Synopsis:  </b>{item.description}</p>
