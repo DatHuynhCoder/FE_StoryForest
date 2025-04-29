@@ -118,11 +118,11 @@ function Header() {
 	return (
 		<>
 			{/* containter-header */}
-			<div className='grid grid-cols-8 grid-rows-2 h-auto bg-[#FBFFE4] md:border-b-5 md:border-[#095533]'>
+			<div className='grid grid-cols-8 grid-rows-2 h-auto md:h-auto bg-[#FBFFE4] md:border-b-5 md:border-[#095533]'>
 				{/* containter-header-logo */}
 				<div className='col-start-1 col-end-5 row-start-1 md:col-end-3 md:row-span-2 flex justify-start'>
 					<Link to={"/"} className='inline-block h-full w-full'>
-						<img className="h-30 ml-10" src={logo} alt='logo' />
+						<img className="w-full md:h-30 md:pr-5 object-cover" src={logo} alt='logo' />
 					</Link>
 				</div>
 				{/* container-header-main */}
@@ -151,7 +151,7 @@ function Header() {
 
 					</div>
 					{/* container-header-serchbox */}
-					<div className='col-span-4 flex justify-center items-center md:bg-[#FBFFE4] m-1 border' >
+					<div className='col-span-4 flex justify-center items-center md:bg-[#FBFFE4] m-1 ' >
 						<input
 							className=' border-2 border-[#095533] w-full p-1 bg-white rounded-lg mr-2' placeholder='Bạn muốn tìm truyện gì' value={search}
 							onChange={(e) => setSearch(e.target.value)}
@@ -163,20 +163,20 @@ function Header() {
 						/>
 						<img src={AiIcon} width={40} onClick={()=>setTogggleSynopsis(!togggleSynopsis)}/>
 					</div>
-					<div className='col-span-4 flex-column justify-center items-center md:bg-[#FBFFE4] m-1 border hidden' style={togggleSynopsis?{display:'block'} : {}}>	
+					<div className='col-span-4 flex-column justify-center items-center md:bg-[#FBFFE4] m-1 hidden' style={togggleSynopsis?{display:'block'} : {}}>	
 						<label style={{fontWeight:'bold'}} className='text-white md:text-black'>
 						Synopsis:</label>
 							<textarea
 							className=' border-2 border-[#095533] w-full bg-white rounded-lg mr-2 p-1' placeholder='Bạn muốn tìm truyện gì' value={synopsis} style={{resize:'none'}}
 							onChange={(e) => setSynopsis(e.target.value)}
-							onKeyDown={(e) => e.key === 'Enter' && alert(synopsis)}
+							onKeyDown={(e) => e.key === 'Enter' && navigate(`/advanced-search/${synopsis}`)}
 
 							// onFocus={() => setToggle(true)}
 							
 							
 						/>
-						<div style={{display:'flex', justifyContent:'flex-end', }}>
-						<button style={{justifySelf:'flex-end', border:'1px solid', width:'30%', backgroundImage: 'linear-gradient(to right, #d9ff00, #38e397)', borderRadius:20}} className="active:brightness-75">Search</button>
+						<div style={{display:'flex', justifyContent:'flex-end', }} onClick={() => navigate(`/advanced-search/${synopsis}`)}>
+						<button style={{justifySelf:'flex-end', width:'30%', backgroundImage: 'linear-gradient(to right, #d9ff00, #38e397)', borderRadius:20}} className="active:brightness-75">Search</button>
 						</div>
 						
 					

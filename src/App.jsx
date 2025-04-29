@@ -50,7 +50,7 @@ import AuthorDetail from "./components/Staff/AthourDetail.jsx";
 import AuthorEdit from "./components/Staff/AuthorEdit.jsx";
 import AddAuthor from "./components/Staff/AuthorAddNew.jsx";
 import VipManagement from "./pages/Staff/VIPManagement.jsx";
-import AdvancedSearch from "./components/AdvancedSearch/AdvancedSearch.jsx";
+// import AdvancedSearch from "./components/AdvancedSearch/AdvancedSearch.jsx";
 import Result from "./pages/SearchResult/Result.jsx";
 
 
@@ -72,8 +72,8 @@ function App() {
           <Route path="/novel" element={<NovelList />} />
           <Route path="/novel/:_id" element={<NovelDetails />} />
           <Route path="/novelReader/:_id/:chapterid" element={<NovelReader />} />
-          <Route path='/result/:keyword' element={<Result />} />
-          <Route path='/advanced-search' element={<AdvancedSearch/>}/>
+          <Route path='/result/:keyword' element={<ResultPage />} />
+          <Route path='/advanced-search/:synopsis' element={<Result/>}/>
 
         </Route>
 
