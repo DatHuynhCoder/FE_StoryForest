@@ -4,7 +4,6 @@ import axios from 'axios'
 import loadingGif from '../../assets/loading.gif'
 import defaultAvt from '../../assets/default_avatar.jpg'
 import { api, apiAuth } from '../../services/api.js'
-import { useSelector } from 'react-redux'
 // icons
 import { FaHome } from "react-icons/fa";
 import { MdNavigateNext } from "react-icons/md";
@@ -16,11 +15,14 @@ import DragCloseDrawer from '../../components/DragCloseDrawer.jsx'
 //
 import { Rating, RatingStar } from "flowbite-react";
 import { Button, Drawer, DrawerHeader, DrawerItems } from "flowbite-react";
-
+//user Redux to update user
+import { useSelector, useDispatch } from 'react-redux'
+import { updateUser } from '../../redux/userSlice.js'
 
 function MangaReader() {
-  const { mangaid, chapterid } = useParams()
   const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const { mangaid, chapterid } = useParams()
   const location = useLocation()
   const { _id, chapters, mangatitle, chapternumber, chaptertitle } = location.state || {}
   // const chapters = location.state.chapters || []
@@ -103,6 +105,8 @@ function MangaReader() {
       if (res.data.success) {
         alert('Comment successfully')
         setComment('')
+        //update user in redux
+        dispatch(updateUser(res.data.user));
         fetchCommentByChapterId()
       }
     })
