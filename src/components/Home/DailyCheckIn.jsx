@@ -42,7 +42,7 @@ const DailyCheckIn = ({ streak = 0, isCheckin = true, handleCheckin }) => {
           <button
             onClick={handleCheckin}
             disabled={isCheckin}
-            className={`w-full py-4 px-6 rounded-lg font-bold text-lg text-white relative overflow-hidden transition-all ${!isCheckin && 'cursor-pointer'}
+            className={`w-full py-2 px-3 rounded-lg font-bold text-lg text-white relative overflow-hidden transition-all ${!isCheckin && 'cursor-pointer'}
               ${!isCheckin
                 ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 shadow-lg shadow-emerald-500/30 transform hover:-translate-y-1'
                 : 'bg-gray-600 cursor-not-allowed opacity-70'}`}

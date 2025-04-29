@@ -6,7 +6,6 @@ import { api, apiAuth } from '../../services/api';
 import Spinner from '../../components/Spinner';
 import defaultAvt from '../../assets/default_avatar.jpg'
 import { toast } from 'react-toastify';
-import { useSelector } from 'react-redux';
 // icons
 import { MdNavigateNext } from "react-icons/md";
 import { MdNavigateBefore } from "react-icons/md";
@@ -17,10 +16,14 @@ import DragCloseDrawer from '../../components/DragCloseDrawer';
 //
 import { Rating, RatingStar } from "flowbite-react";
 import { Button, Drawer, DrawerHeader, DrawerItems } from "flowbite-react";
+//user Redux to update user
+import { useSelector, useDispatch } from 'react-redux'
+import { updateUser } from '../../redux/userSlice.js'
 
 function NovelReader() {
-  const { _id, chapterid } = useParams()
   const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const { _id, chapterid } = useParams()
   const location = useLocation()
   const { chapters, noveltitle, chapternumber, chaptertitle } = location.state || {}
 
@@ -123,6 +126,8 @@ function NovelReader() {
       if (res.data.success) {
         alert('Comment successfully')
         setComment('')
+        //update user in redux
+        dispatch(updateUser(res.data.user));
         fetchCommentByChapterId()
       }
     })
