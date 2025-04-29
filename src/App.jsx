@@ -5,6 +5,8 @@ import Login from './pages/Login_Signup/Login.jsx';
 import Signup from './pages/Login_Signup/Signup.jsx';
 import Profile from './pages/Profile/Profile.jsx';
 import BookDetails from './pages/Details/BookDetails.jsx';
+import OTP from "./pages/Login_Signup/ForgetPass/OTP.jsx";
+import ChangePassword from "./pages/Login_Signup/ForgetPass/ChangePass.jsx";
 // manga pages
 import MangaList from './pages/Manga/MangaList.jsx';
 import MangaReader from './pages/Manga/MangaReader.jsx';
@@ -60,6 +62,8 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/otp" element={<OTP />} />
+        <Route path="/changepass" element={<ChangePassword />} />
 
         <Route element={<Layout />}>
           <Route element={<ProtectedRoute allowedRoles={['reader']} />}>

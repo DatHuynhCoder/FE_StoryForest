@@ -2,15 +2,21 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { api, apiAuth } from '../../services/api'
 import Spinner from '../../components/Spinner'
-import { useSelector } from 'react-redux'
+//use redux to update user
+import { useSelector, useDispatch } from 'react-redux'
+import { updateUser } from '../../redux/userSlice'
+
 import { toast } from 'react-toastify'
+import defaultAvt from '../../assets/default_avatar.jpg'
 
 function NovelDetails() {
   const navigate = useNavigate()
+  const dispatch = useDispatch();
   //get user from redux store
   const user = useSelector((state) => state.user.user);
   const { _id } = useParams() // from NovelList.jsx
   const [loading, setLoading] = useState(true)
+  const [isFavorite, setIsFavorite] = useState(false);
   const [infoNovel, setInfoNovel] = useState({
     _id: '67eabb616f25807d87d7ad10',
     title: 'Infinite Farmer: A Plants vs Dungeon LitRPG',
@@ -40,10 +46,27 @@ function NovelDetails() {
   ])
   const [bookComments, setBookComments] = useState([])
   const comments = [
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User1', content: 'This is a comment' },
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User2', content: 'This is a comment' },
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User3', content: 'This is a comment' },
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User4', content: 'This is a comment' },
+    {
+      bookid: "67f298a0c0aa3501386b7aff",
+      chapterid: "b4b305b8-6dfb-4292-b254-d1b577c725d2",
+      chapternumber: "2",
+      chaptertitle: "Pros and a Pro",
+      content: "hmm",
+      createdAt: "2025-04-28T11:02:15.878Z",
+      rating: 5,
+      updatedAt: "2025-04-28T11:02:15.878Z",
+      userid: {
+        avatar: {
+          public_id: "StoryForest/Account/bz3d7yjgnvoc0gdlzxpr",
+          url: "https://res.cloudinary.com/dvtcbryg5/image/upload/v1745854495/StoryForest/Account/bz3d7yjgnvoc0gdlzxpr.jpg"
+        },
+        username: "otaku-kun",
+        _id: "680b0317446eb05ee1287838",
+      },
+      username: "a",
+      __v: 0,
+      _id: "680f6037e4b5d019dc77a47b"
+    },
   ]
   // handle click on a chapter => navigate to MangaReader
   const handleClickedChapter = (noveltitle, chapterid, chapternumber, chaptertitle) => {
@@ -54,28 +77,50 @@ function NovelDetails() {
     navigate(`/novelReader/${_id}/${chapterid}`, { state: { chapters, noveltitle, chapternumber, chaptertitle } })
   }
 
-  //handle add to favorite
-  const handleAddFavorite = async () => {
-    // check if user is logged in
+  //delete or add to favorite
+  const handleToggleFavorite = async () => {
+    // Check if user is logged in
     if (!user) {
-      toast.error("Vui lòng đăng nhập để thêm vào thư viện")
+      toast.error("Login to be able to add favorite")
       return
     }
 
     try {
-      const response = await apiAuth.post('/api/reader/favorite/addFavorite', { bookId: _id });
-      if (response.data.success) {
-        toast.success("Thêm vào thư viện thành công")
-        setInfoNovel(prev => ({
-          ...prev,
-          followers: prev.followers + 1
-        }))
+      if (isFavorite) {
+        // Remove from favorites
+        const response = await apiAuth.delete('/api/reader/favorite/deleteFavorite', {
+          data: { bookId: _id }
+        });
+        if (response.data.success) {
+          setIsFavorite(false);
+          toast.success('Delete favorite book successfully');
+          setInfoNovel(prev => ({
+            ...prev,
+            followers: prev.followers - 1
+          }));
+        } else {
+          toast.error('Error in deleting favorite book');
+        }
       } else {
-        toast.error("Thêm vào thư viện thất bại")
+        // Add to favorites
+        const response = await apiAuth.post('/api/reader/favorite/addFavorite', { bookId: _id });
+        if (response.data.success) {
+          setIsFavorite(true);
+          toast.success("Add to favorite successfully")
+          setInfoNovel(prev => ({
+            ...prev,
+            followers: prev.followers + 1
+          }));
+
+          //update user in resux
+          dispatch(updateUser(response.data.user));
+        } else {
+          toast.error("Error in adding to favorite")
+        }
       }
     } catch (error) {
       console.log(error)
-      toast.error("Thêm vào thư viện thất bại")
+      toast.error(isFavorite ? "Error removing from favorites" : "Error in adding to favorite")
     }
   }
 
@@ -107,6 +152,26 @@ function NovelDetails() {
         setLoading(false)
       })
   }, [])
+
+  //get favorite status(in or notin)
+  useEffect(() => {
+    const getFavoriteStatus = async () => {
+      if (!user) return;
+
+      try {
+        const response = await apiAuth(`/api/reader/favorite/checkFavorite?bookId=${_id}`);
+        if (response.data.success) {
+          setIsFavorite(response.data.status);
+        } else {
+          toast.error("Cannot check favorite status")
+        }
+      } catch (error) {
+        console.log(error)
+        toast.error("Server error")
+      }
+    }
+    getFavoriteStatus();
+  }, [user, _id])
 
   if (loading) {
     return (
@@ -140,7 +205,15 @@ function NovelDetails() {
 
           <div className='flex-col px-4 md:ml-10 mt-6 md:mt-0'>
             <div className='flex flex-col sm:flex-row justify-center md:justify-start space-y-2 sm:space-y-0 sm:space-x-3 mb-4'>
-              <div onClick={handleAddFavorite} className='rounded bg-green-700 p-2 md:p-3 text-white text-center cursor-pointer font-bold'>Add to favourite</div>
+              {/* Favorite toggle button */}
+              <div
+                onClick={handleToggleFavorite}
+                className={`rounded p-2 md:p-3 text-white text-center cursor-pointer font-bold ${isFavorite ? 'bg-red-600' : 'bg-green-700'
+                  }`}
+              >
+                {isFavorite ? 'Remove from favorite' : 'Add to favorite'}
+              </div>
+
               <div onClick={() => handleStartReading(infoNovel.title, chapters[0]._id, 1, chapters[0].chapter_title)} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold'>Start reading</div>
             </div>
 
@@ -191,7 +264,10 @@ function NovelDetails() {
               <li key={comment._id}>
                 <div className='mt-3'>
                   <div className='w-[100%] border p-2 rounded-md mt-2'>
-                    <p className='ml-1 font-bold'>{comment.username}</p>
+                    <div className='flex'>
+                      <img src={comment.userid?.avatar?.url || defaultAvt} alt="avatar" className='w-10 h-10 rounded-full' />
+                      <p className='ml-1 font-semibold text-black'>{comment.userid.username}</p>
+                    </div>
                     <p className='text-gray-500'>Chapter {comment.chapternumber}: {comment.chaptertitle}</p>
                     <p>{comment.content}</p>
                   </div>

@@ -24,7 +24,7 @@ const Login = () => {
     try {
       const response = await api.post("/api/reader/account/login", { email, password });
       if (response.data.success) {
-        dispatch(loginSuccess({user: response.data.data, token: response.data.accessToken}))
+        dispatch(loginSuccess({ user: response.data.data, token: response.data.accessToken }))
         toast.success("Login successful!");
         navigate("/");
       } else {
@@ -82,6 +82,10 @@ const Login = () => {
             )}
           </button>
         </div>
+
+        {/* Forget pass */}
+        <div className="flex flex-row justify-end font-bold text-(--secondary-color) cursor-pointer text-sm">
+          <Link to="/otp" className="">Forget password?</Link></div>
 
         {/* Login button */}
         <div className="flex justify-center">
