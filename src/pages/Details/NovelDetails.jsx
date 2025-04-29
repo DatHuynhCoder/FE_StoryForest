@@ -2,12 +2,16 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { api, apiAuth } from '../../services/api'
 import Spinner from '../../components/Spinner'
-import { useSelector } from 'react-redux'
+//use redux to update user
+import { useSelector, useDispatch } from 'react-redux'
+import { updateUser } from '../../redux/userSlice'
+
 import { toast } from 'react-toastify'
 import defaultAvt from '../../assets/default_avatar.jpg'
 
 function NovelDetails() {
   const navigate = useNavigate()
+  const dispatch = useDispatch();
   //get user from redux store
   const user = useSelector((state) => state.user.user);
   const { _id } = useParams() // from NovelList.jsx
@@ -107,6 +111,9 @@ function NovelDetails() {
             ...prev,
             followers: prev.followers + 1
           }));
+
+          //update user in resux
+          dispatch(updateUser(response.data.user));
         } else {
           toast.error("Error in adding to favorite")
         }
@@ -148,7 +155,7 @@ function NovelDetails() {
 
   //get favorite status(in or notin)
   useEffect(() => {
-    const getFavoriteStatus = async (req, res) => {
+    const getFavoriteStatus = async () => {
       if (!user) return;
 
       try {

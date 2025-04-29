@@ -3,11 +3,15 @@ import { useParams, useNavigate } from 'react-router'
 import { api, apiAuth } from '../../services/api'
 import Spinner from '../../components/Spinner'
 import { toast } from 'react-toastify'
-import { useSelector } from 'react-redux'
+//use redux to update user
+import { useSelector, useDispatch } from 'react-redux';
+import { updateUser } from '../../redux/userSlice'
 import defaultAvt from '../../assets/default_avatar.jpg'
+
 
 function BookDetails() {
   const navigate = useNavigate()
+  const dispatch = useDispatch();
   //get user from redux store
   const user = useSelector((state) => state.user.user)
   const { _id } = useParams()
@@ -114,6 +118,9 @@ function BookDetails() {
             ...prev,
             followers: prev.followers + 1
           }));
+
+          //update user in redux
+          dispatch(updateUser(response.data.user));
         } else {
           toast.error("Error in adding to favorite")
         }
