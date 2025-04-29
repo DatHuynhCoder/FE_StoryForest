@@ -52,7 +52,9 @@ import AuthorDetail from "./components/Staff/AthourDetail.jsx";
 import AuthorEdit from "./components/Staff/AuthorEdit.jsx";
 import AddAuthor from "./components/Staff/AuthorAddNew.jsx";
 import VipManagement from "./pages/Staff/VIPManagement.jsx";
-
+// Payment
+import Success from "./pages/Payment/Success.jsx";
+import Cancel from "./pages/Payment/Cancel.jsx";
 
 function App() {
   return (
@@ -104,6 +106,8 @@ function App() {
 
           <Route path="/staff/vip-management" element={<VipManagement />}> </Route>
         </Route>
+        <Route path="/payment/success" element={<Success />} />
+        <Route path="/payment/cancel" element={<Cancel />} />
 
       </Routes>
 
