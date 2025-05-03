@@ -4,8 +4,8 @@ import { useLocation, useParams, useNavigate } from 'react-router';
 import './NovelReader.css'; // Import the CSS file
 import { api, apiAuth } from '../../services/api';
 import Spinner from '../../components/Spinner';
+import defaultAvt from '../../assets/default_avatar.jpg'
 import { toast } from 'react-toastify';
-import { useSelector } from 'react-redux';
 // icons
 import { MdNavigateNext } from "react-icons/md";
 import { MdNavigateBefore } from "react-icons/md";
@@ -16,10 +16,14 @@ import DragCloseDrawer from '../../components/DragCloseDrawer';
 //
 import { Rating, RatingStar } from "flowbite-react";
 import { Button, Drawer, DrawerHeader, DrawerItems } from "flowbite-react";
+//user Redux to update user
+import { useSelector, useDispatch } from 'react-redux'
+import { updateUser } from '../../redux/userSlice.js'
 
 function NovelReader() {
-  const { _id, chapterid } = useParams()
   const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const { _id, chapterid } = useParams()
   const location = useLocation()
   const { chapters, noveltitle, chapternumber, chaptertitle } = location.state || {}
 
@@ -43,16 +47,50 @@ function NovelReader() {
     _id: "67eb5b9f3bb426e0d0fd8200"
   })
   const [chaptercomments, setChaptercomments] = useState([
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User1', content: 'This is a comment' },
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User2', content: 'This is a comment' },
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User3', content: 'This is a comment' },
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User4', content: 'This is a comment' },
+    {
+      bookid: "67f298a0c0aa3501386b7aff",
+      chapterid: "b4b305b8-6dfb-4292-b254-d1b577c725d2",
+      chapternumber: "2",
+      chaptertitle: "Pros and a Pro",
+      content: "hmm",
+      createdAt: "2025-04-28T11:02:15.878Z",
+      rating: 5,
+      updatedAt: "2025-04-28T11:02:15.878Z",
+      userid: {
+        avatar: {
+          public_id: "StoryForest/Account/bz3d7yjgnvoc0gdlzxpr",
+          url: "https://res.cloudinary.com/dvtcbryg5/image/upload/v1745854495/StoryForest/Account/bz3d7yjgnvoc0gdlzxpr.jpg"
+        },
+        username: "otaku-kun",
+        _id: "680b0317446eb05ee1287838",
+      },
+      username: "a",
+      __v: 0,
+      _id: "680f6037e4b5d019dc77a47b"
+    },
   ])
   const comments = [
-    { avatar: 'https://static.ybox.vn/2022/ 7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User1', content: 'This is a comment' },
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User2', content: 'This is a comment' },
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User3', content: 'This is a comment' },
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User4', content: 'This is a comment' },
+    {
+      bookid: "67f298a0c0aa3501386b7aff",
+      chapterid: "b4b305b8-6dfb-4292-b254-d1b577c725d2",
+      chapternumber: "2",
+      chaptertitle: "Pros and a Pro",
+      content: "hmm",
+      createdAt: "2025-04-28T11:02:15.878Z",
+      rating: 5,
+      updatedAt: "2025-04-28T11:02:15.878Z",
+      userid: {
+        avatar: {
+          public_id: "StoryForest/Account/bz3d7yjgnvoc0gdlzxpr",
+          url: "https://res.cloudinary.com/dvtcbryg5/image/upload/v1745854495/StoryForest/Account/bz3d7yjgnvoc0gdlzxpr.jpg"
+        },
+        username: "otaku-kun",
+        _id: "680b0317446eb05ee1287838",
+      },
+      username: "a",
+      __v: 0,
+      _id: "680f6037e4b5d019dc77a47b"
+    },
   ]
 
   const [comment, setComment] = useState('')
@@ -76,19 +114,20 @@ function NovelReader() {
       alert('Please login to comment')
       return
     }
-    api.post(`/api/reader/review/create`, {
+    apiAuth.post(`/api/reader/review/create`, {
       content: comment.slice(0, 40),
       rating: 5, // temp
       chapternumber: chapternumber,
       chaptertitle: chaptertitle,
       chapterid: chapterid,
-      userid: user._id,
       username: user.username,
       bookid: _id
     }).then(res => {
       if (res.data.success) {
         alert('Comment successfully')
         setComment('')
+        //update user in redux
+        dispatch(updateUser(res.data.user));
         fetchCommentByChapterId()
       }
     })
@@ -429,7 +468,10 @@ function NovelReader() {
               {chaptercomments.map((comment, index) => (
                 <div className='mt-3' key={index}>
                   <div className='w-[100%] border p-2 rounded-md mt-2'>
-                    <p className='ml-1 font-semibold text-black'>{comment.username}</p>
+                    <div className='flex'>
+                      <img src={comment.userid?.avatar?.url || defaultAvt} alt="avatar" className='w-10 h-10 rounded-full' />
+                      <p className='ml-1 font-semibold text-black'>{comment.userid.username}</p>
+                    </div>
                     <p className='text-black w-[100%]'>{comment.content}</p>
                   </div>
                 </div>

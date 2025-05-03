@@ -5,6 +5,8 @@ import Login from './pages/Login_Signup/Login.jsx';
 import Signup from './pages/Login_Signup/Signup.jsx';
 import Profile from './pages/Profile/Profile.jsx';
 import BookDetails from './pages/Details/BookDetails.jsx';
+import OTP from "./pages/Login_Signup/ForgetPass/OTP.jsx";
+import ChangePassword from "./pages/Login_Signup/ForgetPass/ChangePass.jsx";
 // manga pages
 import MangaList from './pages/Manga/MangaList.jsx';
 import MangaReader from './pages/Manga/MangaReader.jsx';
@@ -50,7 +52,9 @@ import AuthorDetail from "./components/Staff/AthourDetail.jsx";
 import AuthorEdit from "./components/Staff/AuthorEdit.jsx";
 import AddAuthor from "./components/Staff/AuthorAddNew.jsx";
 import VipManagement from "./pages/Staff/VIPManagement.jsx";
-
+// Payment
+import Success from "./pages/Payment/Success.jsx";
+import Cancel from "./pages/Payment/Cancel.jsx";
 
 function App() {
   return (
@@ -58,6 +62,8 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/otp" element={<OTP />} />
+        <Route path="/changepass" element={<ChangePassword />} />
 
         <Route element={<Layout />}>
           <Route element={<ProtectedRoute allowedRoles={['reader']} />}>
@@ -100,6 +106,8 @@ function App() {
 
           <Route path="/staff/vip-management" element={<VipManagement />}> </Route>
         </Route>
+        <Route path="/payment/success" element={<Success />} />
+        <Route path="/payment/cancel" element={<Cancel />} />
 
       </Routes>
 

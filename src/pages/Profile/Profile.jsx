@@ -19,14 +19,14 @@ import Settings from "./Setting";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../redux/userSlice";
 
 const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const user = useSelector((state) => state.user.user);
-  const [favoriteBooks, setFavoriteBooks] = useState();
-  const [isLoading, setIsLoading] = useState(true);
+  const [favoriteBooks, setFavoriteBooks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('profile');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -172,6 +172,22 @@ const Profile = () => {
             {user?.achivement}
           </div>
         </div>
+
+        <div className="p-2 sm:p-4 flex flex-row items-center gap-2 sm:gap-4">
+          <img src="/images/rank.png" alt="medal logo" className="w-6 h-6 sm:w-8 sm:h-8" />
+          <div className="flex-1 text-sm sm:text-xl">
+            <span className="font-bold">Rank: </span>
+            {user?.rank}
+          </div>
+        </div>
+
+        <div className="p-2 sm:p-4 flex flex-row items-center gap-2 sm:gap-4">
+          <img src="/images/level.png" alt="medal logo" className="w-6 h-6 sm:w-8 sm:h-8" />
+          <div className="flex-1 text-sm sm:text-xl">
+            <span className="font-bold">Level: </span>
+            {user?.level} ( {user?.exp} )
+          </div>
+        </div>
       </div>
 
       {/* Edit and Exit section */}
@@ -287,7 +303,6 @@ const Profile = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         user={user}
-        onUserUpdate={(updatedUser) => setUser(updatedUser)}
       />
     </div>
   );
