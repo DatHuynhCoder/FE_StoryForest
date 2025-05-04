@@ -1,11 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const NewUsersDailyChart = () => {
-  // Generate day labels for 30 days
-  const days = Array.from({ length: 30 }, (_, i) => (i + 1).toString());
+  const [selectedMonth, setSelectedMonth] = useState(new Date());
+  const [chartData, setChartData] = useState([]);
 
-  // Chart configuration
+  // 
+  const fetchDataForMonth = (month) => {
+    // Mock data - thay bằng API call thực tế
+    const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+    const mockData = Array.from({ length: daysInMonth }, () => 
+      Math.floor(Math.random() * 400)
+    );
+    
+    return {
+      days: Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString()),
+      values: mockData
+    };
+  };
+
+  useEffect(() => {
+    const { days, values } = fetchDataForMonth(selectedMonth);
+    setChartData({
+      days,
+      values
+    });
+  }, [selectedMonth]);
+
   const chartOptions = {
     colors: ['#14B8A6'],
     chart: {
@@ -19,7 +42,7 @@ const NewUsersDailyChart = () => {
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: '50%', // Thinner bars for daily data
+        columnWidth: '50%',
         borderRadius: 2,
         borderRadiusApplication: 'end',
       },
@@ -31,7 +54,7 @@ const NewUsersDailyChart = () => {
       show: false,
     },
     xaxis: {
-      categories: days,
+      categories: chartData.days || [],
       axisBorder: {
         show: false,
       },
@@ -43,7 +66,6 @@ const NewUsersDailyChart = () => {
         rotate: 0,
         hideOverlappingLabels: true,
         formatter: function(value) {
-          // Only show label for every 4th day
           return parseInt(value) % 4 === 0 ? value : '';
         },
         style: {
@@ -53,9 +75,6 @@ const NewUsersDailyChart = () => {
       }
     },
     yaxis: {
-      title: {
-        text: undefined,
-      },
       labels: {
         formatter: function(val) {
           return val.toFixed(0);
@@ -98,15 +117,10 @@ const NewUsersDailyChart = () => {
     },
   };
 
- 
   const chartSeries = [
     {
       name: 'New Users',
-      data: [
-        350, 180, 150, 210, 90, 150, 200, 310, 130, 190, 
-        220, 160, 240, 170, 240, 300, 160, 210, 330, 180, 
-        230, 150, 190, 220, 110, 140, 200, 170, 360, 210
-      ],
+      data: chartData.values || [],
     },
   ];
 
@@ -115,6 +129,13 @@ const NewUsersDailyChart = () => {
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-gray-800">New users / day</h3>
         <div className="flex items-center">
+          <DatePicker
+            selected={selectedMonth}
+            onChange={(date) => setSelectedMonth(date)}
+            dateFormat="MM/yyyy"
+            showMonthYearPicker
+            className="border rounded px-3 py-1 text-sm mr-2"
+          />
           <span className="w-3 h-3 rounded-full bg-[#14B8A6] mr-2"></span>
           <span className="text-sm text-gray-500">Daily</span>
         </div>
@@ -132,7 +153,7 @@ const NewUsersDailyChart = () => {
       </div>
       
       <div className="mt-2 text-xs text-gray-400 text-center">
-        Monthly • Data updated: {new Date().toLocaleDateString()}
+        Data for: {selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
       </div>
     </div>
   );
