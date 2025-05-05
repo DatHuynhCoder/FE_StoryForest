@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react'
 import { useLocation } from 'react-router'
 import { api } from '../../services/api';
+import { useDispatch } from 'react-redux';
+import { updateUser } from '../../redux/userSlice';
 
 function Success() {
+  const dispatch = useDispatch();
   const location = useLocation(); // Get the current location object
   const queryParams = new URLSearchParams(location.search); // Parse the query string
   // http://localhost:5173/payment/success?userid=680b0317446eb05ee1287838&code=00&id=8d3dd43cdfed45ad991b7fc00f12c523&cancel=false&status=PAID&orderCode=174646546908525
@@ -14,8 +17,11 @@ function Success() {
   const orderCode = queryParams.get('orderCode');
   useEffect(() => {
     api.patch('/api/reader/account/upgrade', { userid: userid }).then(res => {
-      if (res.data.success === true)
+      if (res.data.success === true) {
+        //update user role in redux
+        dispatch(updateUser(res.data.data))
         alert('Now, you are a VIP !')
+      }
       else {
         alert('Some errors occur :(')
       }

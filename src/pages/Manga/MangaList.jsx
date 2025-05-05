@@ -165,7 +165,7 @@ function MangaList() {
   return (
     <>
       <div className='bg-[url("https://static.vecteezy.com/system/resources/previews/042/623/256/non_2x/high-trees-in-forest-illustration-jungle-landscape-vector.jpg")] bg-no-repeat bg-cover left-0 w-full'>
-        <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white h-screen'>
+        <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white h-screen pb-30'>
           <div className='flex-3 pb-18 border overflow-y-auto h-full'>
             {listManga.length !== 0 ? listManga.map(manga => (
               <div className='flex md:flex-row flex-col p-5 border-b' key={manga._id}>
