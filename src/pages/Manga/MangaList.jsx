@@ -3,6 +3,7 @@ import { api } from '../../services/api'
 import Spinner from '../../components/Spinner'
 import { useNavigate } from 'react-router'
 import ReactPaginate from 'react-paginate'
+// icons
 import { RxRocket } from "react-icons/rx";
 import { MdSmartDisplay } from "react-icons/md";
 import { FaFlagCheckered } from "react-icons/fa";
@@ -10,6 +11,8 @@ import { PiShootingStarFill } from "react-icons/pi";
 import { FiRefreshCw } from "react-icons/fi";
 import { GiBleedingEye } from "react-icons/gi";
 import { RiUserFollowLine } from "react-icons/ri";
+// gifs
+import processingGif from '../../assets/processing.gif'
 
 function MangaList() {
   const navigate = useNavigate();
@@ -17,17 +20,17 @@ function MangaList() {
     artist: ['REDICE Studio (레드아이스 스튜디오)', 'Jang Sung-Rak (장성락)'],
     author: ['h-goon (현군)', 'Chugong (추공)', 'Gi So-Ryeong (기소령)'],
     bookImg: {
-      url: 'https://res.cloudinary.com/dvtcbryg5/image/upload/…4423218/StoryForest/Book/mzbhrc52tmszzqnsdusq.jpg',
+      url: processingGif,
       public_id: 'StoryForest/Book/mzbhrc52tmszzqnsdusq'
     },
-    cover_url: "https://uploads.mangadex.org/covers/32d76d19-8a05-4db0-9fc2-e0b0648fe9d0/e90bdc47-c8b9-4df7-b2c0-17641b645ee1.jpg",
+    cover_url: processingGif,
     followers: 0,
     mangaid: "32d76d19-8a05-4db0-9fc2-e0b0648fe9d0",
     rate: 5,
     status: "completed",
     synopsis: "10 years ago, after “the Gate” that connected the real world with the monster world opened, some of the ordinary, everyday people received the power to hunt monsters within the Gate. They are known as “Hunters”. However, not all Hunters are powerful. My name is Sung Jin-Woo, an E-rank Hunter. I’m someone who has to risk his life in the lowliest of dungeons, the “World’s Weakest”. Having no skills whatsoever to display, I barely earned the required money by fighting in low-leveled dungeons… at least until I found a hidden dungeon with the hardest difficulty within the D-rank dungeons! In the end, as I was accepting death, I suddenly received a strange power, a quest log that only I could see, a secret to leveling up that only I know about! If I trained in accordance with my quests and hunted monsters, my level would rise. Changing from the weakest Hunter to the strongest S-rank Hunter!\n\n---\n**Links:**\n\n- Official English Translation [<Pocket Comics>](https://www.pocketcomics.com/comic/320) | [<WebNovel>](https://www.webnovel.com/comic/only-i-level-up-(solo-leveling)_15227640605485101) | [<Tapas>](https://tapas.io/series/solo-leveling-comic/info)\n- Alternate Official Raw - [Kakao Webtoon](https://webtoon.kakao.com/content/나-혼자만-레벨업/2320)",
-    tags: ['Award Winning', 'Monsters', 'Action', 'Long Strip', 'Adventure', 'Magic', 'Drama', 'Fantasy', 'Web Comic', 'Supernatural', 'Adaptation', 'Full Color'],
-    title: "Solo Leveling",
+    tags: ['Loading ...'],
+    title: "Loading ...",
     type: "manga",
     updatedAt: "2025-04-12T02:00:00.436Z",
     views: 238,
@@ -111,6 +114,8 @@ function MangaList() {
         fetchMangasByStatus(newPage, statusType)
     }
     else fetchMangasWithSortType(newPage, sortType)
+
+    scrollToTop()
   }
 
   const handleClickBestRated = () => {
@@ -151,6 +156,10 @@ function MangaList() {
     fetchMangas(0)
   }
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   if (loading) return <Spinner />
 
   return (
@@ -176,9 +185,9 @@ function MangaList() {
                       ))}
                     </div>
                     <div className='flex-2'>
-                      <p>{manga.followers} <b>FOLLOWERS</b></p>
-                      <p>{manga.views} <b>VIEWS</b></p>
-                      <p><b>RATE:</b> {manga.rate}</p>
+                      <p className='text-right'><span className='font-[1000]'>{manga.followers} </span><b>FOLLOWERS</b></p>
+                      <p className='text-right'><span className='font-[1000]'>{manga.views} </span><b>VIEWS</b></p>
+                      <p className='text-right'><b>RATE:</b><span className='font-[1000]'> {manga.rate}</span></p>
                     </div>
                   </div>
                 </div>
@@ -204,7 +213,7 @@ function MangaList() {
             }
 
             {/* Pagination */}
-            <div className='my-4 flex justify-center fixed bottom-0 bg-white py-2'>
+            <div className='my-4 flex justify-center bottom-0 left-0 bg-white py-2'>
               <ReactPaginate
                 breakLabel="..."
                 nextLabel="Next"
@@ -229,25 +238,23 @@ function MangaList() {
 
           {/* Optional Right Sidebar */}
           <div className='flex-1 flex-column border md:block hidden'>
-            <div className='cursor-pointer border m-1 p-2' onClick={() => handleClickBestRated()}>
+
+            <div className={`cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1] ${sortType === 'rate' ? 'bg-green-500' : ''}`} onClick={() => handleClickBestRated()}>
               <p className=' flex font-bold'><span><RxRocket /></span>&nbsp;BEST RATED</p>
             </div>
-            <div className='cursor-pointer border m-1 p-2' onClick={() => handleClickTopView()}>
+            <div className={`cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1] ${sortType === 'views' ? 'bg-green-500' : ''}`} onClick={() => handleClickTopView()}>
               <p className=' flex font-bold'><span><GiBleedingEye /></span>&nbsp;TOP VIEWS</p>
             </div>
-            <div className='cursor-pointer border m-1 p-2' onClick={() => handleClickMostFollowed()}>
+            <div className={`cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1] ${sortType === 'followers' ? 'bg-green-500' : ''}`} onClick={() => handleClickMostFollowed()}>
               <p className=' flex font-bold'><span><RiUserFollowLine /></span>&nbsp;MOST FOLLOWED</p>
             </div>
-            <div className='cursor-pointer border m-1 p-2' onClick={() => handleClickOngoing()}>
+            <div className={`cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1] ${statusType === 'ongoing' ? 'bg-green-500' : ''}`} onClick={() => handleClickOngoing()}>
               <p className=' flex font-bold'><span><MdSmartDisplay /></span>&nbsp;ONGOING MANGA</p>
             </div>
-            <div className='cursor-pointer border m-1 p-2' onClick={() => handleClickComplete()}>
+            <div className={`cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1] ${statusType === 'completed' ? 'bg-green-500' : ''}`} onClick={() => handleClickComplete()}>
               <p className=' flex font-bold'><span><FaFlagCheckered /></span>&nbsp; COMPLETE</p>
             </div>
-            <div className='cursor-pointer border m-1 p-2'>
-              <p className=' flex font-bold'><span><PiShootingStarFill /></span>&nbsp;RISING STARS</p>
-            </div>
-            <div className='cursor-pointer border m-1 p-2' onClick={() => handleClickRefresh()}>
+            <div className='cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1]' onClick={() => handleClickRefresh()}>
               <p className=' flex font-bold'><span><FiRefreshCw /></span>&nbsp;REFRESH</p>
             </div>
           </div>
