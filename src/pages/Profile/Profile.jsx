@@ -102,6 +102,13 @@ const Profile = () => {
     }
   }
 
+  // Handle upgrade vip
+  const handleUpgradeVip = () => {
+    apiAuth.post('/create-payment-link').then(res => {
+      window.location.href = res.data.url;
+    })
+  }
+
   //Spinner to load while fetching data
   if (!user) {
     return <Spinner />;
@@ -137,7 +144,7 @@ const Profile = () => {
         </h1>
         {/* upgrade button */}
         <div className="flex justify-center mt-4 sm:mt-0 sm:justify-end sm:absolute sm:right-5 sm:bottom-0">
-          <button className="p-[3px] cursor-pointer rounded-full bg-black relative"> {/* Added relative here */}
+          <button className="p-[3px] cursor-pointer rounded-full bg-black relative" onClick={() => handleUpgradeVip()}> {/* Added relative here */}
             <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg" />
             <div className="flex items-center gap-2 px-4 py-2 font-bold bg-black rounded-[6px] relative group transition duration-200 text-white hover:bg-transparent">
               <FaCrown className="text-yellow-400 group-hover:animate-pulse group-hover:text-yellow-300 w-5" />
