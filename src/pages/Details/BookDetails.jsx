@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { updateUser } from '../../redux/userSlice'
 import defaultAvt from '../../assets/default_avatar.jpg'
 import processingGif from '../../assets/processing.gif'
-
+import processing2Gif from '../../assets/processing2.gif'
 
 function BookDetails() {
   const navigate = useNavigate()
@@ -16,7 +16,10 @@ function BookDetails() {
   //get user from redux store
   const user = useSelector((state) => state.user.user)
   const { _id } = useParams()
+
   const [loading, setLoading] = useState(true)
+  const [buttonLoading, setButtonLoading] = useState(false)
+
   const [isFavorite, setIsFavorite] = useState(false);
   const [infoManga, setInfoManga] = useState({
     artist: ['REDICE Studio (레드아이스 스튜디오)', 'Jang Sung-Rak (장성락)'],
@@ -87,6 +90,7 @@ function BookDetails() {
 
   //delete or add to favorite
   const handleToggleFavorite = async () => {
+    setButtonLoading(true)
     // Check if user is logged in
     if (!user) {
       toast.error("Login to be able to add favorite")
@@ -126,6 +130,7 @@ function BookDetails() {
           toast.error("Error in adding to favorite")
         }
       }
+      setButtonLoading(false)
     } catch (error) {
       console.log(error)
       toast.error(isFavorite ? "Error removing from favorites" : "Error in adding to favorite")
@@ -199,6 +204,7 @@ function BookDetails() {
             alt={infoManga.title}
             loading='lazy'
             className='w-48 h-64 md:w-60 md:h-72 object-cover shadow-lg'
+            style={{ boxShadow: '3px 3px' }}
           />
         </div>
 
@@ -216,13 +222,20 @@ function BookDetails() {
               {/* Favorite toggle button */}
               <div
                 onClick={handleToggleFavorite}
-                className={`rounded p-2 md:p-3 text-white text-center cursor-pointer font-bold ${isFavorite ? 'bg-red-600 hover:bg-red-500' : 'bg-green-700 hover:bg-green-500'
-                  }`}
+                className={`border rounded p-2 md:p-3 text-center cursor-pointer font-bold ${isFavorite ? 'bg-red-600 hover:bg-red-500' : 'bg-green-700 hover:bg-green-500'}`}
+                style={buttonLoading ? {
+                  backgroundImage: `url(${processingGif})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  boxShadow: '3px 3px'
+                } : { boxShadow: '3px 3px' }}
               >
-                {isFavorite ? 'Remove from favorite' : 'Add to favorite'}
+                <span className='text-white'>{isFavorite ? 'Remove from favorite' : 'Add to favorite'}</span>
               </div>
 
-              <div onClick={handleStartReading} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold hover:bg-[#f1f1f1]'>Start reading</div>
+              <div onClick={handleStartReading} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }}>
+                Start reading
+              </div>
             </div>
             <div>
               <p className='font-semibold'> &nbsp;{infoManga.followers} followed</p>
@@ -230,7 +243,7 @@ function BookDetails() {
 
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>
               {infoManga.tags.map((tag) => (
-                <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' key={tag} onClick={() => { console.log("do something with ", tag) }}>
+                <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }} key={tag} onClick={() => { console.log("do something with ", tag) }}>
                   <span className='text-xs font-black'>{tag}</span>
                 </div>
               ))}

@@ -104,7 +104,7 @@ const Profile = () => {
 
   // Handle upgrade vip
   const handleUpgradeVip = () => {
-    apiAuth.post('/create-payment-link').then(res => {
+    apiAuth.post('/api/reader/payment/create-payment-link').then(res => {
       window.location.href = res.data.url;
     })
   }
