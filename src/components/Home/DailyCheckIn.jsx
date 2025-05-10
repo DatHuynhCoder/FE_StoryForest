@@ -15,21 +15,23 @@ const DailyCheckIn = ({ streak = 0, isCheckin = true, handleCheckin }) => {
         {/* Card body */}
         <div className="p-6">
           {/* Streak counter */}
-          <div className="mb-6 flex justify-center">
-            <div className="relative flex items-center gap-2 py-3 px-6 bg-indigo-800/50 rounded-full backdrop-blur-sm border border-indigo-600">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-600/20 to-red-600/20 blur-sm"></div>
-              <img src="/images/fire.png" className="h-8 w-8 text-orange-500 animate-pulse" />
-              <div className="flex flex-col items-center">
-                <span className="text-white font-bold text-2xl drop-shadow-md">
-                  {streak}
-                </span>
-                <span className="text-indigo-200 text-sm">DAY STREAK</span>
+          {isCheckin &&
+            <div className="mb-6 flex justify-center">
+              <div className="relative flex items-center gap-2 py-3 px-6 bg-indigo-800/50 rounded-full backdrop-blur-sm border border-indigo-600">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-600/20 to-red-600/20 blur-sm"></div>
+                <img src="/images/fire.png" className="h-8 w-8 text-orange-500 animate-pulse" />
+                <div className="flex flex-col items-center">
+                  <span className="text-white font-bold text-2xl drop-shadow-md">
+                    {streak}
+                  </span>
+                  <span className="text-indigo-200 text-sm">DAY STREAK</span>
+                </div>
               </div>
             </div>
-          </div>
+          }
 
           {/* Countdown to reset checkin */}
-            <CountdownToMidnight />
+          <CountdownToMidnight />
 
           {/* Status message when check in */}
           {isCheckin && (

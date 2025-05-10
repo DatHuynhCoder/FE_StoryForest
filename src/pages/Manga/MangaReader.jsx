@@ -154,83 +154,6 @@ function MangaReader() {
   const [openChapterDrawer, setOpenChapterDrawer] = useState(false);
   const [openCommentDrawer, setOpenCommentDrawer] = useState(false);
 
-  // const DragCloseDrawer = ({ open, setOpen, children }) => {
-  //   const [scope, animate] = useAnimate();
-  //   const [drawerRef, { height }] = useMeasure();
-
-  //   const y = useMotionValue(0);
-  //   const controls = useDragControls();
-
-  //   const handleClose = async () => {
-  //     animate(scope.current, {
-  //       opacity: [1, 0],
-  //     });
-
-  //     const yStart = typeof y.get() === "number" ? y.get() : 0;
-
-  //     await animate("#drawer", {
-  //       y: [yStart, height],
-  //     });
-
-  //     setOpen(false);
-  //   };
-
-  //   return (
-  //     <>
-  //       {open && (
-  //         <motion.div
-  //           ref={scope}
-  //           initial={{ opacity: 0 }}
-  //           animate={{ opacity: 1 }}
-  //           onClick={handleClose}
-  //           className="fixed inset-0 z-50 bg-neutral-950/70"
-  //         >
-  //           <motion.div
-  //             id="drawer"
-  //             ref={drawerRef}
-  //             onClick={(e) => e.stopPropagation()}
-  //             initial={{ y: "100%" }}
-  //             animate={{ y: "0%" }}
-  //             transition={{
-  //               ease: "easeInOut",
-  //             }}
-  //             className="absolute bottom-0 h-[75vh] w-full overflow-hidden rounded-t-3xl bg-neutral-900"
-  //             style={{ y }}
-  //             drag="y"
-  //             dragControls={controls}
-  //             onDragEnd={() => {
-  //               if (y.get() >= 100) {
-  //                 handleClose();
-  //               }
-  //             }}
-  //             dragListener={false}
-  //             dragConstraints={{
-  //               top: 0,
-  //               bottom: 0,
-  //             }}
-  //             dragElastic={{
-  //               top: 0,
-  //               bottom: 0.5,
-  //             }}
-  //           >
-  //             <div className="absolute left-0 right-0 top-0 z-10 flex justify-center bg-neutral-900 p-4">
-  //               <button
-  //                 onPointerDown={(e) => {
-  //                   controls.start(e);
-  //                 }}
-  //                 className="h-2 w-14 cursor-grab touch-none rounded-full bg-neutral-700 active:cursor-grabbing"
-  //               ></button>
-  //             </div>
-  //             <div className="relative z-0 h-full overflow-y-scroll p-4 pt-12">
-  //               {children}
-  //             </div>
-  //           </motion.div>
-  //         </motion.div>
-  //       )}
-  //     </>
-  //   );
-  // };
-
   useEffect(() => {
     // console.log("check chapterid: ", chapterid)
     fetchCommentByChapterId()
@@ -264,8 +187,8 @@ function MangaReader() {
         {/* This div will contain 2 button */}
         <p className='md:text-lg mt-2'>Chapter {chapternumber}: {chaptertitle}</p>
         <div className='flex flex-col justify-center'>
-          <button onClick={handleNextChapter} className='p-[10px] bg-green-600 text-white font-bold md:w-[500px] w-[200px] rounded mt-3 cursor-pointer'>Next chapter</button>
-          <button onClick={handlePreviousChapter} className='p-[10px] font-bold md:w-[500px] w-[200px] rounded border mt-3 cursor-pointer'>Previous chapter</button>
+          <button onClick={handleNextChapter} className='p-[10px] bg-green-600 text-white font-bold md:w-[500px] w-[200px] rounded mt-3 cursor-pointer hover:bg-green-500'>Next chapter</button>
+          <button onClick={handlePreviousChapter} className='p-[10px] font-bold md:w-[500px] w-[200px] rounded border mt-3 cursor-pointer hover:bg-[#f1f1f1]'>Previous chapter</button>
         </div>
         {/* This div will contain the manga images */}
         <div>
@@ -293,16 +216,16 @@ function MangaReader() {
           }}>
             <FaCommentAlt />
           </div>
-          <div className='flex items-center justify-center border-2 border-gray-300 px-2 rounded cursor-pointer' onClick={() => handlePreviousChapter()}>
+          <div className='flex items-center justify-center border-2 border-gray-300 px-2 rounded cursor-pointer hover:bg-[#f1f1f1]' onClick={() => handlePreviousChapter()}>
             <MdNavigateBefore />
           </div>
-          <div className='flex items-center justify-center border-2 border-gray-300 px-2 rounded cursor-pointer' onClick={() => setOpenChapterDrawer(true)}>
+          <div className='flex items-center justify-center border-2 border-gray-300 px-2 rounded cursor-pointer hover:bg-[#f1f1f1]' onClick={() => setOpenChapterDrawer(true)}>
             <p className='mx-2'>Chap {chapternumber}</p>
           </div>
-          <div className='flex items-center justify-center border-2 border-gray-300 px-2 rounded cursor-pointer' onClick={() => handleNextChapter()}>
+          <div className='flex items-center justify-center border-2 border-gray-300 px-2 rounded cursor-pointer hover:bg-[#f1f1f1]' onClick={() => handleNextChapter()}>
             <MdNavigateNext />
           </div>
-          <div className='flex items-center justify-center border-2 border-gray-300 px-2 rounded cursor-pointer'
+          <div className='flex items-center justify-center border-2 border-gray-300 px-2 rounded cursor-pointer hover:bg-[#f1f1f1]'
             onClick={scrollToTop}>
             <FaArrowUp />
           </div>
@@ -356,7 +279,7 @@ function MangaReader() {
               </div> */}
             </div>
             <div>
-              {chaptercomments.map((comment, index) => (
+              {chaptercomments.length > 0 ? chaptercomments.map((comment, index) => (
                 <div className='mt-3' key={comment._id}>
                   <div className='w-[100%] border p-2 rounded-md mt-2'>
                     <div className='flex'>
@@ -368,7 +291,15 @@ function MangaReader() {
                   </div>
                 </div>
 
-              ))}
+              )) : <div className='mt-3'>
+                <div className='w-[100%] border p-2 rounded-md mt-2'>
+                  <div className='flex'>
+                    <p className='ml-1 font-semibold text-black'></p>
+                  </div>
+                  <p className='text-gray-500'></p>
+                  <p className='text-black w-[100%]'>No comment in this chapter &#128534;. Will you be the first one ?</p>
+                </div>
+              </div>}
             </div>
           </DrawerItems>
         </Drawer>

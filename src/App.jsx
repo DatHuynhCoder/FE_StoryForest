@@ -54,7 +54,9 @@ import AddAuthor from "./components/Staff/AuthorAddNew.jsx";
 import VipManagement from "./pages/Staff/VIPManagement.jsx";
 // import AdvancedSearch from "./components/AdvancedSearch/AdvancedSearch.jsx";
 import Result from "./pages/SearchResult/Result.jsx";
-
+// Payment
+import Success from "./pages/Payment/Success.jsx";
+import Cancel from "./pages/Payment/Cancel.jsx";
 
 function App() {
   return (
@@ -66,7 +68,7 @@ function App() {
         <Route path="/changepass" element={<ChangePassword />} />
 
         <Route element={<Layout />}>
-          <Route element={<ProtectedRoute allowedRoles={['reader']} />}>
+          <Route element={<ProtectedRoute allowedRoles={['reader','VIP reader','admin','staff']} />}>
             <Route path="/profile" element={<Profile />} />
           </Route>
           <Route path="/" element={<Home />} />
@@ -107,6 +109,8 @@ function App() {
 
           <Route path="/staff/vip-management" element={<VipManagement />}> </Route>
         </Route>
+        <Route path="/payment/success" element={<Success />} />
+        <Route path="/payment/cancel" element={<Cancel />} />
 
       </Routes>
 

@@ -159,7 +159,7 @@ function Home() {
 							<div className="relative" onMouseEnter={() => setHoveredIndex(index)} onMouseLeave={() => setHoveredIndex(null)}>
 								<button
 									onClick={() => handlePrev(index)}
-									className={`absolute left-0 top-1/2 transform -translate-y-1/2 bg-[#FBFFE4] text-black p-3 rounded-full shadow-lg hover:bg-[#095533] transition duration-300 z-10 ${hoveredIndex === index ? "opacity-100" : "opacity-0"} transition-opacity`}
+									className={`absolute left-0 top-1/2 transform -translate-y-1/2 bg-[#FBFFE4] text-black p-3 rounded-full shadow-lg hover:bg-[#095533] transition duration-300 z-30 ${hoveredIndex === index ? "opacity-100" : "opacity-0"} transition-opacity`}
 								>
 									<FaChevronLeft />
 								</button>
@@ -183,7 +183,7 @@ function Home() {
 											<div className="absolute inset-0 bg-gray-800 bg-opacity-70 rounded-md opacity-0 group-hover:opacity-80 transition-opacity duration-300 flex flex-col justify-center p-3 text-white">
 												<h3 className="font-bold text-sm mb-1">{item.title}</h3>
 												<p className="text-xs mb-1">Views: {item.views || "N/A"}</p>
-												<p className="text-xs mb-1">Rate:{item.rate || "N/A"} / 5.0</p>
+												<p className="text-xs mb-1">Rate: {item.rate || "N/A"} / 5</p>
 												<p className="text-xs line-clamp-3">{item.synopsis || "No description available"}</p>
 											</div>
 										</div>
@@ -191,7 +191,7 @@ function Home() {
 								</div>
 								<button
 									onClick={() => handleNext(index)}
-									className={`absolute right-0 top-1/2 transform -translate-y-1/2 bg-[#FBFFE4] text-black p-3 rounded-full shadow-lg hover:bg-[#095533] transition duration-300 z-10 ${hoveredIndex === index ? "opacity-100" : "opacity-0"} transition-opacity`}
+									className={`absolute right-0 top-1/2 transform -translate-y-1/2 bg-[#FBFFE4] text-black p-3 rounded-full shadow-lg hover:bg-[#095533] transition duration-300 z-30 ${hoveredIndex === index ? "opacity-100" : "opacity-0"} transition-opacity`}
 								>
 									<FaChevronRight />
 								</button>
