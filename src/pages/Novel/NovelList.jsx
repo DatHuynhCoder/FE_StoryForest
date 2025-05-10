@@ -33,6 +33,8 @@ function NovelList() {
   const [currentPage, setCurrentPage] = useState(0); // Current page (0-based index)
   const [totalPages, setTotalPages] = useState(0)
 
+  const [fetchOption, setFetchOption] = useState('normal')
+
   const itemsPerPage = 10
 
 
@@ -65,32 +67,74 @@ function NovelList() {
 
   const handlePageClick = (event) => {
     const newPage = event.selected
-    fetchNovels(newPage)
+    if (fetchOption === 'normal') fetchNovels(newPage)
+    else if (fetchOption === 'original') handleClickOriginal(newPage)
+    else if (fetchOption === 'fanfiction') handleClickFanFiction(newPage)
+    scrollToTop()
   }
   const handleClickBestRated = () => {
+    setFetchOption('best-rated')
+    setLoading(true)
     api.get('/api/novel/v2?sort=rate&order=desc&page=1&limit=100') // Example for sorting by rate
       .then((res) => {
         const { data, pagination } = res.data;
         setNovelList(data);
         setCurrentPage(pagination.currentPage - 1);
         setTotalPages(pagination.totalPages);
+        setLoading(false)
       })
       .catch((err) => {
-        console.error("Failed to fetch best-rated mangas:", err);
+        console.error("Failed to fetch best-rate novels: ", err);
       });
   }
-  const handleClickOngoing = () => {
-
+  const handleClickOriginal = (page) => {
+    setFetchOption('original')
+    setLoading(true)
+    api.get(`/api/novel/original?page=${page + 1}&limit=${itemsPerPage}`)
+      .then((res) => {
+        const { data, pagination } = res.data
+        console.log("check original novels: ", data)
+        setNovelList(data)
+        setCurrentPage(pagination.currentPage - 1)
+        setTotalPages(pagination.totalPages)
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error("Failed to fetch original novels: ", err);
+      });
   }
-  const handleClickRefresh = () => {
 
+  const handleClickFanFiction = (page) => {
+    setFetchOption('fanfiction')
+    setLoading(true)
+    api.get(`/api/novel/fanfiction?page=${page + 1}&limit=${itemsPerPage}`)
+      .then((res) => {
+        const { data, pagination } = res.data
+        console.log("check fanfiction novels: ", data)
+        setNovelList(data)
+        setCurrentPage(pagination.currentPage - 1)
+        setTotalPages(pagination.totalPages)
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error("Failed to fetch fan fiction novels: ", err);
+      });
+  }
+
+  const handleClickRefresh = () => {
+    setFetchOption('normal')
+    fetchNovels(0)
+  }
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   if (loading) return <Spinner />
 
   return (
     <>
-      <div className='bg-[url("https://static.vecteezy.com/system/resources/previews/042/623/256/non_2x/high-trees-in-forest-illustration-jungle-landscape-vector.jpg")] bg-no-repeat bg-cover fixed left-0 w-full'>
+      <div className='bg-[url("https://static.vecteezy.com/system/resources/previews/042/623/256/non_2x/high-trees-in-forest-illustration-jungle-landscape-vector.jpg")] bg-no-repeat bg-cover left-0 w-full'>
         <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white h-screen pb-30'>
           <div className='flex-3 pb-18 border overflow-y-auto h-full'>
             {novelList.length !== 0 ? novelList.map(novel => (
@@ -111,9 +155,9 @@ function NovelList() {
                       ))}
                     </div>
                     <div className='flex-2'>
-                      <p>{novel.followers} <b>FOLLOWERS</b></p>
-                      <p>{novel.views} <b>VIEWS</b></p>
-                      <p><b>RATE:</b> {novel.rate}</p>
+                      <p className='text-right'><span className='font-[1000]'>{novel.followers}</span> <b>FOLLOWERS</b></p>
+                      <p className='text-right'><span className='font-[1000]'>{novel.views}</span> <b>VIEWS</b></p>
+                      <p className='text-right'><b>RATE:</b> <span className='font-[1000]'>{novel.rate}</span></p>
                     </div>
                   </div>
                 </div>
@@ -138,7 +182,7 @@ function NovelList() {
             }
 
             {/* Pagination */}
-            <div className='my-4 flex justify-center fixed bottom-0 bg-white py-2'>
+            <div className='my-4 flex justify-center bottom-0 bg-white py-2'>
               <ReactPaginate
                 breakLabel="..."
                 nextLabel="Next"
@@ -163,20 +207,17 @@ function NovelList() {
 
           {/* Optional Right Sidebar */}
           <div className='flex-1 flex-column border md:block hidden'>
-            <div className='cursor-pointer border m-1 p-2' onClick={() => handleClickBestRated()}>
-              <p className=' flex font-bold'><span><RxRocket /></span>&nbsp;BEST RATED</p>
+            <div className={`cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1] ${fetchOption === 'best-rated' ? 'bg-green-500' : ''}`} onClick={() => handleClickBestRated()}>
+              <p className='flex font-bold'><span><RxRocket /></span>&nbsp;BEST RATED</p>
             </div>
-            <div className='cursor-pointer border m-1 p-2' onClick={() => handleClickOngoing()}>
-              <p className=' flex font-bold'><span><MdSmartDisplay /></span>&nbsp;ONGOING FICTION</p>
+            <div className={`cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1] ${fetchOption === 'original' ? 'bg-green-500' : ''}`} onClick={() => handleClickOriginal(0)}>
+              <p className='flex font-bold'><span><MdSmartDisplay /></span>&nbsp;ORIGINAL</p>
             </div>
-            <div className='cursor-pointer border m-1 p-2'>
-              <p className=' flex font-bold'><span><FaFlagCheckered /></span>&nbsp; COMPLETE</p>
+            <div className={`cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1] ${fetchOption === 'fanfiction' ? 'bg-green-500' : ''}`} onClick={() => handleClickFanFiction(0)}>
+              <p className='flex font-bold'><span><FaFlagCheckered /></span>&nbsp; FAN FICTION</p>
             </div>
-            <div className='cursor-pointer border m-1 p-2'>
-              <p className=' flex font-bold'><span><PiShootingStarFill /></span>&nbsp;RISING STARS</p>
-            </div>
-            <div className='cursor-pointer border m-1 p-2' onClick={() => handleClickRefresh()}>
-              <p className=' flex font-bold'><span><FiRefreshCw /></span>&nbsp;REFRESH</p>
+            <div className={`cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1]`} onClick={() => handleClickRefresh()}>
+              <p className='flex font-bold'><span><FiRefreshCw /></span>&nbsp;REFRESH</p>
             </div>
           </div>
         </div>

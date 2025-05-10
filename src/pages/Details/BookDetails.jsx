@@ -7,7 +7,8 @@ import { toast } from 'react-toastify'
 import { useSelector, useDispatch } from 'react-redux';
 import { updateUser } from '../../redux/userSlice'
 import defaultAvt from '../../assets/default_avatar.jpg'
-
+import processingGif from '../../assets/processing.gif'
+import processing2Gif from '../../assets/processing2.gif'
 
 function BookDetails() {
   const navigate = useNavigate()
@@ -15,24 +16,27 @@ function BookDetails() {
   //get user from redux store
   const user = useSelector((state) => state.user.user)
   const { _id } = useParams()
+
   const [loading, setLoading] = useState(true)
+  const [buttonLoading, setButtonLoading] = useState(false)
+
   const [isFavorite, setIsFavorite] = useState(false);
   const [infoManga, setInfoManga] = useState({
     artist: ['REDICE Studio (레드아이스 스튜디오)', 'Jang Sung-Rak (장성락)'],
-    author: ['h-goon (현군)', 'Chugong (추공)', 'Gi So-Ryeong (기소령)'],
+    author: ['Loading ...'],
     bookImg: {
-      url: 'https://res.cloudinary.com/dvtcbryg5/image/upload/v1744423218/StoryForest/Book/mzbhrc52tmszzqnsdusq.jpg',
+      url: processingGif,
       public_id: 'StoryForest/Book/mzbhrc52tmszzqnsdusq'
     },
-    cover_url: "https://uploads.mangadex.org/covers/32d76d19-8a05-4db0-9fc2-e0b0648fe9d0/e90bdc47-c8b9-4df7-b2c0-17641b645ee1.jpg",
+    cover_url: processingGif,
     followers: 0,
     mangaid: "32d76d19-8a05-4db0-9fc2-e0b0648fe9d0",
     rate: 5,
-    status: "completed",
-    synopsis: "10 years ago, after “the Gate” that connected the real world with the monster world opened, some of the ordinary, everyday people received the power to hunt monsters within the Gate. They are known as “Hunters”. However, not all Hunters are powerful. My name is Sung Jin-Woo, an E-rank Hunter. I’m someone who has to risk his life in the lowliest of dungeons, the “World’s Weakest”. Having no skills whatsoever to display, I barely earned the required money by fighting in low-leveled dungeons… at least until I found a hidden dungeon with the hardest difficulty within the D-rank dungeons! In the end, as I was accepting death, I suddenly received a strange power, a quest log that only I could see, a secret to leveling up that only I know about! If I trained in accordance with my quests and hunted monsters, my level would rise. Changing from the weakest Hunter to the strongest S-rank Hunter!\n\n---\n**Links:**\n\n- Official English Translation [<Pocket Comics>](https://www.pocketcomics.com/comic/320) | [<WebNovel>](https://www.webnovel.com/comic/only-i-level-up-(solo-leveling)_15227640605485101) | [<Tapas>](https://tapas.io/series/solo-leveling-comic/info)\n- Alternate Official Raw - [Kakao Webtoon](https://webtoon.kakao.com/content/나-혼자만-레벨업/2320)",
-    tags: ['Award Winning', 'Monsters', 'Action', 'Long Strip', 'Adventure', 'Magic', 'Drama', 'Fantasy', 'Web Comic', 'Supernatural', 'Adaptation', 'Full Color'],
-    title: "Solo Leveling",
-    type: "manga",
+    status: "Loading ...",
+    synopsis: "Loading ...",
+    tags: ['Loading ...'],
+    title: "Loading ...",
+    type: "Loading ...",
     updatedAt: "2025-04-12T02:00:00.436Z",
     views: 238,
     _id: "67f298a0c0aa3501386b7afb"
@@ -86,6 +90,7 @@ function BookDetails() {
 
   //delete or add to favorite
   const handleToggleFavorite = async () => {
+    setButtonLoading(true)
     // Check if user is logged in
     if (!user) {
       toast.error("Login to be able to add favorite")
@@ -125,6 +130,7 @@ function BookDetails() {
           toast.error("Error in adding to favorite")
         }
       }
+      setButtonLoading(false)
     } catch (error) {
       console.log(error)
       toast.error(isFavorite ? "Error removing from favorites" : "Error in adding to favorite")
@@ -198,6 +204,7 @@ function BookDetails() {
             alt={infoManga.title}
             loading='lazy'
             className='w-48 h-64 md:w-60 md:h-72 object-cover shadow-lg'
+            style={{ boxShadow: '3px 3px' }}
           />
         </div>
 
@@ -215,13 +222,20 @@ function BookDetails() {
               {/* Favorite toggle button */}
               <div
                 onClick={handleToggleFavorite}
-                className={`rounded p-2 md:p-3 text-white text-center cursor-pointer font-bold ${isFavorite ? 'bg-red-600' : 'bg-green-700'
-                  }`}
+                className={`border rounded p-2 md:p-3 text-center cursor-pointer font-bold ${isFavorite ? 'bg-red-600 hover:bg-red-500' : 'bg-green-700 hover:bg-green-500'}`}
+                style={buttonLoading ? {
+                  backgroundImage: `url(${processingGif})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  boxShadow: '3px 3px'
+                } : { boxShadow: '3px 3px' }}
               >
-                {isFavorite ? 'Remove from favorite' : 'Add to favorite'}
+                <span className='text-white'>{isFavorite ? 'Remove from favorite' : 'Add to favorite'}</span>
               </div>
 
-              <div onClick={handleStartReading} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold'>Start reading</div>
+              <div onClick={handleStartReading} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }}>
+                Start reading
+              </div>
             </div>
             <div>
               <p className='font-semibold'> &nbsp;{infoManga.followers} followed</p>
@@ -229,7 +243,7 @@ function BookDetails() {
 
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>
               {infoManga.tags.map((tag) => (
-                <div className='border rounded-md m-1 p-1 bg-white' key={tag}>
+                <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }} key={tag} onClick={() => { console.log("do something with ", tag) }}>
                   <span className='text-xs font-black'>{tag}</span>
                 </div>
               ))}
@@ -254,7 +268,7 @@ function BookDetails() {
           <ul className='h-64 overflow-y-scroll'>
             {chapters.sort((a, b) => parseInt(a.chapter) - parseInt(b.chapter)).map((chapter) => (
               <li key={chapter._id} onClick={() => handleClickedChapter(chapter.chapterid, infoManga.title, chapter.chapter, chapter.title)}>
-                <div className='p-2 border rounded-md m-1 bg-white'>
+                <div className='p-2 border rounded-md m-1 bg-white hover:bg-[#f1f1f1] cursor-pointer'>
                   <p className='line-clamp-1'>Chap&nbsp;{chapter.chapter}: {chapter.title}</p>
                   <p className='text-gray-400'>{chapter.date}</p>
                 </div>
@@ -267,7 +281,7 @@ function BookDetails() {
         <div className='md:pt-20 md:flex-2 mt-3 md:mt-0'>
           <p className='font-bold text-green-700'>Comments</p>
           <ul>
-            {bookcomments.map((comment, index) => (
+            {bookcomments.length > 0 ? bookcomments.map((comment, index) => (
               <li key={comment._id}>
                 <div className='mt-3'>
                   <div className='w-[100%] border p-2 rounded-md mt-2'>
@@ -280,7 +294,15 @@ function BookDetails() {
                   </div>
                 </div>
               </li>
-            ))}
+            )) : <div className='mt-3'>
+              <div className='w-[100%] border p-2 rounded-md mt-2'>
+                <div className='flex'>
+                  <p className='ml-1 font-semibold text-black'></p>
+                </div>
+                <p className='text-gray-500'></p>
+                <p>No comment &#128534;. Will you be the first one ?</p>
+              </div>
+            </div>}
           </ul>
         </div>
       </div>

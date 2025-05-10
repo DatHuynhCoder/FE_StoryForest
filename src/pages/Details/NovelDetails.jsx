@@ -8,6 +8,7 @@ import { updateUser } from '../../redux/userSlice'
 
 import { toast } from 'react-toastify'
 import defaultAvt from '../../assets/default_avatar.jpg'
+import processingGif from '../../assets/processing.gif'
 
 function NovelDetails() {
   const navigate = useNavigate()
@@ -19,15 +20,15 @@ function NovelDetails() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [infoNovel, setInfoNovel] = useState({
     _id: '67eabb616f25807d87d7ad10',
-    title: 'Infinite Farmer: A Plants vs Dungeon LitRPG',
-    author: 'R.C. Joshua',
-    synopsis: 'Betrayed. Alone. Forced to survive the deadliest dungeon in the universe. As aFarmer.Tulland dreamed of adventure.To be someone who sees every-place, goes every-where, and does every-thing.All he wanted was to go beyond the confines of his tiny island. So, when the Church denied him a class, he turned to the only other being that could grant him his wish; The System.And the System delivered. Tulland gotaClass, but not one he ever wished for. Awakening as a Farmer, he finds himself in the one place where he can grow away from the clutches of the Church — The Infinite; a dungeon whose end even heroes of old have never seen. Armed with what dregs of power the System deigned to give him, Tulland will have to figure out how to survive, and cultivate, the universe’s deadliest dungeon.Expect:+ Progression fantasy with actual farming!+ A very stubborn MC+ Combat! Action! Plants!Schedule:+ Daily (7 chapters per week) (more while we’re starting out)+ Book 1 completely written!',
-    tags: ['LitRPG', 'Portal Fantasy / Isekai', 'Dungeon', 'Post Apocalyptic', 'Strategy', 'Action', 'Adventure', 'Fantasy', 'GameLit', 'High Fantasy', 'Magic', 'Male Lead', 'Progression'],
+    title: 'Loading ...',
+    author: 'Loading ...',
+    synopsis: 'Loading ...',
+    tags: ['Loading ...'],
     status: 'Original',
     views: 238,
     followers: 0,
     rate: 4,
-    cover_url: 'https://www.royalroadcdn.com/public/covers-large/infinite-farmer-cultivating-the-infinite-dungeon-112376.jpg?time=1731726233',
+    cover_url: processingGif,
     type: 'novel',
     artist: [],
     mangaid: ''
@@ -208,13 +209,13 @@ function NovelDetails() {
               {/* Favorite toggle button */}
               <div
                 onClick={handleToggleFavorite}
-                className={`rounded p-2 md:p-3 text-white text-center cursor-pointer font-bold ${isFavorite ? 'bg-red-600' : 'bg-green-700'
+                className={`rounded p-2 md:p-3 text-white text-center cursor-pointer font-bold ${isFavorite ? 'bg-red-600 hover:bg-red-500' : 'bg-green-700 hover:bg-green-500'
                   }`}
               >
                 {isFavorite ? 'Remove from favorite' : 'Add to favorite'}
               </div>
 
-              <div onClick={() => handleStartReading(infoNovel.title, chapters[0]._id, 1, chapters[0].chapter_title)} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold'>Start reading</div>
+              <div onClick={() => handleStartReading(infoNovel.title, chapters[0]._id, 1, chapters[0].chapter_title)} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold hover:bg-[#f1f1f1]'>Start reading</div>
             </div>
 
             <div>
@@ -223,7 +224,7 @@ function NovelDetails() {
 
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>
               {infoNovel.tags.map((tag) => (
-                <div className='border rounded-md m-1 p-1 bg-white' key={tag}>
+                <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' key={tag} onClick={() => { console.log("do something with ", tag) }}>
                   <span className='text-xs font-black'>{tag}</span>
                 </div>
               ))}
@@ -244,11 +245,11 @@ function NovelDetails() {
       <div className='flex flex-col md:flex-row justify-center pl-10 pr-10 md:pl-20 md:pr-20'>
         {/* This div is for the chapter list */}
         <div className='md:pt-20 md:flex-2 md:mr-10 mt-3 md:mt-0'>
-          <p className='font-bold text-green-700'><u>Danh sách chương</u></p>
+          <p className='font-bold text-green-700'><u>Chapters</u></p>
           <ul className='h-64 overflow-y-scroll'>
             {chapters.map((chapter, index) => (
               <li key={chapter.chapter_title} onClick={() => handleClickedChapter(infoNovel.title, chapter._id, chapter.order, chapter.chapter_title)}>
-                <div className='p-2 border rounded-md m-1 bg-white cursor-pointer'>
+                <div className='p-2 border rounded-md m-1 bg-white cursor-pointer hover:bg-[#f1f1f1]'>
                   <p className='line-clamp-1'>{index}. {chapter.chapter_title}</p>
                 </div>
               </li>
@@ -258,7 +259,7 @@ function NovelDetails() {
         <div className='hidden md:block md:flex-1'></div>
         {/* This div is for the comments */}
         <div className='md:pt-20 md:flex-2 mt-3 md:mt-0'>
-          <p className='font-bold text-green-700'><u>Bình luận</u></p>
+          <p className='font-bold text-green-700'><u>Comments</u></p>
           <ul>
             {bookComments.map((comment, index) => (
               <li key={comment._id}>

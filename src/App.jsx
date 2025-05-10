@@ -66,7 +66,7 @@ function App() {
         <Route path="/changepass" element={<ChangePassword />} />
 
         <Route element={<Layout />}>
-          <Route element={<ProtectedRoute allowedRoles={['reader']} />}>
+          <Route element={<ProtectedRoute allowedRoles={['reader','VIP reader','admin','staff']} />}>
             <Route path="/profile" element={<Profile />} />
           </Route>
           <Route path="/" element={<Home />} />
