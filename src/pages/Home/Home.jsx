@@ -95,6 +95,15 @@ function Home() {
 		}
 	};
 
+	//handle see Profile
+	const handleSeeProfile = (id) => {
+		if (user && user._id === id) {
+			navigate('/profile');
+		} else {
+			navigate(`/otherprofile/${id}`);
+		}
+	}
+
 	//handle if user click check in button
 	const handleCheckin = async () => {
 		// Check if user is logged in
@@ -163,7 +172,7 @@ function Home() {
 								>
 									<FaChevronLeft />
 								</button>
-								<div ref={(el) => (scrollRefs.current[index] = el)} className="flex gap-4 overflow-x-auto scroll-container">
+								<div ref={(el) => (scrollRefs.current[index] = el)} className="flex gap-4 overflow-x-auto overflow-y-hidden scroll-container">
 									{category.books.map((item, idx) => (
 										<div
 											key={item._id}
@@ -207,6 +216,7 @@ function Home() {
 							streak={user.streak}
 							isCheckin={isCheckin}
 							handleCheckin={handleCheckin}
+							role={user.role}
 						/>
 					}
 
@@ -221,7 +231,8 @@ function Home() {
 							{top5Account.map((account, index) => (
 								<div
 									key={account._id}
-									className={`flex flex-col mb-4 ${index < 3 ? 'transform transition-all hover:scale-105' : ''}`}
+									className={`flex flex-col cursor-pointer mb-4 ${index < 3 ? 'transform transition-all hover:scale-105' : ''}`}
+									onClick={() => handleSeeProfile(account._id)}
 								>
 									<div className={`p-4 rounded-lg shadow-md ${index === 0 ? 'bg-gradient-to-r from-yellow-100 to-yellow-300 border-2 border-yellow-500' :
 										index === 1 ? 'bg-gradient-to-r from-gray-100 to-gray-300 border-2 border-gray-400' :
