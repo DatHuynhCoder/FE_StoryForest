@@ -78,6 +78,15 @@ function NovelDetails() {
     navigate(`/novelReader/${_id}/${chapterid}`, { state: { chapters, noveltitle, chapternumber, chaptertitle } })
   }
 
+  //handle see Profile
+  const handleSeeProfile = (id) => {
+    if (user && user._id === id) {
+      navigate('/profile');
+    } else {
+      navigate(`/otherprofile/${id}`);
+    }
+  }
+
   //delete or add to favorite
   const handleToggleFavorite = async () => {
     // Check if user is logged in
@@ -262,8 +271,8 @@ function NovelDetails() {
           <p className='font-bold text-green-700'><u>Comments</u></p>
           <ul>
             {bookComments.map((comment, index) => (
-              <li key={comment._id}>
-                <div className='mt-3'>
+              <li key={comment._id} onClick={() => handleSeeProfile(comment.userid._id)}>
+                <div className='mt-3 cursor-pointer'>
                   <div className='w-[100%] border p-2 rounded-md mt-2'>
                     <div className='flex'>
                       <img src={comment.userid?.avatar?.url || defaultAvt} alt="avatar" className='w-10 h-10 rounded-full' />
