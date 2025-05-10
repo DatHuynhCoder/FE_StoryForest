@@ -14,7 +14,7 @@ const FavoriteBooks = ({ books, handleContinueReading, handleDeleteFavoritebook 
           <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
           </svg>
-          <span className="sr-only">xem them</span>
+          <span className="sr-only">see more</span>
         </button>
       </h2>
 
@@ -35,12 +35,12 @@ const FavoriteBooks = ({ books, handleContinueReading, handleDeleteFavoritebook 
               <div className="flex flex-row justify-center gap-3 sm:gap-10 mt-2 sm:mt-4">
                 <button type="button"
                   className="flex flex-row items-center gap-1 sm:gap-2 text-xs sm:text-base cursor-pointer text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-bold rounded-full px-3 sm:px-5 py-1.5 sm:py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                  <div onClick={() => handleContinueReading(book)}>Xem tiếp</div>
+                  <div onClick={() => handleContinueReading(book)}>Continue</div>
                   <FaArrowRight />
                 </button>
 
                 <button type="button" className="flex flex-row items-center gap-1 sm:gap-2 text-red-700 font-bold hover:text-white rounded-full border-2 cursor-pointer border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 text-xs sm:text-sm px-3 sm:px-5 py-1.5 sm:py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-800">
-                  <div onClick={() => handleDeleteFavoritebook(book._id)}>Xóa</div>
+                  <div onClick={() => handleDeleteFavoritebook(book._id)}>Delete</div>
                   <MdDelete className="h-3 sm:h-5 w-3 sm:w-5" />
                 </button>
               </div>

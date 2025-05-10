@@ -116,10 +116,10 @@ const Profile = () => {
 
   // Sidebar menu items
   const sidebarItems = [
-    { id: 'profile', label: 'Trang cá nhân', icon: <FaUser /> },
-    { id: 'about', label: 'Về tôi', icon: <FaBook /> },
-    { id: 'favorite', label: 'Sách yêu thích', icon: <FaHeart /> },
-    { id: 'settings', label: 'Cài đặt', icon: <FaCog /> }
+    { id: 'profile', label: 'My Profile', icon: <FaUser /> },
+    { id: 'about', label: 'About Me', icon: <FaBook /> },
+    { id: 'favorite', label: 'Favorite Books', icon: <FaHeart /> },
+    { id: 'settings', label: 'Setting', icon: <FaCog /> }
   ];
 
   // Profile Header Component
@@ -143,15 +143,17 @@ const Profile = () => {
           {user?.username}
         </h1>
         {/* upgrade button */}
-        <div className="flex justify-center mt-4 sm:mt-0 sm:justify-end sm:absolute sm:right-5 sm:bottom-0">
-          <button className="p-[3px] cursor-pointer rounded-full bg-black relative" onClick={() => handleUpgradeVip()}> {/* Added relative here */}
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg" />
-            <div className="flex items-center gap-2 px-4 py-2 font-bold bg-black rounded-[6px] relative group transition duration-200 text-white hover:bg-transparent">
-              <FaCrown className="text-yellow-400 group-hover:animate-pulse group-hover:text-yellow-300 w-5" />
-              Upgrade
-            </div>
-          </button>
-        </div>
+        {user.role !== "VIP reader" &&
+          <div className="flex justify-center mt-4 sm:mt-0 sm:justify-end sm:absolute sm:right-5 sm:bottom-0">
+            <button className="p-[3px] cursor-pointer rounded-full bg-black relative" onClick={() => handleUpgradeVip()}> {/* Added relative here */}
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg" />
+              <div className="flex items-center gap-2 px-4 py-2 font-bold bg-black rounded-[6px] relative group transition duration-200 text-white hover:bg-transparent">
+                <FaCrown className="text-yellow-400 group-hover:animate-pulse group-hover:text-yellow-300 w-5" />
+                Upgrade
+              </div>
+            </button>
+          </div>
+        }
       </div>
 
       {/* information */}
@@ -195,6 +197,14 @@ const Profile = () => {
             {user?.level} ( {user?.exp} )
           </div>
         </div>
+
+        <div className="p-2 sm:p-3 flex flex-row items-center gap-2 sm:gap-4">
+          <img src="/images/role.png" alt="role logo" className="w-6 h-6 sm:w-8 sm:h-8" />
+          <div className="flex-1 text-sm sm:text-xl">
+            <span className="font-bold">Role: </span>
+            {user?.role}
+          </div>
+        </div>
       </div>
 
       {/* Edit and Exit section */}
@@ -204,11 +214,11 @@ const Profile = () => {
           className="text-sm sm:text-base cursor-pointer text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-bold rounded-full px-3 sm:px-5 py-2 sm:py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
           onClick={() => setIsModalOpen(true)}
         >
-          ✏️ Chỉnh sửa
+          ✏️ Edit
         </button>
 
         <button onClick={handleLogout} type="button" className="text-green-700 font-bold hover:text-white rounded-full border-2 cursor-pointer border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 text-sm px-3 sm:px-5 py-2 sm:py-2.5 text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
-          🚪Đăng xuất
+          🚪Log out
         </button>
       </div>
     </div>

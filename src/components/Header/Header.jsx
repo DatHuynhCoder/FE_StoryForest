@@ -156,8 +156,8 @@ function Header() {
 							onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
 
 							onFocus={() => setToggleAdvancedSearch(true)}
-							
-							
+
+
 						/>
 					</div>
 				</div>
@@ -167,45 +167,48 @@ function Header() {
 						<div className="relative w-full" onClick={() => setIsOpenProfile(!isOpenProfile)}>
 							<div className="flex items-center gap-3 w-full hover:text-[#095533] cursor-pointer">
 								<img src={user.avatar?.url || DefaultAvt} alt="avatar" className="w-12 h-12 rounded-full" />
-								<span className="font-semibold truncate max-w-[100px] overflow-hidden whitespace-nowrap">
-									{user.username}
-								</span>
+								<div className='flex flex-col'>
+									<span className="font-semibold truncate max-w-[100px] overflow-hidden whitespace-nowrap">
+										{user.username}
+									</span>
+									<div className='font-light text-sm truncate max-w-[150px] overflow-hidden'>Lv {user.level} - {user.rank}</div>
+								</div>
 							</div>
 
 							{/* Dropdown below */}
-								<div
-									className={`absolute ${toggleProfile} top-full mt-2 z-100 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600`}
-								>
-									<div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
-										<div className="font-medium">User</div>
-										<div className="truncate">{user.email}</div>
-									</div>
-									<ul className="py-2 text-sm text-gray-700 dark:text-gray-200">
-										<li>
-											<NavLink to="/profile" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-												Hồ sơ của tôi
-											</NavLink>
-										</li>
-										<li>
-											<a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-												Cài đặt
-											</a>
-										</li>
-										<li>
-											<a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-												Earnings
-											</a>
-										</li>
-									</ul>
-									<div className="py-2">
-										<div
-											className="cursor-pointer block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-											onClick={handleLogout}
-										>
-											Đăng xuất
-										</div>
+							<div
+								className={`absolute ${toggleProfile} top-full mt-2 z-100 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600`}
+							>
+								<div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+									<div className="font-medium">User</div>
+									<div className="truncate">{user.email}</div>
+								</div>
+								<ul className="py-2 text-sm text-gray-700 dark:text-gray-200">
+									<li>
+										<NavLink to="/profile" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+											Hồ sơ của tôi
+										</NavLink>
+									</li>
+									<li>
+										<a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+											Cài đặt
+										</a>
+									</li>
+									<li>
+										<a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+											Earnings
+										</a>
+									</li>
+								</ul>
+								<div className="py-2">
+									<div
+										className="cursor-pointer block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+										onClick={handleLogout}
+									>
+										Đăng xuất
 									</div>
 								</div>
+							</div>
 						</div>
 					) : (
 						<div className="flex gap-2 justify-center">
@@ -261,12 +264,12 @@ function Header() {
 								))}
 							</div>
 						</div>
-						
+
 					</div>
 				)
 			}
 
-			{toggleAdvancedSearch ? <AdvancedSearch setOpen ={setToggleAdvancedSearch}/> : (<></>)}
+			{toggleAdvancedSearch ? <AdvancedSearch setOpen={setToggleAdvancedSearch} /> : (<></>)}
 		</>
 	);
 }
