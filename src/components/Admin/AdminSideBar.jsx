@@ -64,7 +64,7 @@ const AdminSideBar = () => {
                   isActive ? 'bg-teal-100 text-teal-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                Quản lý người dùng
+                User management
               </NavLink>
               <NavLink
                 to="/admin/web-management"
@@ -72,54 +72,13 @@ const AdminSideBar = () => {
                   isActive ? 'bg-teal-100 text-teal-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                Quản lý web đặt sách
+                Web story management
               </NavLink>
             </div>
           )}
         </div>
        
-        {/* Notification Section */}
-        <div className="space-y-1">
-          <button
-            onClick={() => toggleMenu('notification')}
-            className={`flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-colors ${
-              openMenus.notification ? 'bg-teal-50 text-teal-600' : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <span className="flex items-center">
-              <span className={`w-2 h-2 rounded-full mr-3 ${
-                openMenus.notification ? 'bg-teal-500' : 'bg-gray-300'
-              }`}></span>
-              <span className="font-medium">Thông báo</span>
-            </span>
-            {openMenus.notification ? (
-              <FiChevronDown className="text-gray-500" />
-            ) : (
-              <FiChevronRight className="text-gray-500" />
-            )}
-          </button>
-
-          {openMenus.notification && (
-            <div className="ml-5 space-y-1">
-              <NavLink
-                to="/#"
-                className={({ isActive }) => `block px-3 py-2 rounded-lg transition-colors ${
-                  isActive ? 'bg-teal-100 text-teal-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                Cài đặt
-              </NavLink>
-              <NavLink
-                to="/#"
-                className={({ isActive }) => `block px-3 py-2 rounded-lg transition-colors ${
-                  isActive ? 'bg-teal-100 text-teal-600 font-medium' : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                Profile
-              </NavLink>
-            </div>
-          )}
-        </div>
+       
         
       </nav>
 
