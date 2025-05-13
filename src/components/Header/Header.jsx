@@ -9,11 +9,15 @@ import { api } from '../../services/api';
 import { logout } from '../../redux/userSlice';
 import AdvancedSearch from '../AdvancedSearch/AdvancedSearch';
 
-
+// cookie
+import { useCookies } from 'react-cookie';
 
 function Header() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+
+	const [cookie, setCookie, removeCookie] = useCookies(["theme", "intensity"])
+
 	//get user from redux
 	const user = useSelector((state) => state.user.user);
 
@@ -39,6 +43,8 @@ function Header() {
 			const response = await api.post("/api/reader/account/logout");
 			if (response.data.success) {
 				dispatch(logout());
+				removeCookie("theme")
+				removeCookie("intensity")
 				navigate("/login")
 			}
 		} catch (error) {

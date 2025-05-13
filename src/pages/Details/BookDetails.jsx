@@ -8,7 +8,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { updateUser } from '../../redux/userSlice'
 import defaultAvt from '../../assets/default_avatar.jpg'
 import processingGif from '../../assets/processing.gif'
-import processing2Gif from '../../assets/processing2.gif'
 
 function BookDetails() {
   const navigate = useNavigate()
