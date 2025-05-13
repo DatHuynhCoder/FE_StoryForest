@@ -10,18 +10,36 @@ import { MdNavigateNext } from "react-icons/md";
 import { MdNavigateBefore } from "react-icons/md";
 import { FaCommentAlt } from "react-icons/fa";
 import { FaArrowUp } from "react-icons/fa";
+import { FaPlayCircle } from "react-icons/fa";
 // drawer
 import DragCloseDrawer from '../../components/DragCloseDrawer.jsx'
-//
+// select dialog
 import { Rating, RatingStar } from "flowbite-react";
 import { Button, Drawer, DrawerHeader, DrawerItems } from "flowbite-react";
+import Switch from '@mui/material/Switch';
+import Box from '@mui/material/Box';
+import MaterialUIButton from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import InputLabel from '@mui/material/InputLabel';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 //user Redux to update user
 import { useSelector, useDispatch } from 'react-redux'
 import { updateUser } from '../../redux/userSlice.js'
+//cookies
+import { useCookies } from 'react-cookie';
 
 function MangaReader() {
   const navigate = useNavigate()
   const dispatch = useDispatch();
+
+  const [cookie, setCookie, removeCookie] = useCookies(["theme", "intensity"])
+
   const { mangaid, chapterid } = useParams()
   const location = useLocation()
   const { _id, chapters, mangatitle, chapternumber, chaptertitle } = location.state || {}
@@ -47,7 +65,55 @@ function MangaReader() {
   const token = useSelector((state) => state.user.token) || ''
 
   const [pics, setPics] = useState([])
+  // loading while calling apis
   const [loading, setLoading] = useState(true)
+  // switch control
+  const [checked, setChecked] = useState(false);
+  const handleSwitchChange = (event) => {
+    setChecked(event.target.checked);
+  };
+  // handle select theme
+  const [openSelectTheme, setOpenSelectTheme] = useState(false);
+  const [theme, setTheme] = useState(cookie?.theme || "white")
+  const listTheme = ['white', 'black', 'red', 'green']
+  const [intensity, setIntensity] = useState(cookie?.intensity || "500")
+  const litsIntensity = ['100', '500']
+  // theme + intensity = finalColor
+  const [finalColor, setFinalColor] = useState((theme !== 'black' && theme !== 'white') ? theme + '-' + intensity : theme)
+  const handleChangeTheme = (event) => {
+    setTheme((event.target.value) || 'white');
+  };
+  const handleChangeIntensity = (event) => {
+    setIntensity((event.target.value) || '500')
+  }
+
+  const handleClickOpenSelectTheme = () => {
+    if (user._id === 'unknown') alert('Login to use this feature !')
+    else
+      setOpenSelectTheme(true);
+  };
+
+  const handleCloseSelectTheme = (event, reason) => {
+    if (reason !== 'backdropClick') {
+      console.log("theme: ", theme)
+      console.log("intensity: ", intensity)
+      setCookie("theme", theme)
+      setCookie("intensity", intensity)
+      setFinalColor((theme !== 'black' && theme !== 'white') ? theme + '-' + intensity : theme)
+      setOpenSelectTheme(false);
+    }
+  };
+  const handleCancelSelectTheme = (event, reason) => {
+    if (reason !== 'backdropClick') {
+      setOpenSelectTheme(false);
+    }
+  };
+  const handleResetTheme = () => {
+    removeCookie("theme")
+    removeCookie("intensity")
+    window.location.reload()
+  }
+  //
   const [chaptercomments, setChaptercomments] = useState([
     {
       bookid: "67f298a0c0aa3501386b7aff",
@@ -71,7 +137,6 @@ function MangaReader() {
       _id: "680f6037e4b5d019dc77a47b"
     },
   ])
-  console.log("check chaptercomments: ", chaptercomments)
   const [comment, setComment] = useState('')
 
   const fetchCommentByChapterId = async () => {
@@ -167,28 +232,19 @@ function MangaReader() {
         setLoading(false)
       })
     scrollToTop()
-    // api.get(`/mangadex/chapter/${chapterid}/images`)
-    //     .then((res) => {
-    //         setPics(res.data.images)
-    //     }).catch((err) => {
-    //         console.log(err)
-    //     }).finally(() => {
-    //         setLoading(false)
-    //     })
   }, [chapterid])
 
   return (
     <>
-
-      <div className='flex flex-col justify-center items-center md:ml-[200px] md:mr-[200px] mb-20'>
+      <div className={`flex flex-col justify-center items-center md:pl-[200px] md:pr-[200px] mb-20 bg-${finalColor}`}>
         <div className='flex flex-col'>
-          <p className='text-3xl md:text-5xl font-bold text-black text-center cursor-pointer' onClick={handleBackToDetails}>{mangatitle == undefined ? "" : mangatitle}</p>
+          <p className={`text-3xl md:text-5xl font-bold text-center cursor-pointer ${theme === 'black' ? 'text-white' : 'text-black'}`} onClick={handleBackToDetails}>{mangatitle == undefined ? "" : mangatitle}</p>
         </div>
         {/* This div will contain 2 button */}
-        <p className='md:text-lg mt-2'>Chapter {chapternumber}: {chaptertitle}</p>
+        <p className={`md:text-lg mt-2 ${theme === 'black' ? 'text-white' : ''}`}>Chapter {chapternumber}: {chaptertitle}</p>
         <div className='flex flex-col justify-center'>
           <button onClick={handleNextChapter} className='p-[10px] bg-green-600 text-white font-bold md:w-[500px] w-[200px] rounded mt-3 cursor-pointer hover:bg-green-500'>Next chapter</button>
-          <button onClick={handlePreviousChapter} className='p-[10px] font-bold md:w-[500px] w-[200px] rounded border mt-3 cursor-pointer hover:bg-[#f1f1f1]'>Previous chapter</button>
+          <button onClick={handlePreviousChapter} className='p-[10px] font-bold md:w-[500px] w-[200px] rounded border mt-3 cursor-pointer bg-[#fff] hover:bg-[#f1f1f1]'>Previous chapter</button>
         </div>
         {/* This div will contain the manga images */}
         <div>
@@ -198,7 +254,8 @@ function MangaReader() {
             </div>
           ) : (
             pics.map((pic, index) => (
-              <div className='mt-3' key={index}>
+              <div className='mt-3 flex' key={index}>
+                <FaPlayCircle />
                 <img src={pic}
                   alt='manga'
                   loading='lazy'
@@ -228,6 +285,50 @@ function MangaReader() {
           <div className='flex items-center justify-center border-2 border-gray-300 px-2 rounded cursor-pointer hover:bg-[#f1f1f1]'
             onClick={scrollToTop}>
             <FaArrowUp />
+          </div>
+          <div className='flex items-center justify-center px-2 rounded cursor-pointer hover:bg-[#f1f1f1]'
+            onClick={scrollToTop}>
+            <Button onClick={handleClickOpenSelectTheme} className='!bg-green-500'>Theme</Button>
+            <Dialog disableEscapeKeyDown open={openSelectTheme} onClose={handleCloseSelectTheme}>
+              <DialogTitle>Select theme</DialogTitle>
+              <DialogContent>
+                <Box component="form" sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                  <FormControl sx={{ m: 1, minWidth: 120 }}>
+                    <InputLabel htmlFor="demo-dialog-native">Color</InputLabel>
+                    <Select
+                      native
+                      value={theme}
+                      onChange={handleChangeTheme}
+                      input={<OutlinedInput label="Age" id="demo-dialog-native" />}
+                    >
+                      <option aria-label="None" value="" />
+                      {listTheme.map(theme => {
+                        return <option value={theme} key={theme}>{theme}</option>
+                      })}
+                    </Select>
+                  </FormControl>
+                  <FormControl sx={{ m: 1, minWidth: 120 }}>
+                    <InputLabel htmlFor="demo-dialog-native">Intensity</InputLabel>
+                    <Select
+                      native
+                      value={intensity}
+                      onChange={handleChangeIntensity}
+                      input={<OutlinedInput label="Age" id="demo-dialog-native" />}
+                    >
+                      <option aria-label="None" value="" />
+                      {litsIntensity.map(intensity => {
+                        return <option value={intensity} key={intensity}>{intensity}</option>
+                      })}
+                    </Select>
+                  </FormControl>
+                </Box>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleResetTheme}>Reset</Button>
+                <Button onClick={handleCancelSelectTheme}>Cancel</Button>
+                <Button onClick={handleCloseSelectTheme}>Ok</Button>
+              </DialogActions>
+            </Dialog>
           </div>
         </div>
         {/* This div is for comment */}

@@ -21,6 +21,9 @@ import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/userSlice";
 
+// cookie
+import { useCookies } from "react-cookie";
+
 const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -31,6 +34,7 @@ const Profile = () => {
   const [activeSection, setActiveSection] = useState('profile');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const [cookie, setCookie, removeCookie] = useCookies(["theme", "intensity"])
 
   useEffect(() => {
     const fetchFavorite = async () => {
@@ -95,6 +99,8 @@ const Profile = () => {
       const response = await api.post("/api/reader/account/logout");
       if (response.data.success) {
         dispatch(logout());
+        removeCookie("theme")
+        removeCookie("intensity")
         navigate("/login")
       }
     } catch (error) {
