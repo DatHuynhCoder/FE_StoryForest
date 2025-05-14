@@ -8,7 +8,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { updateUser } from '../../redux/userSlice'
 import defaultAvt from '../../assets/default_avatar.jpg'
 import processingGif from '../../assets/processing.gif'
-import processing2Gif from '../../assets/processing2.gif'
 
 function BookDetails() {
   const navigate = useNavigate()
@@ -86,6 +85,15 @@ function BookDetails() {
     let chaptertitle = chapters[0].title
     // to MangaReader.jsx
     navigate(`/mangaReader/${infoManga.mangaid}/${chapters[0].chapterid}`, { state: { _id, chapters, mangatitle, chapternumber, chaptertitle } })
+  }
+
+  //handle see Profile
+  const handleSeeProfile = (id) => {
+    if (user && user._id === id) {
+      navigate('/profile');
+    } else {
+      navigate(`/otherprofile/${id}`);
+    }
   }
 
   //delete or add to favorite
@@ -282,8 +290,8 @@ function BookDetails() {
           <p className='font-bold text-green-700'>Comments</p>
           <ul>
             {bookcomments.length > 0 ? bookcomments.map((comment, index) => (
-              <li key={comment._id}>
-                <div className='mt-3'>
+              <li key={comment._id} onClick={() => handleSeeProfile(comment.userid._id)}>
+                <div className='mt-3 cursor-pointer'>
                   <div className='w-[100%] border p-2 rounded-md mt-2'>
                     <div className='flex'>
                       <img src={comment.userid?.avatar?.url || defaultAvt} alt="avatar" className='w-10 h-10 rounded-full' />

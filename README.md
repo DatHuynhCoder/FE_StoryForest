@@ -31,7 +31,7 @@ Make sure you have the following installed:
 ### Clone the repository
 ```sh
 git clone https://github.com/DatHuynhCoder/FE_StoryForest.git
-cd web-manga-novel
+cd FE_StoryForest
 ```
 
 ### Backend Setup

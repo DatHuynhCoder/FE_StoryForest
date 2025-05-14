@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router";
 //import Pages
 import Login from './pages/Login_Signup/Login.jsx';
 import Signup from './pages/Login_Signup/Signup.jsx';
+import OtherProfile from "./pages/OtherProfile/OtherProfile.jsx";
 import Profile from './pages/Profile/Profile.jsx';
 import BookDetails from './pages/Details/BookDetails.jsx';
 import OTP from "./pages/Login_Signup/ForgetPass/OTP.jsx";
@@ -27,7 +28,6 @@ import ProtectedRoute from "./services/ProtectedRoute.jsx";
 //toast
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 
 //Admin
 import AdminLayout from "./layouts/Admin/AdminLayout.jsx";
@@ -80,7 +80,7 @@ function App() {
           <Route path="/novelReader/:_id/:chapterid" element={<NovelReader />} />
           <Route path='/result/:keyword' element={<ResultPage />} />
           <Route path='/advanced-search/:synopsis' element={<Result/>}/>
-
+          <Route path="/otherprofile/:_id" element={<OtherProfile />} />
         </Route>
 
 

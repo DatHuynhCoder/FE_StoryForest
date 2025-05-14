@@ -1,47 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
+import { api } from '../../services/api';
 
 const NewUserMonthlyChart = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [chartSeries, setChartSeries] = useState([{ name: 'Users', data: Array(12).fill(0) }]);
+  const [loading, setLoading] = useState(true);
   
-  // Số năm (giả)
+  // Generate available years
   const years = Array.from(
-    { length: new Date().getFullYear() - 2024 +1   },
+    { length: new Date().getFullYear() - 2024 + 1 },
     (_, i) => 2024 + i
   );
 
-  // Dữ liệu giả theo năm 
-  const mockData = {
-    2024: [200, 220, 250, 300, 280, 320, 350, 240, 260, 400, 380, 300],
-    2025: [180, 240, 210, 280, 260]
-  };
-
-  // Lấy dữ liệu giả theo năm được chọn
-  const chartSeries = [{
-    name: 'Users',
-    data: mockData[selectedYear] || mockData[2023] // Fallback nếu không có data
-  }];
-
-  /* 
-  // call api
+  // Fetch data from API
   useEffect(() => {
     const fetchMonthlyStats = async () => {
       try {
-        const response = await axios.get(`/api/admin/users/monthly-stats?year=${selectedYear}`);
+        setLoading(true);
+        const response = await api.get(`/api/admin/users/monthly-stats?year=${selectedYear}`);
+        console.log(`New user - year=${selectedYear}`,response.data.data)
         const monthlyData = response.data.data;
-        setChartData([{
+        
+        // Create an array with 12 months, filling in the counts from the API
+        const monthlyCounts = Array(12).fill(0);
+        monthlyData.forEach(item => {
+          monthlyCounts[item.month - 1] = item.count;
+        });
+
+        setChartSeries([{
           name: 'Users',
-          data: monthlyData.map(month => month.count)
+          data: monthlyCounts
         }]);
       } catch (err) {
-        console.error('Error:', err);
+        console.error('Error fetching monthly stats:', err);
+        // Fallback to empty data if API fails
+        setChartSeries([{
+          name: 'Users',
+          data: Array(12).fill(0)
+        }]);
+      } finally {
+        setLoading(false);
       }
     };
+    
     fetchMonthlyStats();
   }, [selectedYear]);
-  */
 
-  // Cấu hình biểu đồ 
+  // Chart configuration
   const chartOptions = {
     colors: ['#14B8A6'],
     chart: {
@@ -49,6 +55,9 @@ const NewUserMonthlyChart = () => {
       type: 'bar',
       height: 180,
       toolbar: { show: false },
+      animations: {
+        enabled: !loading,
+      },
     },
     plotOptions: {
       bar: {
@@ -89,6 +98,7 @@ const NewUserMonthlyChart = () => {
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
             className="text-sm border rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            disabled={loading}
           >
             {years.map((year) => (
               <option key={year} value={year}>
@@ -105,12 +115,18 @@ const NewUserMonthlyChart = () => {
 
       <div className="overflow-x-auto">
         <div className="min-w-[600px]">
-          <Chart
-            options={chartOptions}
-            series={chartSeries}
-            type="bar"
-            height={180}
-          />
+          {loading ? (
+            <div className="h-[180px] flex items-center justify-center">
+              <div className="animate-pulse text-gray-400">Loading data...</div>
+            </div>
+          ) : (
+            <Chart
+              options={chartOptions}
+              series={chartSeries}
+              type="bar"
+              height={180}
+            />
+          )}
         </div>
       </div>
 

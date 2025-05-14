@@ -131,8 +131,8 @@ const UpdateUserModal = ({ isOpen, onClose, user }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="relative bg-white w-full max-w-3xl mx-4 rounded-2xl shadow-xl animate-fadeIn">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-br from-black/30 to-gray-600/30 flex items-center justify-center">
+      <div className="relative bg-white w-full max-w-3xl mx-4 rounded-2xl shadow-xl animate-none">
         {/* Modal Header */}
         <div className="bg-gradient-to-r from-purple-600 to-blue-600 py-4 px-6 rounded-t-2xl">
           <div className="flex justify-between items-center">

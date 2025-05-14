@@ -16,7 +16,10 @@ function NovelDetails() {
   //get user from redux store
   const user = useSelector((state) => state.user.user);
   const { _id } = useParams() // from NovelList.jsx
+
   const [loading, setLoading] = useState(true)
+  const [buttonLoading, setButtonLoading] = useState(false)
+
   const [isFavorite, setIsFavorite] = useState(false);
   const [infoNovel, setInfoNovel] = useState({
     _id: '67eabb616f25807d87d7ad10',
@@ -78,8 +81,18 @@ function NovelDetails() {
     navigate(`/novelReader/${_id}/${chapterid}`, { state: { chapters, noveltitle, chapternumber, chaptertitle } })
   }
 
+  //handle see Profile
+  const handleSeeProfile = (id) => {
+    if (user && user._id === id) {
+      navigate('/profile');
+    } else {
+      navigate(`/otherprofile/${id}`);
+    }
+  }
+
   //delete or add to favorite
   const handleToggleFavorite = async () => {
+    setButtonLoading(true)
     // Check if user is logged in
     if (!user) {
       toast.error("Login to be able to add favorite")
@@ -119,6 +132,7 @@ function NovelDetails() {
           toast.error("Error in adding to favorite")
         }
       }
+      setButtonLoading(false)
     } catch (error) {
       console.log(error)
       toast.error(isFavorite ? "Error removing from favorites" : "Error in adding to favorite")
@@ -193,6 +207,7 @@ function NovelDetails() {
             alt={infoNovel.title}
             loading='lazy'
             className='w-48 h-64 md:w-60 md:h-72 object-cover shadow-lg'
+            style={{ boxShadow: '3px 3px' }}
           />
         </div>
 
@@ -209,13 +224,18 @@ function NovelDetails() {
               {/* Favorite toggle button */}
               <div
                 onClick={handleToggleFavorite}
-                className={`rounded p-2 md:p-3 text-white text-center cursor-pointer font-bold ${isFavorite ? 'bg-red-600 hover:bg-red-500' : 'bg-green-700 hover:bg-green-500'
-                  }`}
+                className={`border rounded p-2 md:p-3 text-center cursor-pointer font-bold ${isFavorite ? 'bg-red-600 hover:bg-red-500' : 'bg-green-700 hover:bg-green-500'}`}
+                style={buttonLoading ? {
+                  backgroundImage: `url(${processingGif})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  boxShadow: '3px 3px'
+                } : { boxShadow: '3px 3px' }}
               >
-                {isFavorite ? 'Remove from favorite' : 'Add to favorite'}
+                <span className='text-white'>{isFavorite ? 'Remove from favorite' : 'Add to favorite'}</span>
               </div>
 
-              <div onClick={() => handleStartReading(infoNovel.title, chapters[0]._id, 1, chapters[0].chapter_title)} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold hover:bg-[#f1f1f1]'>Start reading</div>
+              <div onClick={() => handleStartReading(infoNovel.title, chapters[0]._id, 1, chapters[0].chapter_title)} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }}>Start reading</div>
             </div>
 
             <div>
@@ -224,7 +244,7 @@ function NovelDetails() {
 
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>
               {infoNovel.tags.map((tag) => (
-                <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' key={tag} onClick={() => { console.log("do something with ", tag) }}>
+                <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }} key={tag} onClick={() => { console.log("do something with ", tag) }}>
                   <span className='text-xs font-black'>{tag}</span>
                 </div>
               ))}
@@ -262,8 +282,8 @@ function NovelDetails() {
           <p className='font-bold text-green-700'><u>Comments</u></p>
           <ul>
             {bookComments.map((comment, index) => (
-              <li key={comment._id}>
-                <div className='mt-3'>
+              <li key={comment._id} onClick={() => handleSeeProfile(comment.userid._id)}>
+                <div className='mt-3 cursor-pointer'>
                   <div className='w-[100%] border p-2 rounded-md mt-2'>
                     <div className='flex'>
                       <img src={comment.userid?.avatar?.url || defaultAvt} alt="avatar" className='w-10 h-10 rounded-full' />

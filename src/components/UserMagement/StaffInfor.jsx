@@ -1,338 +1,279 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router';
+import { FaUserCircle } from 'react-icons/fa';
+
 import { 
   ArrowLeft, 
-  Book, 
-  BookOpen, 
-  Trash2, 
-  Edit, 
-  Plus, 
-  Clock, 
   User, 
   Mail, 
   Phone,
   Shield,
-  Activity,
-  FileText,
-  CheckCircle,
-  AlertCircle
+  Calendar,
+  Clock,
+  Edit,
+  Activity
 } from 'lucide-react';
+import { api } from '../../services/api';
 
 const StaffInformations = () => {
-  const { staffId } = useParams();
+  const { id } = useParams();
   const [staff, setStaff] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
-    // Giả lập API call
     const fetchStaff = async () => {
-      // Mock data cho nhân viên
-      const mockStaff = {
-        id: staffId,
-        fullName: 'Trần Thị B',
-        username: 'tranthib',
-        email: 'tranthib@truyen.vn',
-        phone: '0987123456',
-        avatar: 'https://i.pravatar.cc/150?img=5',
-        position: 'Quản lý nội dung',
-        department: 'Biên tập',
-        joinDate: '15/03/2021',
-        lastActive: '10 phút trước',
-        status: 'active', // active/inactive
-        permissions: ['Thêm truyện', 'Sửa truyện', 'Xóa truyện', 'Duyệt chapter'],
-        
-        // Thống kê công việc
-        workStats: {
-          totalAdded: 128,
-          totalEdited: 342,
-          totalDeleted: 28,
-          pendingApproval: 5,
-          approvedThisMonth: 42,
-          rejectionRate: '4.2%'
-        },
-        
-        // Lịch sử thêm truyện
-        addedStories: [
-          { id: 1, title: 'Đấu La Đại Lục', date: '10/02/2023', status: 'published' },
-          { id: 2, title: 'Thần Đạo Đan Tôn', date: '05/01/2023', status: 'published' },
-          { id: 3, title: 'Tu Chân Giới', date: '20/12/2022', status: 'draft' }
-        ],
-        
-        // Lịch sử xóa truyện
-        deletedStories: [
-          { id: 101, title: 'Ma Thổi Đèn Bản Cũ', date: '2 ngày trước', reason: 'Bản quyền' },
-          { id: 102, title: 'Toàn Chức Cao Thủ Fanfic', date: '1 tuần trước', reason: 'Chất lượng thấp' }
-        ],
-        
-        // Truyện đang xử lý
-        pendingStories: [
-          { id: 201, title: 'Ỷ Thiên Đồ Long Ký Remake', date: '3 giờ trước', action: 'edit' },
-          { id: 202, title: 'Tây Du Ký Hiện Đại', date: '1 ngày trước', action: 'review' }
-        ]
-      };
-      setStaff(mockStaff);
+      try {
+        const response = await api.get(`/api/admin/staffs/${id}`);
+        setStaff(response.data.data);
+      } catch (err) {
+        setError(err.message || 'Failed to fetch staff data');
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchStaff();
-  }, [staffId]);
+  }, [id]);
 
-  if (!staff) return <div className="flex justify-center items-center h-64">Loading...</div>;
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-pulse flex space-x-4">
+          <div className="rounded-full bg-gray-200 h-12 w-12"></div>
+          <div className="flex-1 space-y-4 py-1">
+            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded"></div>
+              <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-center p-4 max-w-md mx-auto bg-red-50 rounded-lg border border-red-200">
+          <div className="text-red-600 font-medium mb-2">Error loading staff data</div>
+          <div className="text-sm text-red-500">{error}</div>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-3 px-4 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!staff) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-center p-4 max-w-md mx-auto">
+          <div className="text-gray-500 font-medium mb-2">No staff data found</div>
+          <Link 
+            to="/admin/user-management" 
+            className="text-teal-600 hover:text-teal-800 text-sm inline-flex items-center"
+          >
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back to staff list
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6">
       <div className="mb-6">
-        <Link to="/user-management" className="flex items-center text-teal-600 hover:text-teal-800">
+        <Link 
+          to="/admin/user-management" 
+          className="inline-flex items-center text-teal-600 hover:text-teal-800 transition-colors"
+        >
           <ArrowLeft className="h-4 w-4 mr-1" />
-          Quay lại danh sách nhân viên
+          Back to staff list
         </Link>
       </div>
 
       <div className="flex flex-col md:flex-row gap-6 mb-6">
-        {/* Sidebar thông tin cơ bản */}
+        {/* Staff Profile Card */}
         <div className="w-full md:w-1/4">
-          <div className="bg-white rounded-lg shadow p-4 sticky top-4">
-            <div className="flex flex-col items-center mb-4">
-              <img 
-                src={staff.avatar} 
-                alt={staff.fullName} 
-                className="w-24 h-24 rounded-full mb-3 border-2 border-teal-200"
-              />
-              <h2 className="text-xl font-bold text-center">{staff.fullName}</h2>
-              <span className="text-sm text-gray-500">@{staff.username}</span>
-              <span className={`mt-2 px-3 py-1 rounded-full text-xs font-medium ${
-                staff.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-              }`}>
-                {staff.status === 'active' ? 'Đang hoạt động' : 'Ngừng hoạt động'}
-              </span>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 sticky top-4 transition-all hover:shadow-md">
+            <div className="flex flex-col items-center mb-5">
+            
+              {staff.avatar ? (
+                <img
+                    src={staff.avatar?.url || staff.avatar}
+                    alt={staff.name}
+                    className="w-28 h-28 rounded-full mb-3 border-4 border-teal-100 object-cover shadow-sm"
+                    /> ) : ( <FaUserCircle className="w-28 h-28 rounded-full mb-3 border-4 border-teal-100 object-cover shadow-sm text-gray-500" />)
+              }
+                                   
+
+
+              <h2 className="text-xl font-bold text-gray-800 text-center">{staff.name}</h2>
+              <span className="text-sm text-gray-500 mt-1">@{staff.username}</span>
+              
             </div>
 
             <div className="space-y-3">
-              <div className="flex items-center text-sm">
-                <Mail className="h-4 w-4 mr-2 text-gray-500" />
-                <span>{staff.email}</span>
+              <div className="flex items-center text-sm text-gray-600">
+                <Mail className="h-4 w-4 mr-2 text-gray-500 flex-shrink-0" />
+                <span className="truncate">{staff.email}</span>
               </div>
-              <div className="flex items-center text-sm">
-                <Phone className="h-4 w-4 mr-2 text-gray-500" />
-                <span>{staff.phone}</span>
-              </div>
-              <div className="flex items-center text-sm">
-                <User className="h-4 w-4 mr-2 text-gray-500" />
-                <span>{staff.position}</span>
-              </div>
-              <div className="flex items-center text-sm">
-                <Shield className="h-4 w-4 mr-2 text-gray-500" />
-                <span>Phòng ban: {staff.department}</span>
-              </div>
-              <div className="flex items-center text-sm">
-                <Clock className="h-4 w-4 mr-2 text-gray-500" />
-                <span>Ngày vào làm: {staff.joinDate}</span>
-              </div>
-              <div className="flex items-center text-sm">
-                <Activity className="h-4 w-4 mr-2 text-gray-500" />
-                <span>Hoạt động cuối: {staff.lastActive}</span>
-              </div>
-              
-              <div className="pt-2">
-                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Quyền hạn</h4>
-                <div className="flex flex-wrap gap-1">
-                  {staff.permissions.map((permission, index) => (
-                    <span key={index} className="px-2 py-1 bg-gray-100 rounded text-xs">
-                      {permission}
-                    </span>
-                  ))}
+              {staff.phone && (
+                <div className="flex items-center text-sm text-gray-600">
+                  <Phone className="h-4 w-4 mr-2 text-gray-500 flex-shrink-0" />
+                  <span>{staff.phone}</span>
                 </div>
+              )}
+              <div className="flex items-center text-sm text-gray-600">
+                <Shield className="h-4 w-4 mr-2 text-gray-500 flex-shrink-0" />
+                <span>Role: {staff.role || 'Not specified'}</span>
               </div>
+              <div className="flex items-center text-sm text-gray-600">
+                <Calendar className="h-4 w-4 mr-2 text-gray-500 flex-shrink-0" />
+                <span>Created: {formatDate(staff.createdAt)}</span>
+              </div>
+              <div className="flex items-center text-sm text-gray-600">
+                <Edit className="h-4 w-4 mr-2 text-gray-500 flex-shrink-0" />
+                <span>Updated: {formatDate(staff.updatedAt)}</span>
+              </div>
+              {staff.lastActive && (
+                <div className="flex items-center text-sm text-gray-600">
+                  <Activity className="h-4 w-4 mr-2 text-gray-500 flex-shrink-0" />
+                  <span>Last active: {staff.lastActive}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Nội dung chính */}
+        {/* Main Content */}
         <div className="w-full md:w-3/4">
-          <div className="bg-white rounded-lg shadow mb-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
             <div className="border-b border-gray-200">
               <nav className="flex -mb-px">
                 <button
                   onClick={() => setActiveTab('overview')}
-                  className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${
+                  className={`py-4 px-6 text-center border-b-2 font-medium text-sm flex items-center justify-center transition-colors ${
                     activeTab === 'overview'
                       ? 'border-teal-500 text-teal-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
-                  Tổng quan
+                  <User className="h-4 w-4 mr-2" />
+                  Overview
                 </button>
                 <button
-                  onClick={() => setActiveTab('added')}
-                  className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${
-                    activeTab === 'added'
+                  onClick={() => setActiveTab('activity')}
+                  className={`py-4 px-6 text-center border-b-2 font-medium text-sm flex items-center justify-center transition-colors ${
+                    activeTab === 'activity'
                       ? 'border-teal-500 text-teal-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
-                  Truyện đã thêm
-                </button>
-                <button
-                  onClick={() => setActiveTab('deleted')}
-                  className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${
-                    activeTab === 'deleted'
-                      ? 'border-teal-500 text-teal-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  Truyện đã xóa
-                </button>
-                <button
-                  onClick={() => setActiveTab('pending')}
-                  className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${
-                    activeTab === 'pending'
-                      ? 'border-teal-500 text-teal-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  Đang xử lý
+                  <Activity className="h-4 w-4 mr-2" />
+                  Activity
                 </button>
               </nav>
             </div>
 
             <div className="p-6">
               {activeTab === 'overview' && (
-                <div>
-                  <h3 className="text-lg font-medium mb-4">Thống kê công việc</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div className="bg-teal-50 rounded-lg p-4">
-                      <div className="flex items-center">
-                        <Plus className="h-5 w-5 text-teal-600 mr-2" />
-                        <span className="text-sm font-medium text-gray-600">Truyện đã thêm</span>
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-medium mb-4 flex items-center text-gray-800">
+                      <User className="h-5 w-5 mr-2 text-teal-600" />
+                      Basic Information
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 transition-all hover:border-teal-200">
+                        <div className="flex items-center mb-2">
+                          <User className="h-4 w-4 mr-2 text-gray-600" />
+                          <span className="text-sm font-medium text-gray-600">Full Name</span>
+                        </div>
+                        <div className="text-gray-800 font-medium">{staff.name || "N/A"}</div>
                       </div>
-                      <div className="text-2xl font-bold mt-2">{staff.workStats.totalAdded}</div>
-                    </div>
-                    <div className="bg-purple-50 rounded-lg p-4">
-                      <div className="flex items-center">
-                        <Edit className="h-5 w-5 text-purple-600 mr-2" />
-                        <span className="text-sm font-medium text-gray-600">Truyện đã sửa</span>
+                      <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 transition-all hover:border-teal-200">
+                        <div className="flex items-center mb-2">
+                          <Mail className="h-4 w-4 mr-2 text-gray-600" />
+                          <span className="text-sm font-medium text-gray-600">Email</span>
+                        </div>
+                        <div className="text-gray-800 font-medium">{staff.email}</div>
                       </div>
-                      <div className="text-2xl font-bold mt-2">{staff.workStats.totalEdited}</div>
-                    </div>
-                    <div className="bg-red-50 rounded-lg p-4">
-                      <div className="flex items-center">
-                        <Trash2 className="h-5 w-5 text-red-600 mr-2" />
-                        <span className="text-sm font-medium text-gray-600">Truyện đã xóa</span>
+                      {staff.phone && (
+                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 transition-all hover:border-teal-200">
+                          <div className="flex items-center mb-2">
+                            <Phone className="h-4 w-4 mr-2 text-gray-600" />
+                            <span className="text-sm font-medium text-gray-600">Phone</span>
+                          </div>
+                          <div className="text-gray-800 font-medium">{staff.phone}</div>
+                        </div>
+                      )}
+                      <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 transition-all hover:border-teal-200">
+                        <div className="flex items-center mb-2">
+                          <Shield className="h-4 w-4 mr-2 text-gray-600" />
+                          <span className="text-sm font-medium text-gray-600">Role</span>
+                        </div>
+                        <div className="text-gray-800 font-medium">{staff.role}</div>
                       </div>
-                      <div className="text-2xl font-bold mt-2">{staff.workStats.totalDeleted}</div>
-                    </div>
-                    <div className="bg-yellow-50 rounded-lg p-4">
-                      <div className="flex items-center">
-                        <FileText className="h-5 w-5 text-yellow-600 mr-2" />
-                        <span className="text-sm font-medium text-gray-600">Chờ duyệt</span>
+                      <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 transition-all hover:border-teal-200">
+                        <div className="flex items-center mb-2">
+                          <Calendar className="h-4 w-4 mr-2 text-gray-600" />
+                          <span className="text-sm font-medium text-gray-600">Created At</span>
+                        </div>
+                        <div className="text-gray-800 font-medium">{formatDate(staff.createdAt)}</div>
                       </div>
-                      <div className="text-2xl font-bold mt-2">{staff.workStats.pendingApproval}</div>
-                    </div>
-                    <div className="bg-green-50 rounded-lg p-4">
-                      <div className="flex items-center">
-                        <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-                        <span className="text-sm font-medium text-gray-600">Đã duyệt (tháng)</span>
+                      <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 transition-all hover:border-teal-200">
+                        <div className="flex items-center mb-2">
+                          <Clock className="h-4 w-4 mr-2 text-gray-600" />
+                          <span className="text-sm font-medium text-gray-600">Last Updated</span>
+                        </div>
+                        <div className="text-gray-800 font-medium">{formatDate(staff.updatedAt)}</div>
                       </div>
-                      <div className="text-2xl font-bold mt-2">{staff.workStats.approvedThisMonth}</div>
-                    </div>
-                    <div className="bg-orange-50 rounded-lg p-4">
-                      <div className="flex items-center">
-                        <AlertCircle className="h-5 w-5 text-orange-600 mr-2" />
-                        <span className="text-sm font-medium text-gray-600">Tỉ lệ từ chối</span>
-                      </div>
-                      <div className="text-2xl font-bold mt-2">{staff.workStats.rejectionRate}</div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {activeTab === 'added' && (
+              {activeTab === 'activity' && (
                 <div>
-                  <h3 className="text-lg font-medium mb-4">Truyện đã thêm ({staff.addedStories.length})</h3>
-                  <div className="overflow-hidden border border-gray-200 rounded-lg">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên truyện</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày thêm</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {staff.addedStories.map((story) => (
-                          <tr key={story.id}>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{story.title}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{story.date}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`px-2 py-1 rounded-full text-xs ${
-                                story.status === 'published' 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : 'bg-yellow-100 text-yellow-800'
-                              }`}>
-                                {story.status === 'published' ? 'Đã xuất bản' : 'Bản nháp'}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <div className="mb-6">
+                    <h3 className="text-lg font-medium mb-4 flex items-center text-gray-800">
+                      <Activity className="h-5 w-5 mr-2 text-teal-600" />
+                      Recent Activity
+                    </h3>
+                    <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
+                      <p className="text-gray-500">No activity data available</p>
+                    </div>
                   </div>
-                </div>
-              )}
 
-              {activeTab === 'deleted' && (
-                <div>
-                  <h3 className="text-lg font-medium mb-4">Truyện đã xóa ({staff.deletedStories.length})</h3>
-                  <div className="overflow-hidden border border-gray-200 rounded-lg">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên truyện</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày xóa</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lý do</th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {staff.deletedStories.map((story) => (
-                          <tr key={story.id}>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{story.title}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{story.date}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{story.reason}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'pending' && (
-                <div>
-                  <h3 className="text-lg font-medium mb-4">Truyện đang xử lý ({staff.pendingStories.length})</h3>
-                  <div className="overflow-hidden border border-gray-200 rounded-lg">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên truyện</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày cập nhật</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hành động</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {staff.pendingStories.map((story) => (
-                          <tr key={story.id}>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{story.title}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{story.date}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {story.action === 'edit' ? 'Chỉnh sửa' : 'Duyệt nội dung'}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              <button className="text-teal-600 hover:text-teal-900 mr-3">Xem</button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <div className="mb-6">
+                    <h3 className="text-lg font-medium mb-4 flex items-center text-gray-800">
+                      <Activity className="h-5 w-5 mr-2 text-teal-600" />
+                      Work History
+                    </h3>
+                    <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
+                      <p className="text-gray-500">No work history data available</p>
+                    </div>
                   </div>
                 </div>
               )}

@@ -1,7 +1,7 @@
 import { FaCheck } from "react-icons/fa";
 import CountdownToMidnight from "./CountDownToMidNight";
 
-const DailyCheckIn = ({ streak = 0, isCheckin = true, handleCheckin }) => {
+const DailyCheckIn = ({ streak = 0, isCheckin = true, handleCheckin, role = 'user' }) => {
   return (
     <div className="max-w-md mx-auto">
       <div className="bg-gradient-to-br from-indigo-900 to-blue-700 rounded-xl shadow-xl overflow-hidden transform transition-all hover:scale-105 border-t border-l border-indigo-400/30">
@@ -76,7 +76,11 @@ const DailyCheckIn = ({ streak = 0, isCheckin = true, handleCheckin }) => {
         <div className="p-4 bg-indigo-900/60 backdrop-blur-sm border-t border-indigo-700 text-sm text-center text-indigo-300">
           <div className="flex justify-center items-center">
             <div className="px-2 py-1 bg-indigo-700/50 rounded mr-2">Today's reward</div>
-            <span className="font-medium">300 XP</span>
+            {role == 'VIP reader' ?
+              <span className="font-medium">400 XP</span>
+              :
+              <span className="font-medium">200 XP</span>
+            }
           </div>
         </div>
       </div>
