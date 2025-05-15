@@ -12,6 +12,9 @@ import { useEffect, useState } from "react";
 //import api
 import { api } from "../../services/api";
 
+//scroll to top
+import scrollToTop from "../../utils/ScrollToTop";
+
 const OtherProfile = () => {
   const navigate = useNavigate();
   const { _id } = useParams() //From rank or comment
@@ -42,6 +45,7 @@ const OtherProfile = () => {
       }
     };
 
+    scrollToTop();
     fetchAccount();
     fetchFavorite();
   }, [_id])
