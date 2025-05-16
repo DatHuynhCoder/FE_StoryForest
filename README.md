@@ -35,15 +35,12 @@ cd FE_StoryForest
 ```
 
 ### Backend Setup
-```sh
-cd backend
-npm install
-npm run app
-```
+Please go to our Backend project for more Infomation
+- [BE_StoryForest](https://github.com/DatHuynhCoder/BE_StoryForest)
 
 ### Frontend Setup
+In Frontend directory:
 ```sh
-cd frontend
 npm install
 npm run dev
 ```
