@@ -13,6 +13,7 @@ import { GiBleedingEye } from "react-icons/gi";
 import { RiUserFollowLine } from "react-icons/ri";
 // gifs
 import processingGif from '../../assets/processing.gif'
+import Tags from '../../components/Tags/Tags'
 
 function MangaList() {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ function MangaList() {
   const [totalPages, setTotalPages] = useState(0)
   const [sortType, setSortType] = useState("normal")
   const [statusType, setStatusType] = useState("normal")
+  const [toggle, setToggle] = useState(false)
 
   const itemsPerPage = 10
 
@@ -161,9 +163,10 @@ function MangaList() {
   }
 
   if (loading) return <Spinner />
-
+  
   return (
     <>
+    <Tags type={'manga'} setToggle={setToggle} toggle={toggle}/>
       {/* <div className='bg-[url("https://static.vecteezy.com/system/resources/previews/042/623/256/non_2x/high-trees-in-forest-illustration-jungle-landscape-vector.jpg")] bg-no-repeat bg-cover fixed left-0 w-full'> */}
       <div className='overflow-y-auto bg-[url("https://static.vecteezy.com/system/resources/previews/042/623/256/non_2x/high-trees-in-forest-illustration-jungle-landscape-vector.jpg")] bg-no-repeat bg-cover left-0 w-full'>
         {/* <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white h-screen pb-30'> */}
@@ -181,7 +184,7 @@ function MangaList() {
                     <div className='flex flex-col flex-2'>
                       {manga.tags.slice(1, 5).map((tag, index) => (
                         <div className='m-1 bg-white' key={index}>
-                          <span className='border rounded-md text-xs md:text-[10px] font-black p-1'>
+                          <span className='border rounded-md text-xs md:text-[10px] font-black p-1' >
                             {tag}
                           </span>
                         </div>

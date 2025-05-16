@@ -219,8 +219,8 @@ function BookDetails() {
         <div className='flex flex-col justify-between w-full'>
           <div className='pt-4 md:pt-20 px-4 md:pl-10 text-center md:text-left'>
             <p className='text-3xl md:text-5xl font-bold text-black md:text-black md:hidden'>{infoManga.title}</p>
-            <p className='text-lg md:text-xl font-bold text-black md:text-black md:hidden'>{
-              infoManga.author.map((author) => author + " ")
+            <p className='text-lg md:text-xl font-bold text-black md:text-black md:hidden cursor-pointer'>{
+              infoManga.author.map((author) => (<span onClick={()=>navigate(`/advanced-search?type=all&genre=All&author=${author}`)}>{author} </span>))
             }
             </p>
           </div>
@@ -251,7 +251,7 @@ function BookDetails() {
 
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>
               {infoManga.tags.map((tag) => (
-                <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }} key={tag} onClick={() => { console.log("do something with ", tag) }}>
+                <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }} key={tag} onClick={()=>navigate(`/advanced-search?type=manga&genre=${tag}&author=None`)}>
                   <span className='text-xs font-black'>{tag}</span>
                 </div>
               ))}
@@ -262,9 +262,9 @@ function BookDetails() {
       <div className='pl-10 pr-10 md:pl-20 md:pr-20 md:mt-5 text-justify'>
         <div className='md:block hidden'>
           <p className='text-3xl md:text-5xl font-bold text-black md:text-black'>{infoManga.title}</p>
-          <p className='text-lg md:text-xl font-bold text-black md:text-black'>{
-            infoManga.author.map((author) => author + " ")
-          }
+          <p className='text-lg md:text-xl font-bold text-black md:text-black cursor-pointer'>{
+              infoManga.author.map((author) => (<span className='hover:text-[#00c853]' onClick={()=>navigate(`/advanced-search?type=all&genre=All&author=${author}`)}>{author} </span>))
+            }
           </p>
         </div>
         {infoManga.synopsis.split('---')[0]}

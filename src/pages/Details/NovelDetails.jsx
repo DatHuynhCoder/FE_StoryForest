@@ -244,7 +244,7 @@ function NovelDetails() {
 
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>
               {infoNovel.tags.map((tag) => (
-                <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }} key={tag} onClick={() => { console.log("do something with ", tag) }}>
+                <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }} key={tag} onClick={()=>navigate(`/advanced-search?type=novel&genre=${tag}&author=None`)}>
                   <span className='text-xs font-black'>{tag}</span>
                 </div>
               ))}
@@ -255,9 +255,9 @@ function NovelDetails() {
       <div className='pl-10 pr-10 md:pl-20 md:pr-20 md:mt-5 text-justify'>
         <div className='md:block hidden'>
           <p className='text-3xl md:text-5xl font-bold text-black md:text-black'>{infoNovel.title}</p>
-          <p className='text-lg md:text-xl font-bold text-black md:text-black'>{
-            infoNovel.author
-          }
+          <p className='text-lg md:text-xl font-bold text-black md:text-black cursor-pointer'>{
+              infoNovel.author.map((author) => (<span className='hover:text-[#00c853]' onClick={()=>navigate(`/advanced-search?type=novel&genre=All&author=${author}`)}>{author} </span>))
+            }
           </p>
         </div>
         {infoNovel.synopsis}
