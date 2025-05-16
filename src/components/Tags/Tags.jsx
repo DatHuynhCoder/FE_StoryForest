@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import styles from '../AdvancedSearch/AdvancedSearch.module.css'
+import styles from '../Tags/Tags.module.css'
 import { api } from '../../services/api'
 import { FaCaretUp, FaCaretDown } from "react-icons/fa";
+import { useNavigate } from "react-router";
 
 function Tags({type, setToggle, toggle}) {
     // Các thể loại Manga dùng để lọc
+    const navigate = useNavigate();
     const mangaGenres = [
       "GameLit", "Portal Fantasy / Isekai", "Anti-Hero Lead", "War and Military", "Grimdark", "Action",
       "Adventure", "Fantasy", "Sci-fi", "Artificial Intelligence", "Attractive Lead", "Cyberpunk",
@@ -33,7 +35,7 @@ function Tags({type, setToggle, toggle}) {
       "Sports", "Magical Girls", "Office Workers", "Doujinshi"
     ];
 
-    const [genres, setGenres] = useState(mangaGenres); // Danh sách thể loại hiện tại
+    const [genres, setGenres] = useState(type == 'manga' ? mangaGenres : novelGenres); // Danh sách thể loại hiện tại
 
     const [genre, setGenre] = useState('');
   useEffect(()=>{
@@ -67,7 +69,7 @@ function Tags({type, setToggle, toggle}) {
                           className={[styles.item_type, genre == item ? styles.selected_genre : ''].join(' ')}
                           type="button"
                           value={item}
-                          onClick={() => setGenre(item)}
+                          onClick={() => { navigate(`/advanced-search?type=manga&genre=${item}&author=None`)}}
                         />
                       </li>
                     ))}
