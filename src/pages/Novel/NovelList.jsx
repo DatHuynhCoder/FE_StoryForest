@@ -8,6 +8,7 @@ import { MdSmartDisplay } from "react-icons/md";
 import { FaFlagCheckered } from "react-icons/fa";
 import { PiShootingStarFill } from "react-icons/pi";
 import { FiRefreshCw } from "react-icons/fi";
+import Tags from '../../components/Tags/Tags'
 
 function NovelList() {
   const navigate = useNavigate()
@@ -36,7 +37,7 @@ function NovelList() {
   const [fetchOption, setFetchOption] = useState('normal')
 
   const itemsPerPage = 10
-
+  const [toggle, setToggle] = useState(false)
 
   const fetchNovels = (page) => {
     console.log("check page: ", page)
@@ -134,6 +135,7 @@ function NovelList() {
 
   return (
     <>
+    <Tags type={'novel'} setToggle={setToggle} toggle={toggle}/>
       <div className='bg-[url("https://static.vecteezy.com/system/resources/previews/042/623/256/non_2x/high-trees-in-forest-illustration-jungle-landscape-vector.jpg")] bg-no-repeat bg-cover left-0 w-full'>
         <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white h-screen pb-30'>
           <div className='flex-3 pb-18 border overflow-y-auto h-full'>

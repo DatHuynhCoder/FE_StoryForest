@@ -220,7 +220,7 @@ function BookDetails() {
           <div className='pt-4 md:pt-20 px-4 md:pl-10 text-center md:text-left'>
             <p className='text-3xl md:text-5xl font-bold text-black md:text-black md:hidden'>{infoManga.title}</p>
             <p className='text-lg md:text-xl font-bold text-black md:text-black md:hidden cursor-pointer'>{
-              infoManga.author.map((author) => (<span onClick={()=>navigate(`/advanced-search?type=all&genre=All&author=${author}`)}>{author} </span>))
+              infoManga.author.map((author) => (<span className='hover:text-[#00c853]' onClick={()=>navigate(`/advanced-search?type=all&genre=All&author=${author}`)}>{author} </span>))
             }
             </p>
           </div>

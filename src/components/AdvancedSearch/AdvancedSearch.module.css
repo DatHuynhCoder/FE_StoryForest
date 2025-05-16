@@ -7,7 +7,7 @@
 }
 
 .formRow {
-  height: 150px;
+  height: 140px;
   flex-direction: row;
   display: flex;
   width: 100%;
@@ -121,6 +121,37 @@
 
 .searchButtonText {
   font-weight: 500;
+}
+
+.tagsMobile {
+  height: fit-content;
+  width: 30%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  row-gap: 10px;
+  margin: 5px;
+}
+
+.tagsMobile .tag {
+  border: 1px solid;
+  border-radius: 0.375rem; /* equivalent to rounded-md in Tailwind */
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 900; /* font-black */
+  padding: 0.25rem; /* p-1 */
+  margin: 5px;
+}
+
+/* For larger screens (md breakpoint) */
+@media (max-width: 768px) {
+  .tagsMobile .tag {
+    font-size: 0.625rem; /* md:text-[10px] */
+  }
+
+  .tagsMobile{
+    flex-direction: row;
+    flex:3;
+  }
 }
 @media screen and (max-width: 768px){
   .formRow{

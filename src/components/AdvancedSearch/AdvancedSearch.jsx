@@ -1,53 +1,32 @@
-import React, { use, useEffect, useState } from 'react'
-import styles from '../AdvancedSearch/AdvancedSearch.module.css'
-import { api } from '../../services/api';
-import { useNavigate, useLocation } from 'react-router-dom';
-
+import React, { use, useEffect, useState } from "react";
+import styles from "../AdvancedSearch/AdvancedSearch.module.css";
+import { api } from "../../services/api";
+import { useNavigate, useLocation } from "react-router-dom";
+import { TbReload } from "react-icons/tb";
 
 function AdvancedSearch() {
+  // Router hooks
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
-   const typeParam = queryParams.get('type');
-   const genreParam = queryParams.get('genre');
-   const authorParam = queryParams.get('author');
-    const updateQuery = () => {
-    const params = new URLSearchParams(location.search);
-    params.set('type', type ? type : 'all'); 
-     params.set('genre', genre ? genre : 'All'); 
-      params.set('author', author ? author : 'None'); 
-    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
-  };
- 
-      const mangaGenres = [
-      "GameLit", "Portal Fantasy / Isekai", "Anti-Hero Lead", "War and Military", "Grimdark", "Action",
-      "Adventure", "Fantasy", "Sci-fi", "Artificial Intelligence", "Attractive Lead", "Cyberpunk",
-      "Dystopia", "Hard Sci-fi", "Low Fantasy", "Magic", "Male Lead", "Reincarnation",
-      "Supernatural", "Slice of Life", "Drama", "Gender Bender", "LitRPG", "Psychological",
-      "Female Lead", "High Fantasy", "Urban Fantasy", "Super Heroes", "Comedy", "Soft Sci-fi",
-      "Progression", "Non-Human Lead", "Strong Lead", "Xianxia", "School Life", "Multiple Lead Characters",
-      "Ruling Class", "Steampunk", "Romance", "Time Travel", "Dungeon", "Horror",
-      "Martial Arts", "Contemporary", "Secret Identity", "Wuxia", "Harem", "Historical",
-      "Post Apocalyptic", "Tragedy", "First Contact", "Strategy", "Genetically Engineered", "Mystery",
-      "Space Opera", "Mythos", "Villainous Lead", "Satire", "Technologically Engineered"
-    ];
-    
-    // Các thể loại Novel dùng để lọc
-    const novelGenres = [
-      "Award Winning", "Monsters", "Action", "Long Strip", "Adventure", "Magic", "Drama",
-      "Fantasy", "Web Comic", "Supernatural", "Adaptation", "Full Color", "Romance",
-      "Comedy", "School Life", "Slice of Life", "Gyaru", "Reincarnation", "Demons",
-      "Martial Arts", "Harem", "Isekai", "Samurai", "Sci-Fi", "Military",
-      "Monster Girls", "Psychological", "Sexual Violence", "Philosophical", "Gore", "Horror",
-      "Tragedy", "Superhero", "Mystery", "Mecha", "Video Games", "Villainess",
-      "Delinquents", "Survival", "Ghosts", "Thriller", "Historical", "Medical",
-      "Animals", "Police", "Crossdressing", "Post-Apocalyptic", "Crime", "Time Travel",
-      "Loli", "Genderswap", "Ninja", "Cooking", "Vampires", "Mafia",
-      "Girls' Love", "Music", "Zombies", "Shota", "Reverse Harem", "Aliens",
-      "Sports", "Magical Girls", "Office Workers", "Doujinshi"
-    ];
 
-    const authors = [
+  // State for query parameters
+  const [type, setType] = useState(queryParams.get("type") || "all");
+  const [genre, setGenre] = useState(queryParams.get("genre") || "All");
+  const [author, setAuthor] = useState(queryParams.get("author") || "None");
+  const [search, setSearch] = useState(queryParams.get("search") || "");
+  const [question, setQuestion] = useState("");
+
+  // State for data
+  const [mangaGenres, setMangaGenres] = useState([]);
+  const [novelGenres, setNovelGenres] = useState([]);
+  const [listGenres, setListGenres] = useState([]);
+  const [listResult, setListResult] = useState([]);
+  const [listResultAdvanced, setListResultAdvanced] = useState([]);
+  const [isVIP, setIsVIP] = useState(false);
+
+  // Author list (consider moving to a separate constants file)
+ const authors = [
   "h-goon (현군)", "Chugong (추공)", "Gi So-Ryeong (기소령)", "Fukuda Shinichi", "Sakano Anri", "Aizawa Daisuke", "Fuse", "Takahiro", "Yamada Kanehito", "Kentaro Miura",
   "Mori Kouji", "Fujimoto Tatsuki", "Oda Tomohito", "Rifujin na Magonote", "ONE", "774 (Nanashi)", "Mishima Yomu", "Sogano Shachi", "Kinojo Miya", "Baba Okina",
   "Azumi Kei", "Izumi Tomoki", "Ononata Manimani", "Tanabata Satori", "Nagaoka Taichi", "Akutami Gege", "Hyuuga Natsu", "Nanao Itsuki", "Endou Tatsuya", "Nishi Osamu",
@@ -68,284 +47,320 @@ function AdvancedSearch() {
   "ToraAKR", "Delemhach", "Omega_93", "B for Byrja", "GCLopes", "J.Drude", "Frostbird", "DWinchester", "ahoge_bird", "Halosty",
   "Vihyungrang", "Skarabrae", "R.C. Joshua", "GMSteward", "Foxern", "DWS", "M.Tress", "Kia Leep", "Philippe", "BleedingTears",
   "Dirk Grey", "Cytotoxin", "Daoist Enigma", "Tribulation", "Taylor Colt", "DarkTechnomancer", "C. M. ANTAL", "DangerDesperado", "Path Liar", "arg3nt",
-  "Aliapanacea", "Sylesth", "Extra26", "A.M. Long"
+  "Aliapanacea", "Sylesth", "Extra26", "A.M. Long", "Halosty"
 ];
-  const [type, setType] = useState('all')
-  const [listGenres, setListGenres] = useState([...mangaGenres, ...novelGenres])
-  const [isVIP, setIsVIP] = useState(false);
-  const [genre, setGenre] = useState('All');
-  const [author, setAuthor] = useState('None')
-  const [question, setQuestion]=useState('')
 
-const [listResult, setListResult] = useState([])
 
-  const handleSearchButton = async() =>{
+  // Update URL query parameters
+  const updateQuery = () => {
+    const params = new URLSearchParams();
+    params.set("type", type || "all");
+    params.set("genre", genre || "All");
+    params.set("author", author || "None");
+    params.set("search", search || "");
+
+    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+  };
+
+  // Fetch genres from API
+  const fetchGenres = async () => {
+    try {
+      const [resManga, resNovel] = await Promise.all([
+        api.get("/api/manga/genres"),
+        api.get("/api/novel/genres"),
+      ]);
+
+      const manga = resManga.data.data || [];
+      const novel = resNovel.data.data || [];
+
+      setMangaGenres(manga);
+      setNovelGenres(novel);
+      setListGenres([...new Set([...manga, ...novel])]);
+    } catch (error) {
+      console.error("Error fetching genres:", error.message);
+    }
+  };
+
+  // Handle advanced search
+  const handleSearchButton = async () => {
+    if (!question.trim()) {
+      setListResultAdvanced([]);
+      return;
+    }
 
     try {
-      const res = await api.post('/api/vipreader/advanced-search',{question: question})
-      console.log(res)
-      
-      setTimeout(()=>{
-             setListResult(res.data) 
-      }, 1000)
-      setType('all');
-    setGenre('All')
-   setAuthor('None')
-   
-
-
+      const res = await api.post("/api/vipreader/advanced-search", {
+        question,
+      });
+      setTimeout(() => {
+        setListResultAdvanced(res.data), setListResult(res.data);
+      }, 1000);
+      resetFilters();
     } catch (error) {
-      
+      console.error("Advanced search error:", error);
     }
-    
-  }
-  // Các thể loại Manga dùng để lọc
+  };
 
-  useEffect(()=>{
-    setType(typeParam ? typeParam : 'all');
-    setGenre(genreParam ? genreParam :'All')
-    setAuthor(authorParam ? authorParam :'None')
-    
-  },[])
+  // Reset filters
+  const resetFilters = () => {
+    setType("all");
+    setGenre("All");
+    setAuthor("None");
+  };
 
+  // Main data fetching effect
+  const fetchData = async () => {
+    try {
+      let results = [];
 
-   useEffect(() => {
-     const fetchData = async () => {
-       try {
-         const mangaRes = await api.get("/api/manga");
-         const novelRes = await api.get("/api/novel");
- 
-         const combinedResults = [...mangaRes.data.data, ...novelRes.data.data];
-         let results = combinedResults;
- 
-         if (type!= "all") {
-           results = results.filter((item) => item.type == type);
-         }
+      // Initial data fetch
+      if (!search && !question) {
+        const [mangaRes, novelRes] = await Promise.all([
+          api.get("/api/manga"),
+          api.get("/api/novel"),
+        ]);
+        results = [...mangaRes.data.data, ...novelRes.data.data];
+      }
 
-         if(genre != 'All'){
-           results = results.filter((item) => item.tags.includes(genre));
-         } 
+      // Search by term
+      if (search) {
+        const res = await api.get(`/api/search/${search}`);
+        results = res.data.data;
+      }
 
-        if(author != 'None'){
-           results = results.filter((item) => item.author.includes(author));
-         } 
-         
-         console.log(results);
-         setListResult(results);
-       } catch (error) {
-         console.error(error);
-       }
-     };
-     
-     fetchData();
-     updateQuery()
-   }, [type, genre, author]);
+      if (question) {
+        results = listResultAdvanced;
+      }
+
+      // Apply filters
+      if (type !== "all") {
+        results = results.filter((item) => item.type === type);
+      }
+
+      if (genre !== "All") {
+        results = results.filter((item) => item.tags.includes(genre));
+      }
+
+      if (author !== "None") {
+        results = results.filter((item) => item.author.includes(author));
+      }
+
+      setListResult(results);
+    } catch (error) {
+      console.error("Data fetch error:", error);
+    }
+  };
+
+  // Effects
+  useEffect(() => {
+    fetchGenres();
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+    updateQuery();
+  }, [type, genre, author, search, question]);
   return (
     <>
       <div className={styles.container}>
-      <div className={styles.formRow}>
-        <div className={styles.formGroup}>
-          <div className={styles.radioGroup}>
-            <p className={styles.radioLabel}>Type:</p>
-             <div className={styles.radioOption}>
-              <input
-                type="radio"
-                value={"all"}
-                name="type"
-                
-                checked={type == "all"}
-                onChange={(e) => {
-                  setType(e.target.value), setListGenres(mangaGenres);
-                }}
-              />
-              <p>All</p>
-            </div>
-            <div className={styles.radioOption}>
-              <input
-                type="radio"
-                value={"manga"}
-                name="type"
-                checked={type == "manga"}
-                onChange={(e) => {
-                  setType(e.target.value), setListGenres(mangaGenres);
-                }}
-              />
-              <p>Manga</p>
-            </div>
-            <div className={styles.radioOption}>
-              <input
-                type="radio"
-                value={"novel"}
-                name="type"
-                onChange={(e) => {
-                 setType(e.target.value), setListGenres(novelGenres);
-                }}
-                checked={type == "novel"}
-              />
-              <p>Novel</p>
-            </div>
-          </div>
-          
-          <div className={styles.selectGroup}>
-            <p className={styles.selectLabel}>Genres: </p>
-            <select
-              className={styles.select}
-              value={genre}
-              onChange={(e) => setGenre(e.target.value)}
-            >
-              <option key={-1} value={'All'}>All</option>
-              {listGenres.map((item, index) => (
-                <option key={index} value={item}>{item}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.selectGroup}>
-            <p className={styles.selectLabel}>Author: </p>
-            <select
-              className={styles.select}
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-            >
-              <option key={-1} value={'None'}>None</option>
-              {authors.map((item, index) => (
-                <option key={index}>{item}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {isVIP ? (
-          <>
-          <div className={styles.vipSection}>
-            <p className={styles.synopsisLabel}>Synopsis:</p>
-            <div className={styles.textareaContainer}>
-              <textarea
-                className={styles.textarea}
-                placeholder="Enter what you remember about the story..."
-                value={question}
-                onChange={(e)=>setQuestion(e.target.value)}
-              ></textarea>
-            </div>
-               
-          </div>
-          <div
-        className={styles.searchButton}
-        onClick={handleSearchButton}
-      >
-        <p className={styles.searchButtonText}>Search</p>
-      </div></>
-        ) : (
-          <>
-          <div className={styles.vipSection}>
-            <div>
-              <p>Become VIP to search stories from memory...</p>
-              <div
-                className={styles.vipButton}
-                onClick={() => setIsVIP(true)}
-              >
-                <p className={styles.vipButtonText}>To VIP</p>
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
+            <div className={styles.radioGroup}>
+              <p className={styles.radioLabel}>Type:</p>
+              <div className={styles.radioOption}>
+                <input
+                  type="radio"
+                  value={"all"}
+                  name="type"
+                  checked={type == "all"}
+                  onChange={(e) => {
+                    setType(e.target.value);
+                    setListGenres([...mangaGenres, ...novelGenres]);
+                    setGenre("All");
+                  }}
+                />
+                <p>All</p>
+              </div>
+              <div className={styles.radioOption}>
+                <input
+                  type="radio"
+                  value={"manga"}
+                  name="type"
+                  checked={type == "manga"}
+                  onChange={(e) => {
+                    setType(e.target.value), setListGenres(mangaGenres);
+                    setGenre("All");
+                  }}
+                />
+                <p>Manga</p>
+              </div>
+              <div className={styles.radioOption}>
+                <input
+                  type="radio"
+                  value={"novel"}
+                  name="type"
+                  onChange={(e) => {
+                    setType(e.target.value), setListGenres(novelGenres);
+                    setGenre("All");
+                  }}
+                  checked={type == "novel"}
+                />
+                <p>Novel</p>
               </div>
             </div>
-            
+
+            <div className={styles.selectGroup}>
+              <p className={styles.selectLabel}>Genres: </p>
+              <select
+                className={styles.select}
+                value={genre}
+                onChange={(e) => setGenre(e.target.value)}
+              >
+                <option key={-1} value={"All"}>
+                  All
+                </option>
+                {listGenres.map((item, index) => (
+                  <option key={index} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.selectGroup}>
+              <p className={styles.selectLabel}>Author: </p>
+              <select
+                className={styles.select}
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+              >
+                <option key={-1} value={"None"}>
+                  None
+                </option>
+                {authors.map((item, index) => (
+                  <option key={index}>{item}</option>
+                ))}
+              </select>
+            </div>
           </div>
-       
-      </>
-        )}
-           
-        
+
+          {isVIP ? (
+            <>
+              <div className={styles.vipSection}>
+                <p className={styles.synopsisLabel}>Synopsis:</p>
+                <div className={styles.textareaContainer}>
+                  <textarea
+                    className={styles.textarea}
+                    placeholder="Enter what you remember about the story..."
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                  ></textarea>
+                </div>
+              </div>
+              <div className={styles.searchButton} onClick={handleSearchButton}>
+                <p className={styles.searchButtonText}>Search</p>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className={styles.vipSection}>
+                <div>
+                  <p>Become VIP to search stories from memory...</p>
+                  <div
+                    className={styles.vipButton}
+                    onClick={() => setIsVIP(true)}
+                  >
+                    <p className={styles.vipButtonText}>To VIP</p>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        <div
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            setSearch(""),
+              setAuthor("None"),
+              setGenre("All"),
+              setType("all"),
+              setQuestion("");
+          }}
+        >
+          <TbReload size={30} />
+        </div>
       </div>
-      
-   
-    </div>
-    {listResult.length !== 0 ? (
-                        listResult.map((result, index) => (
-                          <div
-                            className="flex md:flex-row flex-col p-5 border-b"
-                            key={index}
-                          >
-                            <div className="flex-1">
-                              <img
-                                src={result.bookImg?.url}
-                                alt=""
-                                className="w-30 m-auto"
-                                loading="lazy"
-                              />
-                            </div>
-                            <div className="flex-4">
-                              <p
-                                onClick={() =>
-                                  navigate(`/${result.type}/${result._id}`)
-                                }
-                                className="text-lg md:text-xl font-bold text-green-500 text-center hover:underline cursor-pointer"
-                              >
-                                {result.title}
-                              </p>
-                              <div className="flex">
-                                {/* <div className="flex flex-col flex-2"> */}
-                                  <div style={{ height:'fit-content', width:'30%', display:'flex', flexWrap:'wrap', flexDirection: 'row', rowGap:'10px'}}>
-                                  
-                                  {result.tags?.map((tag, index) => (
-                                    
-                                      <span className="border rounded-md text-xs md:text-[10px] font-black p-1" style={{height:'fit-content', margin:'5px'}}>
-                                        {tag}
-                                      </span>
-                                    
-                                  ))}
-                                </div>
-                                <div className="flex-2">
-                                  <p className="text-right">
-                                    <span className="font-[1000]">
-                                      {result.followers}{" "}
-                                    </span>
-                                    <b>FOLLOWERS</b>
-                                  </p>
-                                  <p className="text-right">
-                                    <span className="font-[1000]">
-                                      {result.views}{" "}
-                                    </span>
-                                    <b>VIEWS</b>
-                                  </p>
-                                  <p className="text-right">
-                                    <b>RATE:</b>
-                                    <span className="font-[1000]">
-                                      {" "}
-                                      {result.rate}
-                                    </span>
-                                  </p>
-                                  <p className="text-right">
-                                    <b></b>
-                                    <span className="font-[1000]">
-                                      {" "}
-                                      {result.type?.toUpperCase()}
-                                    </span>
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="flex md:flex-row flex-col p-5 border-b">
-                          <div className="flex-1">
-                            <div className="w-30 m-auto"></div>
-                          </div>
-                          <div className="flex-4">
-                            <p className="text-lg md:text-xl font-bold text-green-500 text-center hover:underline cursor-pointer">
-                              Nothing to show
-                            </p>
-                            <div className="flex">
-                              <div className="flex flex-col flex-2"></div>
-                              <div className="flex-2"></div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    
-                
-                
+      {listResult.length !== 0 ? (
+        listResult.map((result, index) => (
+          <div className="flex md:flex-row flex-col p-5 border-b" key={index}>
+            <div className="flex-1">
+              <img
+                src={result.bookImg?.url}
+                alt=""
+                className="w-30 m-auto"
+                loading="lazy"
+              />
+            </div>
+            <div className="flex-4">
+              <p
+                onClick={() => navigate(`/${result.type}/${result._id}`)}
+                className="text-lg md:text-xl font-bold text-green-500 text-center hover:underline cursor-pointer"
+              >
+                {result.title}
+              </p>
+              <div className="flex">
+                {/* <div className="flex flex-col flex-2"> */}
+                <div className={styles.tagsMobile}>
+                  {result.tags?.map((tag, index) => (
+                    <span key={index} className={styles.tag}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex-2">
+                  <p className="text-right">
+                    <span className="font-[1000]">{result.followers} </span>
+                    <b>FOLLOWERS</b>
+                  </p>
+                  <p className="text-right">
+                    <span className="font-[1000]">{result.views} </span>
+                    <b>VIEWS</b>
+                  </p>
+                  <p className="text-right">
+                    <b>RATE:</b>
+                    <span className="font-[1000]"> {result.rate}</span>
+                  </p>
+                  <p className="text-right">
+                    <b></b>
+                    <span className="font-[1000]">
+                      {" "}
+                      {result.type?.toUpperCase()}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))
+      ) : (
+        <div className="flex md:flex-row flex-col p-5 border-b">
+          <div className="flex-1">
+            <div className="w-30 m-auto"></div>
+          </div>
+          <div className="flex-4">
+            <p className="text-lg md:text-xl font-bold text-green-500 text-center hover:underline cursor-pointer">
+              Nothing to show
+            </p>
+            <div className="flex">
+              <div className="flex flex-col flex-2"></div>
+              <div className="flex-2"></div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
 
-export default AdvancedSearch
+export default AdvancedSearch;

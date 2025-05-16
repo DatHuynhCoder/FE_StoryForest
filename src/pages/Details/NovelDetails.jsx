@@ -214,8 +214,10 @@ function NovelDetails() {
         <div className='flex flex-col justify-between w-full'>
           <div className='pt-4 md:pt-20 px-4 md:pl-10 text-center md:text-left'>
             <p className='text-3xl md:text-5xl font-bold text-black md:text-black md:hidden'>{infoNovel.title}</p>
-            <p className='text-lg md:text-xl font-bold text-black md:text-black md:hidden'>
-              {infoNovel.author}
+            <p className='text-lg md:text-xl font-bold text-black md:text-black md:hidden hover:text-[#00c853]'>
+              {
+              infoNovel.author.map((author) => (<span className='hover:text-[#00c853]' onClick={()=>navigate(`/advanced-search?type=novel&genre=All&author=${author}`)}>{author} </span>))
+            }
             </p>
           </div>
 
