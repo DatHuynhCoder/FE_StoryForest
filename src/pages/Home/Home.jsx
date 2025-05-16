@@ -312,7 +312,7 @@ function Home() {
 				className="fixed bottom-5 right-5 p-3 bg-[#095533] text-white font-bold rounded-full shadow-lg flex items-center"
 				onClick={() => setShowContact(true)}
 			>
-				<IoIosContacts className="mr-2 text-2xl" /> Liên hệ
+				<IoIosContacts className="mr-2 text-2xl" /> Contact
 			</button>
 			{/* Contact Form */}
 			{showContact && (

@@ -10,10 +10,10 @@ const ContactForm = () => {
           style={{ backgroundImage: "url('/images/brg_contact.png')" }}
         >
           <div className="w-4/5 md:h-3/5 bg-[#D9D9D9]/50 rounded-lg p-4">
-            <h2 className="text-lg md:text-xl font-bold">Thông tin liên hệ</h2>
-            <p className="italic text-xs md:text-sm mt-2">Bạn cần hỗ trợ?</p>
+            <h2 className="text-lg md:text-xl font-bold">Contact Information</h2>
+            <p className="italic text-xs md:text-sm mt-2">Do you need assistance?</p>
             <p className="italic text-xs md:text-sm mt-2">
-              Hãy gửi tin nhắn cho chúng tôi!
+             Please send us a message!
             </p>
 
             <div className="mt-6 space-y-2 flex flex-col justify-center items-center ">
@@ -46,7 +46,7 @@ const ContactForm = () => {
               <img src="/images/logo.png" alt="Logo" className="w-1/2" />
             </div>
             <div>
-              <label className="block font-semibold">Tên người dùng:</label>
+              <label className="block font-semibold">Username:</label>
               <input className="w-full p-2 border rounded-md text-xs md:text-sm" type="text" />
             </div>
             <div>
@@ -54,23 +54,23 @@ const ContactForm = () => {
               <input className="w-full p-2 border rounded-md text-xs md:text-sm" type="email" />
             </div>
             <div>
-              <label className="block font-semibold">Số điện thoại:</label>
+              <label className="block font-semibold">Phone number:</label>
               <input className="w-full p-2 border rounded-md text-xs md:text-sm" type="text" />
             </div>
             <div>
-              <label className="block font-semibold">Loại vấn đề:</label>
+              <label className="block font-semibold">Type of issue:</label>
               <select className="w-full p-2 border rounded-md text-xs md:text-sm">
-                <option>Chọn vấn đề</option>
-                <option>Hỗ trợ kỹ thuật</option>
-                <option>Đóng góp ý kiến</option>
+                <option>Choose an issue</option>
+                <option>Technical support</option>
+                <option>Contribute ideas</option>
               </select>
             </div>
             <div>
-              <label className="block font-semibold">Nội dung:</label>
+              <label className="block font-semibold">Content:</label>
               <textarea className="w-full h-20 p-2 border rounded-md text-xs md:text-sm"></textarea>
             </div>
             <button className="w-full bg-[#B3D8A1] text-white p-2 rounded-md font-semibold text-xs md:text-sm hover:bg-green-600">
-              Gửi
+              Send
             </button>
           </form>
         </div>

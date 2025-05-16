@@ -1,211 +1,174 @@
-/* Container chính của trang */
 .container {
-    display: flex;
+  padding: 20px;
+  background-color: #c8e6c9;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
+
+.formRow {
+  height: 140px;
+  flex-direction: row;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 10px;
+}
+
+.radioLabel {
+  font-weight: 500;
+}
+
+.radioOption {
+  display: flex;
+  gap: 5px;
+}
+
+.selectGroup {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.selectLabel {
+  font-weight: 500;
+}
+
+.select {
+  width: 250px;
+  height: 40px;
+  font-size: 16px;
+  padding: 8px;
+  border-radius: 6px;
+  box-shadow: 2px 2px 5px rgba(45, 44, 44, 0.4);
+  background-color: white;
+}
+
+.vipSection {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 150px;
+  padding: 10px 10px 10px 20px;
+  margin-left: 25px;
+  border-left: 2px solid;
+}
+
+.synopsisLabel {
+  font-weight: 500;
+}
+
+.textareaContainer {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  padding: 10px 10px 0 10px;
+}
+
+.textarea {
+  all: unset;
+  height: 100%;
+  width: 100%;
+  box-shadow: 2px 2px 5px rgba(45, 44, 44, 0.4);
+  border-radius: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: white;
+}
+
+.vipPrompt {
+  margin: 20px 0 0 10px;
+}
+
+.vipButton {
+  margin: 20px 0 0 10px;
+  height: 40px;
+  width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgb(211, 123, 29) 0%, rgb(220, 39, 22) 100%);
+}
+
+.vipButtonText {
+  font-weight: 500;
+  color: white;
+}
+
+.searchButton {
+  margin: 10px 0 0 10px;
+  height: 40px;
+  width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgb(103, 228, 65) 0%, #5FFFB8 100%);
+  box-sizing: border-box;
+}
+
+.searchButtonText {
+  font-weight: 500;
+}
+
+.tagsMobile {
+  height: fit-content;
+  width: 30%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  row-gap: 10px;
+  margin: 5px;
+}
+
+.tagsMobile .tag {
+  border: 1px solid;
+  border-radius: 0.375rem; /* equivalent to rounded-md in Tailwind */
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 900; /* font-black */
+  padding: 0.25rem; /* p-1 */
+  margin: 5px;
+}
+
+/* For larger screens (md breakpoint) */
+@media (max-width: 768px) {
+  .tagsMobile .tag {
+    font-size: 0.625rem; /* md:text-[10px] */
+  }
+
+  .tagsMobile{
+    flex-direction: row;
+    flex:3;
+  }
+}
+@media screen and (max-width: 768px){
+  .formRow{
     flex-direction: column;
-    background-color: #095533;
-    cursor: pointer;
-  }
-  
-  /* Vùng chứa các nút tùy chọn: Manga, Novel, Tìm kiếm nâng cao */
-  .container_options {
-    display: flex;
-    margin: 10px calc(100vw / 24);
-    justify-content: space-between;
-    cursor: pointer;
-  }
-  
-  /* Vùng nội dung chính */
-  .container_content {
-    background-color: #042818;
-    padding: 10px calc(100vw / 24);
-    cursor: pointer;
-  }
-  
-  /* Danh sách các thể loại (genre) hiển thị theo dạng lưới */
-  .container_types {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  /* Nút đại diện cho từng thể loại */
-  .item_type {
-    height: 40px;
-    width: 100%;
-    font-size: small;
-    line-height: 15px;
-    padding-left: 15px;
-  
-    color: white;
-    text-align: start;
-    border-radius: 20px;
-    vertical-align: middle;
-  }
-  
-  /* Hover và trạng thái đã chọn của thể loại */
-  .item_type:hover,
-  .selected_genre {
-    background-color: #b3d8a8;
-    color: black;
-  }
-  
-  /* Tùy chọn (tab) như Manga, Novel, Tìm kiếm nâng cao */
-  .option {
-    text-align: center;
-    padding: 5px 10px;
-    font-size: small;
-    cursor: pointer;
-  }
-  
-  /* Trạng thái được chọn cho option */
-  .selected {
-    background-color: #b3d8a8;
-    border-radius: 60px;
-    cursor: pointer;
-  }
-  
-  /* Container bao quanh tất cả các option */
-  .options {
-    display: flex;
-    background-color: #fbffe4;
-    border-radius: 60px;
-    cursor: pointer;
-  }
-  
-  /* Biểu mẫu tìm kiếm nâng cao */
-  .advanced_form {
-    display: grid;
-    grid-template-columns: 30% 70%;
+    height: auto;
+    justify-content: flex-start;
+    align-items: flex-start;
     row-gap: 10px;
-  }
   
-  /* Ô nhập nội dung (textarea) */
-  .description {
-    border: 1px solid;
-    resize: none;
-    border-radius: 10px;
-    background-color: #fbffe4;
-    font-size: small;
-    padding: 5px 10px;
-    outline: none;
   }
-  
-  /* Ô input (nhập tên truyện, tên nhân vật) */
-  .input {
-    box-sizing: border-box;
-    border: 1px solid;
+
+  .vipSection{
+    border: none;
+    padding: 0;
+    margin: 10px 0;
+    border-top: 2px solid;
+    padding-top: 10px;
     width: 100%;
-    border-radius: 60px;
-    background-color: #fbffe4;
-    padding: 2px 10px;
-    font-size: small;
   }
-  
-  /* Khi input được focus */
-  .input:focus {
-    outline: none;
-  }
-  
-  /* Label của input/textarea */
-  .label {
-    color: white;
-    font-weight: bold;
-    font-size: small;
-    cursor: pointer;
-    height: 36px;
-  }
-  
-  /* Vùng chứa nút submit (nằm bên phải) */
-  .container_submit {
-    grid-column-start: 2;
-    display: flex;
-    justify-content: end;
-  }
-  
-  /* Nút submit tìm kiếm */
-  .submit {
-    width: 50%;
-    background-image: linear-gradient(to right, #d9ff00, #38e397);
-    border-radius: 60px;
-    font-size: small;
-    font-weight: bold;
-    height: 30px;
-    cursor: auto;
-  }
-  
-  /* Hover nút submit */
-  .submit:hover {
-    opacity: 0.7;
-  }
-  
-  /* Kết quả từng item sau khi tìm kiếm */
-  .container_item {
-    display: flex;
-    margin: 10px;
-    background-color: #b3d8a8;
-    padding: 10px;
-    border-radius: 10px;
-  }
-  
-  /* Nội dung của mỗi item */
-  .container_content_item {
-    padding: 2px 10px;
-  }
-  
-  /* Rút gọn mô tả, chỉ hiển thị 5 dòng đầu */
-  .description_item {
-    display: -webkit-box;
-    -webkit-line-clamp: 5; /* Giới hạn 5 dòng */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: all 0.3s ease;
-  }
-  
-  /* Ảnh thumbnail của truyện */
-  .thumbnail {
-    max-width: 120px;
-  }
-  
-  /* Giao diện dành cho màn hình lớn (PC) */
-  @media screen and (min-width: 1024px) {
-    /* Thay đổi số cột thể loại trên màn hình lớn */
-    .container_types {
-      grid-template-columns: repeat(7, 1fr);
-    }
-  
-    /* Biểu mẫu nâng cao trên PC */
-    .advanced_form {
-      display: grid;
-      grid-template-columns: 10% 90%;
-      row-gap: 20px;
-    }
-  
-    /* Tăng kích thước font của các option */
-    .option {
-      font-size: medium;
-    }
-  
-    /* Label lớn hơn cho PC */
-    .label {
-      font-weight: bold;
-      font-size: medium;
-    }
-  
-    /* Nút submit nhỏ gọn hơn trên màn lớn */
-    .submit {
-      width: 20%;
-      font-size: medium;
-    }
-  
-    /* Font chữ lớn hơn cho thể loại */
-    .item_type {
-      font-size: medium;
-    }
-  
-    /* Padding nội dung chính */
-    .container_content {
-      padding-top: 20px;
-      padding-bottom: 20px;
-    }
-  }
-  
+}

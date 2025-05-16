@@ -1,0 +1,194 @@
+.headerContainer {
+  height: 100px;
+  display: flex;
+  flex-direction: row;
+  background-color: #004d40;
+}
+
+.logoContainer {
+  padding: 10px;
+  flex: 1;
+}
+
+.logoImage {
+  height: 100%;
+  object-fit: contain;
+}
+
+.searchContainer {
+  width: 100%;
+  flex-direction: row;
+  display: flex;
+  flex: 4;
+}
+
+.searchInputContainer {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.searchBox {
+  width: 90%;
+  height: 50%;
+  border-radius: 10px;
+  padding: 5px 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  box-shadow: 2px 2px 3px rgba(235, 226, 226, 0.4);
+  position: relative;
+}
+
+.searchInput {
+  all: unset;
+  width: 100%;
+}
+
+.searchResults {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background-color: white;
+  width: 100%;
+  height: 600px;
+  z-index: 20;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  box-shadow: 2px 2px 5px rgba(45, 44, 44, 0.4);
+  overflow-y: scroll;
+
+}
+
+.authContainer {
+  flex: 1;
+  justify-content: center;
+align-items: center;
+}
+
+.authButtons {
+  display: flex;
+  gap: 5%;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding-right: 20px;
+}
+
+.authButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2% 8%;
+  border-radius: 10px;
+  background-color: #43a047;
+}
+
+.authButtonText {
+  color: white;
+  font-weight: 500;
+}
+
+.navContainer {
+  display: flex;
+  background-color: #81c784;
+ 
+}
+
+
+
+.navItem {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+}
+
+.navText {
+  font-weight: 500;
+  height: 30px;
+}
+
+.navMd{
+  display: flex;
+  width: 100%;
+}
+
+/* Mobile styles */
+.mobileSearchContainer {
+  display: none;
+  flex-direction: column;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  row-gap: 10px;
+  margin-top: 10px;
+}
+
+.mobileMenuContainer {
+  display: none;
+  flex: 1;
+  align-items: center;
+  position: relative;
+  justify-content: space-between;
+  padding: 0 10px;
+  width: 100%;
+}
+
+.mobileMenuDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10;
+  background-color: #f0f4c3;
+  width: 100%;
+  padding: 5px 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  row-gap: 5px;
+    box-shadow: 2px 2px 5px rgba(45, 44, 44, 0.4);
+}
+.radioGroup {
+  display: flex;
+  gap: 10px;
+  
+  background-color: #95e8da;
+  padding: 10px;
+}
+
+.radioLabel {
+  font-weight: 500;
+}
+
+.radioOption {
+  display: flex;
+  gap: 5px;
+}
+@media screen and (max-width: 768px) {
+
+.searchContainer{
+  display: none;
+}  
+
+.mobileSearchContainer {
+  display: flex;
+}
+.mobileMenuContainer{
+  display: flex;
+}
+
+.navMd{
+  display: none;
+}
+.searchBox{
+  width: 95%;
+}
+.searchResults{
+  height: 500px;
+}
+}

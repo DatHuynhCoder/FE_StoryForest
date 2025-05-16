@@ -1,88 +1,289 @@
 // Import các asset (hình ảnh) và file CSS
-import iconResult from "../../assets/iconResult.png";
-import bookImage from "../../assets/book.jpg";
-import "../SearchResult/ResultPage.css";
-import arrowIcon from "../../assets/back-next-icon.png";
+import React, { useEffect, useState } from 'react'
+import { api } from '../../services/api'
+import Spinner from '../../components/Spinner'
+import { useNavigate } from 'react-router'
+import ReactPaginate from 'react-paginate'
+// icons
+import { RxRocket } from "react-icons/rx";
+import { MdSmartDisplay } from "react-icons/md";
+import { FaFlagCheckered } from "react-icons/fa";
+import { PiShootingStarFill } from "react-icons/pi";
+import { FiRefreshCw } from "react-icons/fi";
+import { GiBleedingEye } from "react-icons/gi";
+import { RiUserFollowLine } from "react-icons/ri";
+// gifs
+import processingGif from '../../assets/processing.gif'
+import '../SearchResult/ResultPage.css'
+import Tags from '../../components/Tags/Tags'
 
-// Import các component con
-import Author from "./Filter/Author/Author";
-import Tag from "./Filter/Tag/Tag";
-// 
-import { api } from "../../services/api";
-//
-import { useEffect, useState } from "react";
-import { useParams } from "react-router";
-import { useNavigate } from "react-router";
-import Spinner from "../../components/Spinner";
 const ResultPage = () => {
-    const { keyword } = useParams();
-    const [listResult, setListResult] = useState([]);
-    const [loading, setLoading] = useState(true);
-    useEffect(() => {
-        api.get(`api/search/${keyword}`)
-            .then((res) => {
-                console.log(res.data);
-                setListResult(res.data.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            }).finally(() => {
-                setLoading(false);
-            })
-    }, [keyword]);
-    if (loading) {
-        return (
-            <Spinner />
-        )
+   const navigate = useNavigate();
+  const [listManga, setListManga] = useState([{
+    artist: ['REDICE Studio (레드아이스 스튜디오)', 'Jang Sung-Rak (장성락)'],
+    author: ['h-goon (현군)', 'Chugong (추공)', 'Gi So-Ryeong (기소령)'],
+    bookImg: {
+      url: processingGif,
+      public_id: 'StoryForest/Book/mzbhrc52tmszzqnsdusq'
+    },
+    cover_url: processingGif,
+    followers: 0,
+    mangaid: "32d76d19-8a05-4db0-9fc2-e0b0648fe9d0",
+    rate: 5,
+    status: "completed",
+    synopsis: "10 years ago, after “the Gate” that connected the real world with the monster world opened, some of the ordinary, everyday people received the power to hunt monsters within the Gate. They are known as “Hunters”. However, not all Hunters are powerful. My name is Sung Jin-Woo, an E-rank Hunter. I’m someone who has to risk his life in the lowliest of dungeons, the “World’s Weakest”. Having no skills whatsoever to display, I barely earned the required money by fighting in low-leveled dungeons… at least until I found a hidden dungeon with the hardest difficulty within the D-rank dungeons! In the end, as I was accepting death, I suddenly received a strange power, a quest log that only I could see, a secret to leveling up that only I know about! If I trained in accordance with my quests and hunted monsters, my level would rise. Changing from the weakest Hunter to the strongest S-rank Hunter!\n\n---\n**Links:**\n\n- Official English Translation [<Pocket Comics>](https://www.pocketcomics.com/comic/320) | [<WebNovel>](https://www.webnovel.com/comic/only-i-level-up-(solo-leveling)_15227640605485101) | [<Tapas>](https://tapas.io/series/solo-leveling-comic/info)\n- Alternate Official Raw - [Kakao Webtoon](https://webtoon.kakao.com/content/나-혼자만-레벨업/2320)",
+    tags: ['Loading ...'],
+    title: "Loading ...",
+    type: "manga",
+    updatedAt: "2025-04-12T02:00:00.436Z",
+    views: 238,
+    page: 1,
+    _id: "67f298a0c0aa3501386b7afb"
+  }]);
+  const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(0); // Current page (0-based index)
+  const [totalPages, setTotalPages] = useState(0)
+  const [sortType, setSortType] = useState("normal")
+  const [statusType, setStatusType] = useState("normal")
+
+  const itemsPerPage = 10
+
+  const fetchMangas = (page) => {
+    console.log("check page: ", page)
+    setLoading(true);
+    api.get(`/api/manga/v2?page=${page + 1}&limit=${itemsPerPage}`) // Backend expects 1-based page index
+      .then((res) => {
+        const { data, pagination } = res.data;
+        setListManga(data);
+        setCurrentPage(pagination.currentPage - 1); // Convert to 0-based index
+        setTotalPages(pagination.totalPages);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch mangas:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+  const fetchMangasWithSortType = (page, type) => {
+    console.log("check page: ", page)
+    setLoading(true);
+    api.get(`/api/manga/v2?page=${page + 1}&limit=${itemsPerPage}&sort=${type}&order=desc`) // Backend expects 1-based page index
+      .then((res) => {
+        const { data, pagination } = res.data;
+        setListManga(data);
+        setCurrentPage(pagination.currentPage - 1); // Convert to 0-based index
+        setTotalPages(pagination.totalPages);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch mangas:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+  const fetchMangasByStatus = (page, status) => {
+    console.log("check page: ", page)
+    setLoading(true);
+    api.get(`/api/manga/status?page=${page + 1}&limit=${itemsPerPage}&status=${status}`) // Backend expects 1-based page index
+      .then(res => {
+        const { data, pagination } = res.data;
+        setListManga(data)
+        setCurrentPage(pagination.currentPage - 1)
+        setTotalPages(pagination.totalPages)
+      })
+      .catch(err => {
+        console.error("Failed to fetch mangas:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      })
+  }
+
+  const handleClickOnManga = (_id) => {
+    navigate(`/manga/${_id}`)
+  }
+
+  useEffect(() => {
+    fetchMangas(0)
+  }, [])
+
+  const handlePageClick = (event) => {
+    const newPage = event.selected
+    if (sortType === "normal") {
+      if (statusType === "normal")
+        fetchMangas(newPage)
+      else
+        fetchMangasByStatus(newPage, statusType)
     }
+    else fetchMangasWithSortType(newPage, sortType)
+
+    scrollToTop()
+  }
+
+  const handleClickBestRated = () => {
+    setSortType("rate")
+    setStatusType("normal")
+    fetchMangasWithSortType(0, "rate")
+  }
+
+  const handleClickTopView = () => {
+    setSortType("views")
+    setStatusType("normal")
+    fetchMangasWithSortType(0, "views")
+  }
+
+  const handleClickMostFollowed = () => {
+    setSortType("followers")
+    setStatusType("normal")
+    fetchMangasWithSortType(0, "followers")
+  }
+
+  const handleClickOngoing = () => {
+    setStatusType("ongoing")
+    setSortType("normal")
+    //fetch
+    fetchMangasByStatus(0, "ongoing")
+  }
+
+  const handleClickComplete = () => {
+    setStatusType("completed")
+    setSortType("normal")
+    //fetch
+    fetchMangasByStatus(0, "completed")
+  }
+
+  const handleClickRefresh = () => {
+    setSortType("normal")
+    setStatusType("normal")
+    fetchMangas(0)
+  }
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  if (loading) return <Spinner />
     return (
-        <div>
-            {/* Component bộ lọc thể loại và sắp xếp */}
-            <Tag />
+       
+                  <div className='overflow-y-auto bg-[url("https://static.vecteezy.com/system/resources/previews/042/623/256/non_2x/high-trees-in-forest-illustration-jungle-landscape-vector.jpg")] bg-no-repeat bg-cover left-0 w-full'>
+        {/* <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white h-screen pb-30'> */}
+        <Tags/>
+        <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white'></div>
             {/* Khu vực tiêu đề kết quả tìm kiếm */}
-            <div className="container-result-title">
-                <img className="icon-result" src={iconResult} alt="icon result" />
-                <p className="title-result">Kết quả tìm kiếm</p>
+            
+        <>
+      {/* <div className='bg-[url("https://static.vecteezy.com/system/resources/previews/042/623/256/non_2x/high-trees-in-forest-illustration-jungle-landscape-vector.jpg")] bg-no-repeat bg-cover fixed left-0 w-full'> */}
+      <div className='overflow-y-auto bg-[url("https://static.vecteezy.com/system/resources/previews/042/623/256/non_2x/high-trees-in-forest-illustration-jungle-landscape-vector.jpg")] bg-no-repeat bg-cover left-0 w-full'>
+        {/* <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white h-screen pb-30'> */}
+        <div className="container-result-title">
+                {/* <img className="icon-result" src={iconResult} alt="icon result" /> */}
+                <p className="title-result" style={{border: '1px solid'}}>Kết quả tìm kiếm</p>
             </div>
-
-            {/* Khu vực hiển thị danh sách truyện tìm kiếm được */}
-            <div className="container-result-books">
-                <div className="grid-books">
-                    {/* Hiển thị danh sách sách theo dạng lưới */}
-                    {
-                        listResult.map((item, index) => (
-                            <div className="item-book" key={index}>
-                                <img className="book-image" src={item.cover_url} alt="book image" />
-                                <p className="book-name">{item.title}</p>
-                            </div>
-                        ))
-                    }
+        <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white'>
+            
+          {/* <div className='flex-3 pb-18 border overflow-y-auto h-full'> */}
+          <div className='flex-3 pb-18 border h-full'>
+            {listManga.length !== 0 ? listManga.map(manga => (
+              <div className='flex md:flex-row flex-col p-5 border-b' key={manga._id}>
+                <div className='flex-1'>
+                  <img src={manga.bookImg.url} alt="" className='w-30 m-auto' loading='lazy' />
                 </div>
+                <div className='flex-4'>
+                  <p onClick={() => handleClickOnManga(manga._id)} className='text-lg md:text-xl font-bold text-green-500 text-center hover:underline cursor-pointer'>{manga.title}</p>
+                  <div className='flex'>
+                    <div className='flex flex-col flex-2'>
+                      {manga.tags.slice(1, 5).map((tag, index) => (
+                        <div className='m-1 bg-white' key={index}>
+                          <span className='border rounded-md text-xs md:text-[10px] font-black p-1'>
+                            {tag}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className='flex-2'>
+                      <p className='text-right'><span className='font-[1000]'>{manga.followers} </span><b>FOLLOWERS</b></p>
+                      <p className='text-right'><span className='font-[1000]'>{manga.views} </span><b>VIEWS</b></p>
+                      <p className='text-right'><b>RATE:</b><span className='font-[1000]'> {manga.rate}</span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+              :
+              <div className='flex md:flex-row flex-col p-5 border-b'>
+                <div className='flex-1'>
+                  <div className='w-30 m-auto'></div>
+                </div>
+                <div className='flex-4'>
+                  <p className='text-lg md:text-xl font-bold text-green-500 text-center hover:underline cursor-pointer'>Nothing to show</p>
+                  <div className='flex'>
+                    <div className='flex flex-col flex-2'>
+
+                    </div>
+                    <div className='flex-2'>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+
+            {/* Pagination */}
+            <div className='my-4 flex justify-center bottom-0 left-0 bg-white py-2'>
+              <ReactPaginate
+                breakLabel="..."
+                nextLabel="Next"
+                previousLabel="Prev"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={3}
+                marginPagesDisplayed={1}
+                pageCount={totalPages} // Use totalPages from BE
+                forcePage={currentPage} // Highlight the current page
+                containerClassName="flex md:gap-2 gap-1 cursor-pointer px-2"
+                pageClassName="border rounded" // Just the li
+                pageLinkClassName="block md:px-3 px-2 py-1 hover:bg-green-200" // The actual <a>
+                previousClassName="border rounded"
+                previousLinkClassName="block px-3 py-1 hover:bg-green-200"
+                nextClassName="border rounded"
+                nextLinkClassName="block px-3 py-1 hover:bg-green-200"
+                activeClassName="bg-green-500 text-white"
+              />
+
             </div>
+          </div>
 
-            {/* Khu vực phân trang */}
-            <div className="container-result-pagination">
-                {/* Nút quay về trang trước */}
-                <div className="item-page-index">
-                    <img className="back-page-index" src={arrowIcon} alt="arrow icon" />
-                </div>
+          {/* Optional Right Sidebar */}
+          <div className='flex-1 flex-column border md:block hidden'>
 
-                {/* Hiển thị số trang */}
-                <div className="item-page-index">1</div>
-                <div className="item-page-index">2</div>
-                <div className="item-page-index">3</div>
-                <div className="item-page-index">4</div>
-                <div className="item-page-index">5</div>
-
-                {/* Nút chuyển sang trang tiếp theo */}
-                <div className="item-page-index">
-                    <img className="next-page-index" src={arrowIcon} alt="arrow icon" />
-                </div>
+            <div className={`cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1] ${sortType === 'rate' ? 'bg-green-500' : ''}`} onClick={() => handleClickBestRated()}>
+              <p className=' flex font-bold'><span><RxRocket /></span>&nbsp;BEST RATED</p>
             </div>
-
-            {/* Footer */}
-            <div className="footer"></div>
+            <div className={`cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1] ${sortType === 'views' ? 'bg-green-500' : ''}`} onClick={() => handleClickTopView()}>
+              <p className=' flex font-bold'><span><GiBleedingEye /></span>&nbsp;TOP VIEWS</p>
+            </div>
+            <div className={`cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1] ${sortType === 'followers' ? 'bg-green-500' : ''}`} onClick={() => handleClickMostFollowed()}>
+              <p className=' flex font-bold'><span><RiUserFollowLine /></span>&nbsp;MOST FOLLOWED</p>
+            </div>
+            <div className={`cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1] ${statusType === 'ongoing' ? 'bg-green-500' : ''}`} onClick={() => handleClickOngoing()}>
+              <p className=' flex font-bold'><span><MdSmartDisplay /></span>&nbsp;ONGOING MANGA</p>
+            </div>
+            <div className={`cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1] ${statusType === 'completed' ? 'bg-green-500' : ''}`} onClick={() => handleClickComplete()}>
+              <p className=' flex font-bold'><span><FaFlagCheckered /></span>&nbsp; COMPLETE</p>
+            </div>
+            <div className='cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1]' onClick={() => handleClickRefresh()}>
+              <p className=' flex font-bold'><span><FiRefreshCw /></span>&nbsp;REFRESH</p>
+            </div>
+          </div>
         </div>
+      </div>
+    </>
+           
+
+            </div>
+           
+
+     
     );
 };
 
