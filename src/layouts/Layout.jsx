@@ -6,7 +6,8 @@ const Layout = () => {
   return (
     <>
       <Header />
-      <Outlet />
+    <div style={{position: 'relative', zIndex: 0}}> <Outlet /></div>
+     
       <Footer />
     </>
   )
