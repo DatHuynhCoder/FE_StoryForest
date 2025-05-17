@@ -1,9 +1,66 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { api } from '../../services/api';
 
 const DailySales = () => {
-  // Generate day labels for 30 days
-  const days = Array.from({ length: 30 }, (_, i) => (i + 1).toString());
+  const [selectedMonth, setSelectedMonth] = useState(new Date());
+  const [chartData, setChartData] = useState({ days: [], values: [] });
+  const [loading, setLoading] = useState(true);
+
+  /*
+  const fetchSalesDataForMonth = async (month) => {
+    try {
+      setLoading(true);
+      const year = month.getFullYear();
+      const monthNumber = month.getMonth() + 1;
+      
+      
+      const response = await api.get(`/api/admin/sales/daily-stats?year=${year}&month=${monthNumber}`);
+      
+      console.log(`Sales data year=${year}&month=${monthNumber}`, response.data);
+      
+      if (!response.data.success || !Array.isArray(response.data.data)) {
+        throw new Error('Invalid data format');
+      }
+
+      const daysInMonth = new Date(year, monthNumber, 0).getDate();
+      const dailySales = Array(daysInMonth).fill(0);
+
+      response.data.data.forEach(item => {
+        if (item && typeof item.day === 'number' && typeof item.amount === 'number') {
+          const dayIndex = item.day - 1;
+          if (dayIndex >= 0 && dayIndex < daysInMonth) {
+            dailySales[dayIndex] = item.amount;
+          }
+        }
+      });
+
+      return {
+        days: Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString()),
+        values: dailySales
+      };
+    } catch (error) {
+      console.error('Error fetching sales data:', error);
+      const daysInMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0).getDate();
+      return {
+        days: Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString()),
+        values: Array(daysInMonth).fill(0)
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+  */
+ 
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await fetchSalesDataForMonth(selectedMonth);
+      setChartData(data);
+    };
+    loadData();
+  }, [selectedMonth]);
 
   // Chart configuration
   const chartOptions = {
@@ -15,11 +72,14 @@ const DailySales = () => {
       toolbar: {
         show: false,
       },
+      animations: {
+        enabled: !loading,
+      },
     },
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: '50%', // Thinner bars for daily data
+        columnWidth: '50%',
         borderRadius: 2,
         borderRadiusApplication: 'end',
       },
@@ -31,7 +91,7 @@ const DailySales = () => {
       show: false,
     },
     xaxis: {
-      categories: days,
+      categories: chartData.days,
       axisBorder: {
         show: false,
       },
@@ -43,7 +103,6 @@ const DailySales = () => {
         rotate: 0,
         hideOverlappingLabels: true,
         formatter: function(value) {
-          // Only show label for every 4th day
           return parseInt(value) % 4 === 0 ? value : '';
         },
         style: {
@@ -53,9 +112,6 @@ const DailySales = () => {
       }
     },
     yaxis: {
-      title: {
-        text: undefined,
-      },
       labels: {
         formatter: function(val) {
           return val.toFixed(0);
@@ -66,7 +122,6 @@ const DailySales = () => {
         }
       },
       min: 0,
-      max: 400,
       tickAmount: 5,
     },
     grid: {
@@ -90,49 +145,62 @@ const DailySales = () => {
     },
     tooltip: {
       x: {
-        show: false,
+        show: true,
+        formatter: function(val) {
+          return `Day ${val}`;
+        }
       },
       y: {
-        formatter: (val) => `${val} new users`,
+        formatter: (val) => `$${val.toFixed(2)}`,
       },
     },
   };
 
- 
   const chartSeries = [
     {
-      name: 'New Users',
-      data: [
-        350, 180, 150, 210, 90, 150, 200, 310, 130, 190, 
-        220, 160, 240, 170, 240, 300, 160, 210, 330, 180, 
-        230, 150, 190, 220, 110, 140, 200, 170, 360, 210
-      ],
+      name: 'Daily Income',
+      data: chartData.values,
     },
   ];
 
   return (
     <div className="w-full bg-white p-4 rounded-lg shadow-sm">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">Daily Sales</h3>
+        <h3 className="text-lg font-semibold text-gray-800">Daily Income</h3>
         <div className="flex items-center">
-          <span className="w-3 h-3 rounded-full bg-[#14B8A6] mr-2"></span>
-          <span className="text-sm text-gray-500">Daily</span>
+          <DatePicker
+            selected={selectedMonth}
+            onChange={(date) => setSelectedMonth(date)}
+            dateFormat="MM/yyyy"
+            showMonthYearPicker
+            className="border rounded px-3 py-1 text-sm mr-2"
+          />
+          <div className="flex items-center">
+            <span className="w-3 h-3 rounded-full bg-[#14B8A6] mr-2"></span>
+            <span className="text-sm text-gray-500">Income</span>
+          </div>
         </div>
       </div>
       
       <div className="overflow-x-auto">
         <div className="min-w-[600px]">
-          <Chart
-            options={chartOptions}
-            series={chartSeries}
-            type="bar"
-            height={180}
-          />
+          {loading ? (
+            <div className="h-[180px] flex items-center justify-center">
+              <div className="animate-pulse text-gray-400">Loading data...</div>
+            </div>
+          ) : (
+            <Chart
+              options={chartOptions}
+              series={chartSeries}
+              type="bar"
+              height={180}
+            />
+          )}
         </div>
       </div>
       
       <div className="mt-2 text-xs text-gray-400 text-center">
-        Monthly • Data updated: {new Date().toLocaleDateString()}
+        Data for: {selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
       </div>
     </div>
   );

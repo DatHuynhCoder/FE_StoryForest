@@ -47,10 +47,7 @@ import EditStory from "./components/Staff/EditStory.jsx";
 import AddNewStory from "./components/Staff/AddNewStory.jsx";
 import AddChapter from "./components/Staff/AddChapter.jsx";
 
-import AuthorManagement from "./pages/Staff/AuthorManagement.jsx";
-import AuthorDetail from "./components/Staff/AthourDetail.jsx";
-import AuthorEdit from "./components/Staff/AuthorEdit.jsx";
-import AddAuthor from "./components/Staff/AuthorAddNew.jsx";
+
 import VipManagement from "./pages/Staff/VIPManagement.jsx";
 // import AdvancedSearch from "./components/AdvancedSearch/AdvancedSearch.jsx";
 import Result from "./pages/SearchResult/Result.jsx";
@@ -98,15 +95,11 @@ function App() {
         <Route element={<StaffLayout />}>
           <Route path="/staff/story-management" element={<StoryManagement />}> </Route>
           <Route path="/staff/story-management/edit-story/:id_story" element={<EditStory />}> </Route>
-          <Route path="/staff/story-management/edit-story/:id_story/:id_chapter" element={<EditChapter />}> </Route>
-          <Route path="/staff/story-management/edit-story/:id_story/add-chapter" element={<AddChapter />}> </Route>
+          <Route path="/staff/story-management/edit-chapter/:chapterTitle/:chapterId" element={<EditChapter />}> </Route>
+          <Route path="/staff/story-management/add-chapter/:id_story" element={<AddChapter />}> </Route>
           <Route path="/staff/story-management/detail-story/:id" element={<DetailStory />}> </Route>
           <Route path="/staff/story-management/add-story" element={<AddNewStory />}> </Route>
 
-          <Route path="/staff/author-management" element={<AuthorManagement />}> </Route>
-          <Route path="/staff/author-management/detail-author/:author_id" element={<AuthorDetail />}> </Route>
-          <Route path="/staff/author-management/edit-author/:author_id" element={<AuthorEdit />}> </Route>
-          <Route path="/staff/author-management/add-author" element={<AddAuthor />}> </Route>
 
           <Route path="/staff/vip-management" element={<VipManagement />}> </Route>
         </Route>

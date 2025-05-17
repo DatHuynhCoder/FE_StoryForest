@@ -12,18 +12,18 @@ const WebManagement = () => {
         {/* Cột 1: Thống kê chính */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-3xl font-bold mb-2">3,782</h3>
-          <p className="text-gray-500">Tổng số truyện</p>
+          <p className="text-gray-500">Total stories</p>
         </div>
 
         {/* Cột 22: StaffStaffs */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-3xl font-bold mb-2">20.000.000 vnd</h3>
-          <p className="text-gray-500">Tổng số thu nhập</p>
+          <p className="text-gray-500">Total income</p>
         </div>
          {/* Cột 3: Orders */}
          <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-3xl font-bold mb-2">3,782</h3>
-          <p className="text-gray-500">Tổng số đơn </p>
+          <p className="text-gray-500">Total VIP accounts </p>
         </div>
 
 
