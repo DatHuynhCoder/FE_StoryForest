@@ -1,0 +1,48 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    background-color: #095533;
+    cursor: pointer;
+
+
+  }
+
+    /* Vùng nội dung chính */
+  .container_content {
+    background-color: #042818;
+    padding: 10px calc(100vw / 24);
+    cursor: pointer;
+        max-height: 300px;
+    overflow-y: scroll;
+  }
+    .container_types {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+   /* Nút đại diện cho từng thể loại */
+  .item_type {
+    height: 40px;
+    width: 100%;
+    font-size: small;
+    line-height: 15px;
+    padding-left: 15px;
+  
+    color: white;
+    text-align: start;
+    border-radius: 20px;
+    vertical-align: middle;
+  }
+
+   .item_type:hover,
+  .selected_genre {
+    background-color: #b3d8a8;
+    color: black;
+  }
+
+  @media screen and (min-width: 1024px) {
+    /* Thay đổi số cột thể loại trên màn hình lớn */
+    .container_types {
+      grid-template-columns: repeat(7, 1fr);
+    }
+  }

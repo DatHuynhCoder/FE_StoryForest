@@ -16,7 +16,10 @@ function NovelDetails() {
   //get user from redux store
   const user = useSelector((state) => state.user.user);
   const { _id } = useParams() // from NovelList.jsx
+
   const [loading, setLoading] = useState(true)
+  const [buttonLoading, setButtonLoading] = useState(false)
+
   const [isFavorite, setIsFavorite] = useState(false);
   const [infoNovel, setInfoNovel] = useState({
     _id: '67eabb616f25807d87d7ad10',
@@ -89,6 +92,7 @@ function NovelDetails() {
 
   //delete or add to favorite
   const handleToggleFavorite = async () => {
+    setButtonLoading(true)
     // Check if user is logged in
     if (!user) {
       toast.error("Login to be able to add favorite")
@@ -128,6 +132,7 @@ function NovelDetails() {
           toast.error("Error in adding to favorite")
         }
       }
+      setButtonLoading(false)
     } catch (error) {
       console.log(error)
       toast.error(isFavorite ? "Error removing from favorites" : "Error in adding to favorite")
@@ -202,14 +207,17 @@ function NovelDetails() {
             alt={infoNovel.title}
             loading='lazy'
             className='w-48 h-64 md:w-60 md:h-72 object-cover shadow-lg'
+            style={{ boxShadow: '3px 3px' }}
           />
         </div>
 
         <div className='flex flex-col justify-between w-full'>
           <div className='pt-4 md:pt-20 px-4 md:pl-10 text-center md:text-left'>
             <p className='text-3xl md:text-5xl font-bold text-black md:text-black md:hidden'>{infoNovel.title}</p>
-            <p className='text-lg md:text-xl font-bold text-black md:text-black md:hidden'>
-              {infoNovel.author}
+            <p className='text-lg md:text-xl font-bold text-black md:text-black md:hidden hover:text-[#00c853]'>
+              {
+              infoNovel.author.map((author) => (<span className='hover:text-[#00c853]' onClick={()=>navigate(`/advanced-search?type=novel&genre=All&author=${author}`)}>{author} </span>))
+            }
             </p>
           </div>
 
@@ -218,13 +226,18 @@ function NovelDetails() {
               {/* Favorite toggle button */}
               <div
                 onClick={handleToggleFavorite}
-                className={`rounded p-2 md:p-3 text-white text-center cursor-pointer font-bold ${isFavorite ? 'bg-red-600 hover:bg-red-500' : 'bg-green-700 hover:bg-green-500'
-                  }`}
+                className={`border rounded p-2 md:p-3 text-center cursor-pointer font-bold ${isFavorite ? 'bg-red-600 hover:bg-red-500' : 'bg-green-700 hover:bg-green-500'}`}
+                style={buttonLoading ? {
+                  backgroundImage: `url(${processingGif})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  boxShadow: '3px 3px'
+                } : { boxShadow: '3px 3px' }}
               >
-                {isFavorite ? 'Remove from favorite' : 'Add to favorite'}
+                <span className='text-white'>{isFavorite ? 'Remove from favorite' : 'Add to favorite'}</span>
               </div>
 
-              <div onClick={() => handleStartReading(infoNovel.title, chapters[0]._id, 1, chapters[0].chapter_title)} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold hover:bg-[#f1f1f1]'>Start reading</div>
+              <div onClick={() => handleStartReading(infoNovel.title, chapters[0]._id, 1, chapters[0].chapter_title)} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }}>Start reading</div>
             </div>
 
             <div>
@@ -233,7 +246,7 @@ function NovelDetails() {
 
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>
               {infoNovel.tags.map((tag) => (
-                <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' key={tag} onClick={() => { console.log("do something with ", tag) }}>
+                <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }} key={tag} onClick={()=>navigate(`/advanced-search?type=novel&genre=${tag}&author=None`)}>
                   <span className='text-xs font-black'>{tag}</span>
                 </div>
               ))}
@@ -244,9 +257,9 @@ function NovelDetails() {
       <div className='pl-10 pr-10 md:pl-20 md:pr-20 md:mt-5 text-justify'>
         <div className='md:block hidden'>
           <p className='text-3xl md:text-5xl font-bold text-black md:text-black'>{infoNovel.title}</p>
-          <p className='text-lg md:text-xl font-bold text-black md:text-black'>{
-            infoNovel.author
-          }
+          <p className='text-lg md:text-xl font-bold text-black md:text-black cursor-pointer'>{
+              infoNovel.author.map((author) => (<span className='hover:text-[#00c853]' onClick={()=>navigate(`/advanced-search?type=novel&genre=All&author=${author}`)}>{author} </span>))
+            }
           </p>
         </div>
         {infoNovel.synopsis}

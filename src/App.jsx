@@ -49,9 +49,12 @@ import AddChapter from "./components/Staff/AddChapter.jsx";
 
 
 import VipManagement from "./pages/Staff/VIPManagement.jsx";
+// import AdvancedSearch from "./components/AdvancedSearch/AdvancedSearch.jsx";
+import Result from "./pages/SearchResult/Result.jsx";
 // Payment
 import Success from "./pages/Payment/Success.jsx";
 import Cancel from "./pages/Payment/Cancel.jsx";
+import AdvancedSearch from "./components/AdvancedSearch/AdvancedSearch.jsx";
 
 function App() {
   return (
@@ -74,6 +77,7 @@ function App() {
           <Route path="/novel/:_id" element={<NovelDetails />} />
           <Route path="/novelReader/:_id/:chapterid" element={<NovelReader />} />
           <Route path='/result/:keyword' element={<ResultPage />} />
+          <Route path='/advanced-search' element={<AdvancedSearch/>}/>
           <Route path="/otherprofile/:_id" element={<OtherProfile />} />
         </Route>
 

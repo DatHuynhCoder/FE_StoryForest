@@ -31,19 +31,16 @@ Make sure you have the following installed:
 ### Clone the repository
 ```sh
 git clone https://github.com/DatHuynhCoder/FE_StoryForest.git
-cd web-manga-novel
+cd FE_StoryForest
 ```
 
 ### Backend Setup
-```sh
-cd backend
-npm install
-npm run app
-```
+Please go to our Backend project for more Infomation
+- [BE_StoryForest](https://github.com/DatHuynhCoder/BE_StoryForest)
 
 ### Frontend Setup
+In Frontend directory:
 ```sh
-cd frontend
 npm install
 npm run dev
 ```
@@ -65,6 +62,10 @@ JWT_REFRESH_EXPIRES_IN=
 ## Usage
 - Run `npm run app` in `backend` and `npm run dev` in `frontend` directories.
 - Ctrl + click on the link display in the terminal
+
+## Our Design
+- [Structure Design](https://drive.google.com/file/d/18xYJh17B0YMIHlQm0kixvrh87Uz981Zm/view?usp=sharing)
+- [UI/UX Design](https://www.figma.com/design/MgHOWUFJYKD3JFOCdivLWd/StoryForest---07---NT208?node-id=4-358&t=RELcnZrUQvG86DKQ-1)
 
 ## License
 This project is licensed under the MIT License.

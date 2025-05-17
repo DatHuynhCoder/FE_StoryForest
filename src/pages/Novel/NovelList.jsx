@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { api } from '../../services/api'
+import { api, apiAuth } from '../../services/api'
 import Spinner from '../../components/Spinner'
 import { useNavigate } from 'react-router'
 import ReactPaginate from 'react-paginate'
 import { RxRocket } from "react-icons/rx";
 import { MdSmartDisplay } from "react-icons/md";
-import { FaFlagCheckered } from "react-icons/fa";
+import { FaFlagCheckered, FaCrown } from "react-icons/fa";
 import { PiShootingStarFill } from "react-icons/pi";
 import { FiRefreshCw } from "react-icons/fi";
+import Tags from '../../components/Tags/Tags'
+import { useSelector } from 'react-redux'
 
 function NovelList() {
   const navigate = useNavigate()
@@ -29,6 +31,7 @@ function NovelList() {
       page: 1
     }
   ])
+  const user = useSelector((state) => state.user.user);
   const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(0); // Current page (0-based index)
   const [totalPages, setTotalPages] = useState(0)
@@ -36,7 +39,7 @@ function NovelList() {
   const [fetchOption, setFetchOption] = useState('normal')
 
   const itemsPerPage = 10
-
+  const [toggle, setToggle] = useState(false)
 
   const fetchNovels = (page) => {
     console.log("check page: ", page)
@@ -126,6 +129,13 @@ function NovelList() {
     fetchNovels(0)
   }
 
+  // Handle upgrade vip
+  const handleUpgradeVip = () => {
+    apiAuth.post('/api/reader/payment/create-payment-link').then(res => {
+      window.location.href = res.data.url;
+    })
+  }
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -134,8 +144,9 @@ function NovelList() {
 
   return (
     <>
+      <Tags type={'novel'} setToggle={setToggle} toggle={toggle} />
       <div className='bg-[url("https://static.vecteezy.com/system/resources/previews/042/623/256/non_2x/high-trees-in-forest-illustration-jungle-landscape-vector.jpg")] bg-no-repeat bg-cover left-0 w-full'>
-        <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white h-screen pb-30'>
+        <div className='flex flex-col md:flex-row md:ml-50 md:mr-50 border bg-white h-auto pb-30'>
           <div className='flex-3 pb-18 border overflow-y-auto h-full'>
             {novelList.length !== 0 ? novelList.map(novel => (
               <div className='flex md:flex-row flex-col p-5 border-b' key={novel._id}>
@@ -219,6 +230,27 @@ function NovelList() {
             <div className={`cursor-pointer border m-1 p-2 hover:bg-[#f1f1f1]`} onClick={() => handleClickRefresh()}>
               <p className='flex font-bold'><span><FiRefreshCw /></span>&nbsp;REFRESH</p>
             </div>
+
+
+            {user && user.role != "VIP reader" && (
+              <div className="bg-gray-100 rounded-xl p-3">
+                <div className="font-bold text-lg">What you get as a VIP (aka the cool kids club):</div>
+                <div>🕵️ Be the first to read our latest chapter drops — hot and fresh, straight to your eyeballs.</div>
+                <div>🔍 Use our insanely ultimate powerful blazing-fast slashy search (You type nonsense craps, we dig up gold.)</div>
+                <div>🎨 Customize your own theme or pick from a bunch of sexy presets — your vibe, your rules.</div>
+                <div>📖 Let us read chapters for you while you lie down like the majestic lazy legend you are (coming soon, we pinky swear).</div>
+                <div>🗣️ Voice cloning: Make your voice clone read stuff for you — it’s like audiobook, but with your own glorious voice (yup, also coming soon).</div>
+
+                {/* VIP button */}
+                <button className="p-[3px] mt-2 cursor-pointer rounded-full bg-black relative" onClick={() => handleUpgradeVip()}> {/* Added relative here */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg" />
+                  <div className="flex items-center gap-2 px-4 py-2 font-bold bg-black rounded-[6px] relative group transition duration-200 text-white hover:bg-transparent">
+                    <FaCrown className="text-yellow-400 group-hover:animate-pulse group-hover:text-yellow-300 w-5" />
+                    Upgrade
+                  </div>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

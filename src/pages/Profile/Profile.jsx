@@ -21,6 +21,9 @@ import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/userSlice";
 
+// cookie
+import { useCookies } from "react-cookie";
+
 const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -31,6 +34,7 @@ const Profile = () => {
   const [activeSection, setActiveSection] = useState('profile');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const [cookie, setCookie, removeCookie] = useCookies(["theme", "intensity"])
 
   useEffect(() => {
     const fetchFavorite = async () => {
@@ -95,6 +99,8 @@ const Profile = () => {
       const response = await api.post("/api/reader/account/logout");
       if (response.data.success) {
         dispatch(logout());
+        removeCookie("theme")
+        removeCookie("intensity")
         navigate("/login")
       }
     } catch (error) {
@@ -202,9 +208,16 @@ const Profile = () => {
           <img src="/images/role.png" alt="role logo" className="w-6 h-6 sm:w-8 sm:h-8" />
           <div className="flex-1 text-sm sm:text-xl">
             <span className="font-bold">Role: </span>
-            {user?.role}
+            {user?.role === 'VIP reader' ? (
+              <span className="inline-flex items-center gap-1 font-bold text-yellow-500 bg-yellow-100 px-2 py-0.5 rounded shadow-sm animate-pulse">
+                👑 VIP reader
+              </span>
+            ) : (
+              <span className="text-gray-700">{user?.role}</span>
+            )}
           </div>
         </div>
+
       </div>
 
       {/* Edit and Exit section */}
