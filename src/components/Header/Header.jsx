@@ -108,14 +108,19 @@ const Header = () => {
     setToggleMenu(prev => !prev);
   };
 	const handleSearch = () => {
-		if (search) {
-			navigate(`/advanced-search?search=${search}&type=all&genre=All&author=None`)
+		if (search!='') {
+			navigate(`/advanced-search?type=all&genre=All&author=None&search=${search}`)
 		}
+
+    setSearch('')
 
     setSearch('')
 	}
 	const handleViewResultDetails = (type, id) => {
 		setSearch("")
+		setFocusSearchBox(true)
+		// navigate(`/bookDetail/${_id}/${mangaid}`)
+		navigate(`/${type}/${id}`)
 		setFocusSearchBox(true)
 		// navigate(`/bookDetail/${_id}/${mangaid}`)
 		navigate(`/${type}/${id}`)
@@ -125,7 +130,7 @@ const Header = () => {
     <>
       <div className={styles.headerContainer}>
         <div className={styles.logoContainer}>
-          <img className={styles.logoImage} src={logo} alt="logo" />
+          <img className={styles.logoImage} src={logo} alt="logo" onClick={()=>{navigate('/')}}/>
         </div>
 
         <>
