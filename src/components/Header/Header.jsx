@@ -113,9 +113,14 @@ const Header = () => {
 		}
 
     setSearch('')
+
+    setSearch('')
 	}
 	const handleViewResultDetails = (type, id) => {
 		setSearch("")
+		setFocusSearchBox(true)
+		// navigate(`/bookDetail/${_id}/${mangaid}`)
+		navigate(`/${type}/${id}`)
 		setFocusSearchBox(true)
 		// navigate(`/bookDetail/${_id}/${mangaid}`)
 		navigate(`/${type}/${id}`)
