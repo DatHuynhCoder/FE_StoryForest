@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { api } from "../../services/api";
 // icon
 import { MdEmail } from "react-icons/md";
-import { RiLockPasswordFill, RiEyeCloseFill, RiEyeFill } from "react-icons/ri";
+import { RiLockPasswordFill, RiEyeCloseFill, RiEyeFill, RiHome4Fill } from "react-icons/ri";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "react-toastify";
 
@@ -40,9 +40,12 @@ const Login = () => {
     <div className="w-full h-screen bg-cover sm:bg-[url(/images/bg_login_lap.jpg)] bg-[url(/images/bg_login_phone.jpg)] bg-center flex justify-center items-center">
       <div className="bg-white/50 rounded-3xl px-5 py-3 xl:w-3/10 lg:w-2/5 sm:w-1/2 w-3/4 min-h-1/2 flex flex-col gap-3">
         {/* header-login */}
-        <h1 className="font-bold text-(--secondary-text-color) text-3xl">
-          Let Start <span className="sm:block">Reading</span>
-        </h1>
+        <div className="flex flex-row items-center justify-between">
+          <h1 className="font-bold text-(--secondary-text-color) text-3xl">
+            Let Start <span className="sm:block">Reading</span>
+          </h1>
+          <RiHome4Fill className="w-8 h-8 text-blue-800 cursor-pointer" onClick={() => navigate('/')}/>
+        </div>
         <p className="font-bold text-(--secondary-text-color) text-sm">
           Please login or sign up to continue
         </p>
