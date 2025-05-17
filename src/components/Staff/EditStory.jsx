@@ -1,293 +1,456 @@
-import { FiEdit2, FiTrash2, FiPlus, FiChevronRight, FiArrowLeft } from "react-icons/fi";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
-
+import { useState, useEffect } from 'react';
+import { FiEdit2, FiTrash2, FiPlus, FiChevronRight, FiArrowLeft, FiStar } from 'react-icons/fi';
+import { useNavigate, useParams } from 'react-router';
+import { api } from '../../services/api';
 
 const EditStory = () => {
-  // Mock data state
-  const [storyData, setStoryData] = useState({
-    _id: "1",
-    title: "One Piece",
-    coverImage: "/src/assets/book.jpg",
-    genres: "Action, Adventure, Fantasy",
-    author: "Eiichiro Oda",
-    description: "One Piece là một trong những manga/anime nổi tiếng và dài nhất thế giới...",
-    chapters: []
-  });
-
-  const [loading, setLoading] = useState(true);
+  const { id_story } = useParams();
+  const navigate = useNavigate();
+  
   const [currentPage, setCurrentPage] = useState(1);
-  const chaptersPerPage = 7;
+  const [story, setStory] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [chapters, setChapters] = useState([]);
+  const [totalChapters, setTotalChapters] = useState(0);
+  const [coverPreview, setCoverPreview] = useState('');
+  const itemsPerPage = 10;
 
-  // Mock API call
   useEffect(() => {
     const fetchStoryData = async () => {
-      setLoading(true);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Mock data
-      const mockChapters = Array.from({ length: 15 }, (_, i) => ({
-        id: i + 1,
-        title: `Chapter ${i + 1}`,
-        date: new Date(Date.now() - (i * 2 * 24 * 60 * 60 * 1000)).toLocaleDateString(),
-      }));
-
-      setStoryData(prev => ({
-        ...prev,
-        chapters: mockChapters
-      }));
-      setLoading(false);
+      try {
+        setLoading(true);
+        const storyResponse = await api.get(`/api/staff/book/${id_story}`);
+        setStory(storyResponse.data.data);
+        setCoverPreview(storyResponse.data.data.cover_url || '');
+        setChapters([]);
+      } catch (err) {
+        setError(err.message || 'An error occurred while loading data.');
+        console.error('Error when getting story data:', err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchStoryData();
-  }, []);
+  }, [id_story]);
 
-  const navigate = useNavigate();
-  // Pagination logic
-  const indexOfLastChapter = currentPage * chaptersPerPage;
-  const indexOfFirstChapter = indexOfLastChapter - chaptersPerPage;
-  const currentChapters = storyData.chapters.slice(indexOfFirstChapter, indexOfLastChapter);
-  const totalPages = Math.ceil(storyData.chapters.length / chaptersPerPage);
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  useEffect(() => {
+    if (story && story.mangaid) {
+      fetchChapters(story.mangaid, currentPage);
+    }
+  }, [story, currentPage]);
+      
+  const fetchChapters = async (mangaid, page = 1) => {
+    try {
+      const response = await api.get(`/api/staff/chapter/${mangaid}/chapters`);
+      setChapters(response.data.data);
+      setTotalChapters(response.data.total || 0);
+    } catch (err) {
+      console.error('Error fetching chapters:', err);
+      setChapters([]);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setStoryData(prev => ({
+    setStory(prev => ({
       ...prev,
       [name]: value
     }));
   };
-  const handleEditChapter = (chapterId) => {
-    navigate(`/staff/story-management/edit-story/${storyData._id}/${chapterId}`);
-    
+
+  const handleArrayInputChange = (e) => {
+    const { name, value } = e.target;
+    setStory(prev => ({
+      ...prev,
+      [name]: value.split(',').map(item => item.trim())
+    }));
   };
-  
-  const handleDeleteChapter = (chapterId) => {
-    if (window.confirm("Bà có chắc chắn muốn xóa chương này không?")) {
-      setStoryData(prev => ({
+
+  const handleCoverChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCoverPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+      
+      setStory(prev => ({
         ...prev,
-        chapters: prev.chapters.filter(chap => chap.id !== chapterId)
+        coverFile: file
       }));
     }
   };
-  const handleAddChapter  = () => {
-    navigate(`/staff/story-management/edit-story/${storyData._id}/add-chapter`);
-    
+
+  const renderChapterTitle = (chapter) => {
+    if (chapter.title) return chapter.title;
+    return `Chapter ${chapter.chapter}${chapter.volume ? ` (Vol. ${chapter.volume})` : ''}`;
+  };
+
+  const handleEditChapter = (chapter) => {
+    const chapterId = chapter.chapterid;
+    const chapterTitle = chapter.title;
+    navigate(`/staff/story-management/edit-chapter/${chapterTitle}/${chapterId}`);
+  };
+
+  const handleDeleteChapter = async (chapterId) => {
+    if (window.confirm("Are you sure you want to delete this chapter?")) {
+      try {
+        await api.delete(`/api/staff/chapter/${chapterId}`);
+        // Refresh chapters list after deletion
+        fetchChapters(story.mangaid, currentPage);
+      } catch (err) {
+        console.error('Error deleting chapter:', err);
+      }
+    }
+  };
+
+  const handleAddChapter = () => {
+    navigate(`/staff/story-management/add-chapter/${id_story}`);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      formData.append('title', story.title);
+      formData.append('author', story.author.join(','));
+      formData.append('artist', story.artist.join(','));
+      formData.append('type', story.type);
+      formData.append('tags', story.tags.join(','));
+      formData.append('status', story.status);
+      formData.append('synopsis', story.synopsis);
+      formData.append('mangaid', story.mangaid);
+      
+      if (story.coverFile) {
+        formData.append('cover', story.coverFile);
+      }
+      
+      await api.put(`/api/staff/book/${id_story}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      alert('Story updated successfully!');
+      navigate(`/staff/story-management/story/${id_story}`);
+    } catch (err) {
+      console.error('Error while updating story:', err);
+      alert('An error occurred while updating the story.');
+    }
   };
 
   const handleCancel = () => {
-    if (window.confirm("Bạn có chắc muốn hủy bỏ các thay đổi?")) {
+    if (window.confirm("Are you sure you want to discard your changes?")) {
       navigate(-1);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="bg-gray-50 min-h-screen p-4 md:p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading story data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-gray-50 min-h-screen p-4 md:p-6 flex items-center justify-center">
+        <div className="bg-white p-6 rounded-lg shadow-md max-w-md text-center">
+          <h3 className="text-lg font-medium text-red-600 mb-2">Error loading data</h3>
+          <p className="text-gray-700 mb-4">{error}</p>
+          <button
+            onClick={handleCancel}
+            className="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700"
+          >
+            Back 
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!story) {
+    return (
+      <div className="bg-gray-50 min-h-screen p-4 md:p-6 flex items-center justify-center">
+        <div className="bg-white p-6 rounded-lg shadow-md max-w-md text-center">
+          <h3 className="text-lg font-medium text-gray-800 mb-2">Story not found</h3>
+          <p className="text-gray-700 mb-4">Story with ID {id_story} does not exist or has been deleted.</p>
+          <button
+            onClick={handleCancel}
+            className="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700"
+          >
+            Back 
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-100 py-6">
-  
-      {/* Main Content */}
-      <main className="container mx-auto px-4">
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          {/* Top section */}
-          <div className="flex flex-col md:flex-row gap-6 mb-8">
-            {/* Cover Image */}
-            <div className="flex-shrink-0 w-full md:w-1/4">
+    <div className="bg-gray-50 min-h-screen p-4 md:p-6">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        {/* Header with back button */}
+        <div className="px-4 py-3 md:px-6 md:py-4 border-b border-gray-200">
+          <button 
+            onClick={handleCancel}
+            className="flex items-center text-teal-600 hover:text-teal-800"
+          >
+            <FiArrowLeft className="mr-1" />
+            <span>Back</span>
+          </button>
+        </div>
+
+        {/* Story edit form */}
+        <form onSubmit={handleSubmit} className="px-4 py-4 md:px-6 md:py-6">
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* Cover image */}
+            <div className="flex-shrink-0 w-full md:w-48 lg:w-56">
               <img 
-                src={storyData.coverImage} 
-                alt="Bìa truyện" 
-                className="w-full rounded-md border border-gray-300 object-cover aspect-[3/4]"
+                src={coverPreview || '/placeholder.jpg'} 
+                alt={`${story.title} cover`}
+                className="w-full h-auto rounded shadow-md mb-2 aspect-[3/4] object-cover"
               />
-              <button className="mt-3 w-full px-3 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 text-sm transition-colors">
-                Đổi ảnh bìa
-              </button>
+              <input
+                type="file"
+                id="cover-upload"
+                accept="image/*"
+                onChange={handleCoverChange}
+                className="hidden"
+              />
+              <label 
+                htmlFor="cover-upload"
+                className="block w-full px-3 py-2 bg-teal-600 text-white text-center rounded hover:bg-teal-700 cursor-pointer"
+              >
+                Change cover
+              </label>
             </div>
 
-            {/* Form section */}
-            <div className="w-full md:w-3/4 space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Tên truyện</label>
-                <input
-                  name="title"
-                  value={storyData.title}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
+            {/* Story details form */}
+            <div className="flex-1 space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                  <input
+                    name="title"
+                    value={story.title}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    required
+                  />
+                </div>
+                
+                <div className="flex items-center bg-yellow-100 px-3 py-1 rounded-full">
+                  <FiStar className="text-yellow-500 mr-1" />
+                  <span className="font-medium">{story.rate}/5</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Authors (comma separated)</label>
+                  <input
+                    name="author"
+                    value={story.author?.join(', ') || ''}
+                    onChange={handleArrayInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Artists (comma separated)</label>
+                  <input
+                    name="artist"
+                    value={story.artist?.join(', ') || ''}
+                    onChange={handleArrayInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <select
+                    name="type"
+                    value={story.type}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  >
+                    <option value="manga">Manga</option>
+                    <option value="manhwa">Manhwa</option>
+                    <option value="manhua">Manhua</option>
+                    <option value="comic">Comic</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma separated)</label>
+                  <input
+                    name="tags"
+                    value={story.tags?.join(', ') || ''}
+                    onChange={handleArrayInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <select
+                    name="status"
+                    value={story.status}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  >
+                    <option value="ongoing">Ongoing</option>
+                    <option value="completed">Completed</option>
+                    <option value="hiatus">Hiatus</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Manga ID</label>
+                  <input
+                    name="mangaid"
+                    value={story.mangaid}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    required
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Thể loại</label>
-                <input
-                  name="genres"
-                  value={storyData.genres}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Tác giả</label>
-                <input
-                  name="author"
-                  value={storyData.author}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Mô tả</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Synopsis</label>
                 <textarea
-                  name="description"
+                  name="synopsis"
                   rows={6}
-                  value={storyData.description}
+                  value={story.synopsis}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
+              </div>
+
+              <div className="flex flex-wrap gap-4">
+                <div className="bg-gray-100 px-3 py-2 rounded-lg">
+                  <p className="text-sm text-gray-500">Views</p>
+                  <p className="font-medium">{story.views || 0}</p>
+                </div>
+                <div className="bg-gray-100 px-3 py-2 rounded-lg">
+                  <p className="text-sm text-gray-500">Followers</p>
+                  <p className="font-medium">{story.followers || 0}</p>
+                </div>
+                <div className="bg-gray-100 px-3 py-2 rounded-lg">
+                  <p className="text-sm text-gray-500">Total Chapters</p>
+                  <p className="font-medium">{totalChapters || 0}</p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Chapter management */}
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-               Quản lý chương
-            </h2>
-
-            {/* Sort & Add */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mb-4">
-              <div className="text-sm text-gray-600">
-                Sắp xếp: 
-                <select className="border border-gray-300 rounded px-2 py-1 ml-1 focus:outline-none focus:ring-2 focus:ring-teal-500">
-                  <option>Mới nhất</option>
-                  <option>Cũ nhất</option>
-                  <option>Theo số chương</option>
-                </select>
-              </div>
+          {/* Chapter management section */}
+          <div className="mt-8 border-t border-gray-200 pt-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+              <h2 className="text-xl font-semibold">Chapter List</h2>
+              
               <button 
-                onClick={() => handleAddChapter()} 
-                className="bg-teal-600 hover:bg-teal-700 text-white px-3 py-2 rounded-md flex items-center text-sm transition-colors">
-                <FiPlus className="mr-1" /> Thêm chương mới
+                type="button"
+                onClick={handleAddChapter}
+                className="px-3 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 flex items-center text-sm"
+              >
+                <FiPlus className="mr-1" />
+                <span>Add Chapter</span>
               </button>
             </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto">
-              <table className="min-w-full border text-sm">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="text-left px-4 py-2">Chương</th>
-                    <th className="text-left px-4 py-2">Ngày đăng/chỉnh sửa</th>
-                    <th className="text-right px-4 py-2">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
+            {/* Chapters table */}
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <div className="overflow-y-auto max-h-[400px]">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50 sticky top-0">
                     <tr>
-                      <td colSpan="3" className="px-4 py-6 text-center text-gray-500">
-                        Đang tải dữ liệu...
-                      </td>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chapter</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pages</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Published</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
-                  ) : (
-                    currentChapters.map((chapter) => (
-                      <tr key={chapter.id} className="border-t hover:bg-gray-50">
-                        <td className="px-4 py-3">{chapter.title}</td>
-                        <td className="px-4 py-3">{chapter.date}</td>
-                        <td className="px-4 py-3 text-right">
-                          <div className="flex justify-end space-x-3">
-                            <button 
-                              onClick={() => handleEditChapter(chapter.id)} 
-                              className="text-teal-600 hover:text-teal-800 transition-colors">
-                              <FiEdit2 size={16} />
-                            </button>
-                            <button 
-                              onClick={() => handleDeleteChapter(chapter.id)} 
-                              className="text-red-600 hover:text-red-800 transition-colors">
-                              <FiTrash2 size={16} />
-                            </button>
-                          </div>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {chapters.length > 0 ? (
+                      chapters.map((chapter) => (
+                        <tr key={chapter._id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {chapter.title || `Chapter ${chapter.chapter}${chapter.volume ? ` (Vol. ${chapter.volume})` : ''}`}
+
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                            {chapter.volume || '-'}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                            {chapter.pages || 0}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                            {new Date(chapter.publishDate).toLocaleDateString()}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                            <div className="flex space-x-3">
+                              <button 
+                                type="button"
+                                onClick={() => handleEditChapter(chapter)}
+                                className="text-teal-600 hover:text-teal-800"
+                              >
+                                Edit
+                              </button>
+                              <button 
+                                type="button"
+                                onClick={() => handleDeleteChapter(chapter.chapterid)}
+                                className="text-red-600 hover:text-red-800"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="5" className="px-4 py-6 text-center text-gray-500">
+                          No chapters found
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
-            {/* Pagination */}
-            {!loading && (
-              <div className="mt-6 flex justify-center">
-                <nav className="flex items-center gap-1">
-                  <button
-                    onClick={() => paginate(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
-                    className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    &lt;
-                  </button>
-                  
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNum;
-                    if (totalPages <= 5) {
-                      pageNum = i + 1;
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i;
-                    } else {
-                      pageNum = currentPage - 2 + i;
-                    }
-
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => paginate(pageNum)}
-                        className={`px-3 py-1 border rounded ${currentPage === pageNum ? 'bg-teal-600 text-white' : 'hover:bg-gray-100'}`}
-                      >
-                        {pageNum}
-                      </button>
-                    );
-                  })}
-
-                  {totalPages > 5 && currentPage < totalPages - 2 && (
-                    <span className="px-2">...</span>
-                  )}
-
-                  {totalPages > 5 && currentPage < totalPages - 2 && (
-                    <button
-                      onClick={() => paginate(totalPages)}
-                      className={`px-3 py-1 border rounded ${currentPage === totalPages ? 'bg-teal-600 text-white' : 'hover:bg-gray-100'}`}
-                    >
-                      {totalPages}
-                    </button>
-                  )}
-
-                  <button
-                    onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
-                    disabled={currentPage === totalPages}
-                    className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    &gt;
-                  </button>
-                </nav>
-              </div>
-            )}
+           
           </div>
 
-          {/* Action Buttons */}
-          <div className="mt-10 flex justify-end gap-3">
+          {/* Action buttons */}
+          <div className="mt-8 flex justify-end gap-3">
             <button 
+              type="button"
               onClick={handleCancel}
-
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md transition-colors">
-              Hủy
+              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+            >
+              Cancel
             </button>
-            <button className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md transition-colors">
-              Lưu thay đổi
+            <button 
+              type="submit"
+              className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+            >
+              Save Changes
             </button>
           </div>
-        </div>
-      </main>
+        </form>
+      </div>
     </div>
   );
 };

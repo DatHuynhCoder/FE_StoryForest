@@ -168,7 +168,7 @@ const MonthlySales = () => {
   return (
     <div className="w-full bg-white p-4 rounded-lg shadow-sm">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">Monthly Sales</h3>
+        <h3 className="text-lg font-semibold text-gray-800">Monthly income</h3>
         
         <div className="flex items-center space-x-4">
           {/* Dropdown chọn năm */}
@@ -191,7 +191,7 @@ const MonthlySales = () => {
           
           <div className="flex items-center">
             <span className="w-3 h-3 rounded-full bg-[#14B8A6] mr-2"></span>
-            <span className="text-sm text-gray-500">Sales</span>
+            <span className="text-sm text-gray-500">Income</span>
           </div>
         </div>
       </div>
