@@ -8,6 +8,7 @@
 .logoContainer {
   padding: 10px;
   flex: 1;
+  cursor: pointer;
 }
 
 .logoImage {
