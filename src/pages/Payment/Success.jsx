@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useLocation } from 'react-router'
-import { api } from '../../services/api';
+import { apiAuth } from '../../services/api';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../../redux/userSlice';
 
@@ -16,7 +16,7 @@ function Success() {
   const status = queryParams.get('status'); // PAID
   const orderCode = queryParams.get('orderCode');
   useEffect(() => {
-    api.patch('/api/reader/account/upgrade', { userid: userid }).then(res => {
+    apiAuth.patch('/api/reader/account/upgrade').then(res => {
       if (res.data.success === true) {
         //update user role in redux
         dispatch(updateUser(res.data.data))

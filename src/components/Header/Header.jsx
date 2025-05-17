@@ -18,57 +18,55 @@ import { useCookies } from 'react-cookie';
 
 const Header = () => {
 
-	const dispatch = useDispatch();
-	const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-	const [cookie, setCookie, removeCookie] = useCookies(["theme", "intensity"])
+  const [cookie, setCookie, removeCookie] = useCookies(["theme", "intensity"])
   const [focusSearchBox, setFocusSearchBox] = useState(false)
-   const [focusResults, setFocusResults] = useState(false)
+  const [focusResults, setFocusResults] = useState(false)
 
-     const [focusSearchBoxMb, setFocusSearchBoxMb] = useState(false)
-   const [focusResultsMb, setFocusResultsMb] = useState(false)
+  const [focusSearchBoxMb, setFocusSearchBoxMb] = useState(false)
+  const [focusResultsMb, setFocusResultsMb] = useState(false)
 
-	//get user from redux
-	const user = useSelector((state) => state.user.user);
+  //get user from redux
+  const user = useSelector((state) => state.user.user);
 
+  const [search, setSearch] = useState("")
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenProfile, setIsOpenProfile] = useState(false);
+  const toggleProfile = isOpenProfile ? "" : "hidden";
 
-	const [search, setSearch] = useState("")
-
-	const [isOpen, setIsOpen] = useState(false);
-	const [isOpenProfile, setIsOpenProfile] = useState(false);
-	const toggleProfile = isOpenProfile ? "" : "hidden";
-
-	const [toggleMenu, setToggleMenu] = useState(false)
-	const [type, setType] = useState('')
+  const [toggleMenu, setToggleMenu] = useState(false)
+  const [type, setType] = useState('')
   const [typeResult, setTypeResult] = useState('all')
-	const [page, setPage] = useState('Home')
-	const [toggle, setToggle] = useState(false)
+  const [page, setPage] = useState('Home')
+  const [toggle, setToggle] = useState(false)
 
 
 
-	const handleLogout = async () => {
-		try {
-			const response = await api.post("/api/reader/account/logout");
-			if (response.data.success) {
-				dispatch(logout());
-				removeCookie("theme")
-				removeCookie("intensity")
-				navigate("/login")
-			}
-		} catch (error) {
-			toast.error("An error occur during logout:", error);
-		}
-	}
+  const handleLogout = async () => {
+    try {
+      const response = await api.post("/api/reader/account/logout");
+      if (response.data.success) {
+        dispatch(logout());
+        removeCookie("theme")
+        removeCookie("intensity")
+        navigate("/login")
+      }
+    } catch (error) {
+      toast.error("An error occur during logout:", error);
+    }
+  }
 
 
-	const [listResult, setListResult] = useState([])
+  const [listResult, setListResult] = useState([])
 
-	useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
-         const res = await api.get(`/api/search/${search}`);
-         const combinedResults = res.data.data
+        const res = await api.get(`/api/search/${search}`);
+        const combinedResults = res.data.data
         let results = [];
 
         if (typeResult != "all") {
@@ -78,49 +76,45 @@ const Header = () => {
         }
         console.log(results);
         setListResult(results);
-        
+
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchData();
-  }, [typeResult,search]);
+  }, [typeResult, search]);
 
 
- useEffect(() => {
-  // Cập nhật page khi location thay đổi
-  if (location.pathname === '/') {
-    setPage('Home');
-  } else if (location.pathname.startsWith('/manga')) {
-    setPage('Manga');
-  } else if (location.pathname.startsWith('/novel')) {
-    setPage('Novel');
-  } else if (location.pathname.startsWith('/advanced-search')) {
-    setPage('Advanced Search');
-  } else {
-    setPage('Home'); // Hoặc giá trị mặc định khác
-  }
-}, [location.pathname]);
+  useEffect(() => {
+    // Cập nhật page khi location thay đổi
+    if (location.pathname === '/') {
+      setPage('Home');
+    } else if (location.pathname.startsWith('/manga')) {
+      setPage('Manga');
+    } else if (location.pathname.startsWith('/novel')) {
+      setPage('Novel');
+    } else if (location.pathname.startsWith('/advanced-search')) {
+      setPage('Advanced Search');
+    } else {
+      setPage('Home'); // Hoặc giá trị mặc định khác
+    }
+  }, [location.pathname]);
 
   const handleActive = (pageName) => {
     setPage(pageName);
     setToggleMenu(prev => !prev);
   };
+  
 	const handleSearch = () => {
 		if (search!='') {
 			navigate(`/advanced-search?type=all&genre=All&author=None&search=${search}`)
 		}
 
     setSearch('')
-
-    setSearch('')
 	}
 	const handleViewResultDetails = (type, id) => {
 		setSearch("")
-		setFocusSearchBox(true)
-		// navigate(`/bookDetail/${_id}/${mangaid}`)
-		navigate(`/${type}/${id}`)
 		setFocusSearchBox(true)
 		// navigate(`/bookDetail/${_id}/${mangaid}`)
 		navigate(`/${type}/${id}`)
@@ -144,15 +138,15 @@ const Header = () => {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  onFocus={()=>setFocusSearchBox(true)}
-                  onBlur={()=>setFocusSearchBox(false)}
+                  onFocus={() => setFocusSearchBox(true)}
+                  onBlur={() => setFocusSearchBox(false)}
                 />
                 <IoSearch size={20} />
-                {search && (focusSearchBox||focusResults) && (
+                {search && (focusSearchBox || focusResults) && (
                   <>
                     {" "}
-                    <div className={styles.searchResults}  onMouseEnter={()=>setFocusResults(true)}
-                  onMouseLeave={()=>setFocusResults(false)}>
+                    <div className={styles.searchResults} onMouseEnter={() => setFocusResults(true)}
+                      onMouseLeave={() => setFocusResults(false)}>
                       <div className={styles.radioGroup}>
                         <p className={styles.radioLabel}>Type:</p>
                         <div className={styles.radioOption}>
@@ -289,14 +283,23 @@ const Header = () => {
               <div
                 className="relative w-full h-full"
                 onClick={() => setIsOpenProfile(!isOpenProfile)}
-             
+
               >
-                <div className="flex items-center gap-3 w-full text-[#c5e1a5] hover:text-white cursor-pointer h-full" >
-                  <img
-                    src={user.avatar?.url || DefaultAvt}
-                    alt="avatar"
-                    className="w-12 h-12 rounded-full"
-                  />
+                <div className="flex items-center gap-3 w-full text-[#c5e1a5] hover:text-white cursor-pointer h-full">
+                  <div className={`relative w-12 h-12 rounded-full ${user.role === 'VIP reader' ? 'ring-2 ring-yellow-400 animate-glow' : ''}`}>
+                    <img
+                      src={user.avatar?.url || DefaultAvt}
+                      alt="avatar"
+                      className="w-full h-full rounded-full"
+                    />
+                    {user.role === 'VIP reader' && (
+                      <img
+                        src="/images/king.png"
+                        alt="VIP Crown"
+                        className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-6 h-6 drop-shadow-md"
+                      />
+                    )}
+                  </div>
                   <div className="flex flex-col">
                     <span className="font-semibold truncate max-w-[100px] overflow-hidden whitespace-nowrap">
                       {user.username}
@@ -346,20 +349,20 @@ const Header = () => {
                       className="cursor-pointer block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                       onClick={handleLogout}
                     >
-                     Log out
+                      Log out
                     </div>
                   </div>
                 </div>
               </div>
-              
+
             </>
           ) : (
             <>
               <div className={styles.authButtons}>
-                <NavLink to="/signup" className={styles.authButton}>
+                <NavLink to="/login" className={styles.authButton}>
                   <p className={styles.authButtonText}>Login</p>
                 </NavLink>
-                <NavLink to="/login" className={styles.authButton}>
+                <NavLink to="/signup" className={styles.authButton}>
                   <p className={styles.authButtonText}>Sign up</p>
                 </NavLink>
               </div>
@@ -430,31 +433,31 @@ const Header = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                onFocus={()=>setFocusSearchBoxMb(true)}
-                 onBlur={()=>setFocusSearchBoxMb(false)}
+                onFocus={() => setFocusSearchBoxMb(true)}
+                onBlur={() => setFocusSearchBoxMb(false)}
               />
               <IoSearch size={20} />
               {search && (focusResultsMb || focusSearchBoxMb) && (
                 <>
                   {" "}
                   <div className={styles.searchResults}
-                   onMouseEnter={()=>setFocusResultsMb(true)}
-                  onMouseLeave={()=>setFocusResultsMb(false)}
-                 >
+                    onMouseEnter={() => setFocusResultsMb(true)}
+                    onMouseLeave={() => setFocusResultsMb(false)}
+                  >
                     <div className={styles.radioGroup} >
                       <p className={styles.radioLabel}>Type:</p>
-                       <div className={styles.radioOption}>
-                          <input
-                            type="radio"
-                            value={"all"}
-                            name="typeResultMobile"
-                            checked={typeResult == "all"}
-                            onChange={(e) => {
-                              setTypeResult(e.target.value);
-                            }}
-                          />
-                          <p>All</p>
-                        </div>
+                      <div className={styles.radioOption}>
+                        <input
+                          type="radio"
+                          value={"all"}
+                          name="typeResultMobile"
+                          checked={typeResult == "all"}
+                          onChange={(e) => {
+                            setTypeResult(e.target.value);
+                          }}
+                        />
+                        <p>All</p>
+                      </div>
                       <div className={styles.radioOption}>
                         <input
                           type="radio"
@@ -496,9 +499,9 @@ const Header = () => {
                           </div>
                           <div className="flex-4">
                             <p
-                               onClick={() =>
-                                  handleViewResultDetails(result.type, result._id)
-                                }
+                              onClick={() =>
+                                handleViewResultDetails(result.type, result._id)
+                              }
                               className="text-lg md:text-xl font-bold text-green-500 text-center hover:underline cursor-pointer"
                             >
                               {result.title}
@@ -582,7 +585,7 @@ const Header = () => {
                     style={({ isActive }) =>
                       isActive ? { backgroundColor: "#66bb6a" } : {}
                     }
-                    onClick={() => {setPage("Home");setToggleMenu((prev) => !prev)}}
+                    onClick={() => { setPage("Home"); setToggleMenu((prev) => !prev) }}
                   >
                     <p className={styles.navText}>Home</p>
                   </NavLink>
@@ -618,7 +621,7 @@ const Header = () => {
                     style={({ isActive }) =>
                       isActive ? { backgroundColor: "#66bb6a" } : {}
                     }
-                   onClick={() => handleActive('Advanced Search')}
+                    onClick={() => handleActive('Advanced Search')}
                   >
                     <p className={styles.navText}>Advanced Search</p>
                   </NavLink>

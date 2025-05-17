@@ -7,7 +7,7 @@
 }
 
 .formRow {
-  height: 140px;
+  height: auto;
   flex-direction: row;
   display: flex;
   width: 100%;
@@ -59,7 +59,6 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  height: 150px;
   padding: 10px 10px 10px 20px;
   margin-left: 25px;
   border-left: 2px solid;
@@ -99,6 +98,7 @@
   justify-content: center;
   align-items: center;
   border-radius: 10px;
+  cursor: pointer;
   background: linear-gradient(90deg, rgb(211, 123, 29) 0%, rgb(220, 39, 22) 100%);
 }
 
@@ -115,6 +115,7 @@
   justify-content: center;
   align-items: center;
   border-radius: 10px;
+  cursor: pointer;
   background: linear-gradient(90deg, rgb(103, 228, 65) 0%, #5FFFB8 100%);
   box-sizing: border-box;
 }

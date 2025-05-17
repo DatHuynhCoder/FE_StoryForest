@@ -374,7 +374,17 @@ function NovelReader() {
           <p className='md:text-lg mt-2'>{chaptertitle}</p>
         </div>
         <div className='flex flex-col justify-center'>
-          <Button variant="contained" onClick={handleReadChapter}>Đọc chapter 🔊</Button>
+          <button className="relative px-6 py-3 font-semibold text-white bg-blue-600 overflow-hidden group rounded-md">
+            {/* Normal text */}
+            <span className="relative z-10 group-hover:hidden">Read chapter</span>
+
+            {/* Hover text */}
+            <span className="relative z-10 hidden group-hover:inline">Under Construction</span>
+
+            {/* Stripe overlay */}
+            <span className="absolute inset-0 bg-[repeating-linear-gradient(45deg,black_0,black_10%,transparent_10%,transparent_20%)] bg-yellow-800 opacity-0 group-hover:opacity-40 transition-opacity duration-300 pointer-events-none"></span>
+          </button>
+
           {/* <button onClick={handleReadChapter} type="button" className="cursor-pointer text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 ">Đọc chapter 🔊</button> */}
         </div>
         {/* This div will contain the novel content */}

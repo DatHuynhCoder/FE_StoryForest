@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { api } from "../../services/api";
 // icon
 import { FaUserCircle } from "react-icons/fa";
-import { RiLockPasswordFill, RiEyeCloseFill, RiEyeFill } from "react-icons/ri";
+import { RiLockPasswordFill, RiEyeCloseFill, RiEyeFill, RiHome4Fill } from "react-icons/ri";
 import { MdEmail } from "react-icons/md";
 
 import { toast } from "react-toastify";
@@ -19,7 +19,7 @@ const Signup = () => {
 
   const handleSignup = async () => {
     try {
-      const response = await api.post("/api/reader/account/register", {username, email, password });
+      const response = await api.post("/api/reader/account/register", { username, email, password });
       if (response.data.success) {
         toast.success("Signup successful!");
         navigate("/login");
@@ -36,9 +36,12 @@ const Signup = () => {
     <div className="w-full h-screen bg-cover sm:bg-[url(/images/bg_signup_lap.jpg)] bg-[url(/images/bg_signup_phone.jpg)] bg-center flex justify-center items-center">
       <div className="bg-white/50 rounded-3xl px-5 py-4 xl:w-3/10 lg:w-2/5 sm:w-1/2 w-3/4 min-h-1/2 flex flex-col gap-4">
         {/* header-login */}
-        <h1 className="font-bold text-(--secondary-text-color) text-3xl">
-          Let Create <span className="sm:block">an Account</span>
-        </h1>
+        <div className="flex flex-row items-center justify-between">
+          <h1 className="font-bold text-(--secondary-text-color) text-3xl">
+            Let Create <span className="sm:block">an Account</span>
+          </h1>
+          <RiHome4Fill className="w-8 h-8 text-blue-800 cursor-pointer" onClick={() => navigate('/')} />
+        </div>
         <p className="font-bold text-(--secondary-text-color) text-sm">
           Please enter your information here
         </p>

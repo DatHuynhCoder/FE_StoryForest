@@ -286,50 +286,64 @@ function MangaReader() {
             onClick={scrollToTop}>
             <FaArrowUp />
           </div>
-          <div className='flex items-center justify-center px-2 rounded cursor-pointer hover:bg-[#f1f1f1]'
-            onClick={scrollToTop}>
-            <Button onClick={handleClickOpenSelectTheme} className='!bg-green-500'>Theme</Button>
-            <Dialog disableEscapeKeyDown open={openSelectTheme} onClose={handleCloseSelectTheme}>
-              <DialogTitle>Select theme</DialogTitle>
-              <DialogContent>
-                <Box component="form" sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                  <FormControl sx={{ m: 1, minWidth: 120 }}>
-                    <InputLabel htmlFor="demo-dialog-native">Color</InputLabel>
-                    <Select
-                      native
-                      value={theme}
-                      onChange={handleChangeTheme}
-                      input={<OutlinedInput label="Age" id="demo-dialog-native" />}
-                    >
-                      <option aria-label="None" value="" />
-                      {listTheme.map(theme => {
-                        return <option value={theme} key={theme}>{theme}</option>
-                      })}
-                    </Select>
-                  </FormControl>
-                  <FormControl sx={{ m: 1, minWidth: 120 }}>
-                    <InputLabel htmlFor="demo-dialog-native">Intensity</InputLabel>
-                    <Select
-                      native
-                      value={intensity}
-                      onChange={handleChangeIntensity}
-                      input={<OutlinedInput label="Age" id="demo-dialog-native" />}
-                    >
-                      <option aria-label="None" value="" />
-                      {litsIntensity.map(intensity => {
-                        return <option value={intensity} key={intensity}>{intensity}</option>
-                      })}
-                    </Select>
-                  </FormControl>
-                </Box>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleResetTheme}>Reset</Button>
-                <Button onClick={handleCancelSelectTheme}>Cancel</Button>
-                <Button onClick={handleCloseSelectTheme}>Ok</Button>
-              </DialogActions>
-            </Dialog>
-          </div>
+          {/* only VIP can choose theme */}
+          {user && user.role === 'VIP reader' ? (
+            <div
+              className="flex items-center justify-center px-2 rounded cursor-pointer hover:bg-[#f1f1f1]"
+              onClick={scrollToTop}
+            >
+              <Button onClick={handleClickOpenSelectTheme} className="!bg-green-500 cursor-pointer">
+                Theme
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center px-2 rounded">
+              <Button className="bg-gray-400 cursor-not-allowed" disabled>
+                🔒 Theme
+              </Button>
+            </div>
+          )}
+          {/* Theme choosing section */}
+          <Dialog disableEscapeKeyDown open={openSelectTheme} onClose={handleCloseSelectTheme}>
+            <DialogTitle>Select theme</DialogTitle>
+            <DialogContent>
+              <Box component="form" sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                <FormControl sx={{ m: 1, minWidth: 120 }}>
+                  <InputLabel htmlFor="demo-dialog-native">Color</InputLabel>
+                  <Select
+                    native
+                    value={theme}
+                    onChange={handleChangeTheme}
+                    input={<OutlinedInput label="Age" id="demo-dialog-native" />}
+                  >
+                    <option aria-label="None" value="" />
+                    {listTheme.map(theme => {
+                      return <option value={theme} key={theme}>{theme}</option>
+                    })}
+                  </Select>
+                </FormControl>
+                <FormControl sx={{ m: 1, minWidth: 120 }}>
+                  <InputLabel htmlFor="demo-dialog-native">Intensity</InputLabel>
+                  <Select
+                    native
+                    value={intensity}
+                    onChange={handleChangeIntensity}
+                    input={<OutlinedInput label="Age" id="demo-dialog-native" />}
+                  >
+                    <option aria-label="None" value="" />
+                    {litsIntensity.map(intensity => {
+                      return <option value={intensity} key={intensity}>{intensity}</option>
+                    })}
+                  </Select>
+                </FormControl>
+              </Box>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleResetTheme}>Reset</Button>
+              <Button onClick={handleCancelSelectTheme}>Cancel</Button>
+              <Button onClick={handleCloseSelectTheme}>Ok</Button>
+            </DialogActions>
+          </Dialog>
         </div>
         {/* This div is for comment */}
         <Drawer open={openCommentDrawer} onClose={() => setOpenCommentDrawer(false)}>

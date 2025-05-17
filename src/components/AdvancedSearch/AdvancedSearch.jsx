@@ -1,7 +1,8 @@
 import React, { use, useEffect, useState } from "react";
 import styles from "../AdvancedSearch/AdvancedSearch.module.css";
-import { api } from "../../services/api";
+import { api, apiAuth } from "../../services/api";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { TbReload } from "react-icons/tb";
 
 function AdvancedSearch() {
@@ -9,6 +10,8 @@ function AdvancedSearch() {
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
+  //get user
+  const user = useSelector((state) => state.user.user);
 
   // State for query parameters
   const [type, setType] = useState(queryParams.get('type')||'all');
@@ -26,29 +29,29 @@ function AdvancedSearch() {
   const [isVIP, setIsVIP] = useState(false);
 
   // Author list (consider moving to a separate constants file)
- const authors = [
-  "h-goon (현군)", "Chugong (추공)", "Gi So-Ryeong (기소령)", "Fukuda Shinichi", "Sakano Anri", "Aizawa Daisuke", "Fuse", "Takahiro", "Yamada Kanehito", "Kentaro Miura",
-  "Mori Kouji", "Fujimoto Tatsuki", "Oda Tomohito", "Rifujin na Magonote", "ONE", "774 (Nanashi)", "Mishima Yomu", "Sogano Shachi", "Kinojo Miya", "Baba Okina",
-  "Azumi Kei", "Izumi Tomoki", "Ononata Manimani", "Tanabata Satori", "Nagaoka Taichi", "Akutami Gege", "Hyuuga Natsu", "Nanao Itsuki", "Endou Tatsuya", "Nishi Osamu",
-  "Teshima Fuminori", "Hero", "sing N song (싱숑)", "UMI", "Shirakome Ryo", "Oda Eiichiro", "Miku (美紅)", "Akasaka Aka", "Sakurai Norio", "Tsukiyo Rui",
-  "Harawata Saizou", "Mikami Saka", "Kui Ryoko", "Kazuno Fefu", "Myon", "Ishino Yassan", "Shinozaki Kaoru", "Sansan Sun", "Kotoyama", "Yashu",
-  "Usonan (유소난)", "Oono Kousuke", "Hagiu Aki", "Kanamaru Yuki", "Goji Shoji", "Tanaka Yuu", "Ryuyu", "Kazanami Shinogi", "Kurokata", "Take",
-  "Katou Yuuichi", "Eguchi Ren", "Aneko Yusagi", "Berry (열매)", "Soda Ice (뽕따맛스크류바)", "Umemura Shinya", "Fukui Takumi", "Nakamura Rikito", "Arai Sumiko", "Yuuki Karaku",
-  "Miraijin A", "Densuke (デンスケ)", "Kojima Takehiro", "Yukimori Nene", "Miyajima Reiji", "Gwon Gyeoeul (권겨을)", "Okano Yuu", "Akai Matsuri", "Tatsu Yukinobu", "Kaneshiro Muneyuki",
-  "Yukimura Makoto", "Hiiragi Yuuichi", "Sumimori Sai", "Kitagawa Nikita", "Yanagino Kanata", "Ryuto", "Shiraishi Arata", "Maki Keigo", "Isshiki Ichika", "Sawamura Harutarou",
-  "Shinkou Shotou", "Hinoura Takumi", "Mayoi Tofu", "Isayama Hajime", "Horikoshi Kouhei", "Ononaka Akihiro", "Hakari Enki", "Hata Kenjiro", "Zappon", "Ikada Kai",
-  "Tamamaru (たままる)", "Kankitsu Yusura", "Roy", "Inori.", "Yamaguchi Satoru", "Shimesaba (しめさば)", "Niichi", "Kratos5627", "ZebraUnicorn", "Draith",
-  "Mahmoud Schahed", "Nolifeneeded", "l-Ryn-l", "Syphax", "zang", "The First Observer", "marshalcarper", "JimQuill", "Fabled Webs", "PeterRoberts",
-  "J P Koenig", "Buller", "S.C. King", "Urmie", "SavingThrow", "Mangowo", "PlumParrot", "C.H. Mouser", "J.M. Clarke (U Juggernaut)", "Anne Crews",
-  "warden1207", "C. Sebastian Nutt", "itsdirector", "UndyingRevenge", "bor902", "LibrinLatone", "CNBaihaqi", "L.S. Easton", "CPT.Nicomedes", "Capaluchu",
-  "PigLord42", "jerpatch", "Vitaly S Alexius", "nugenttw", "Orthoros", "Tom Writing Quietly", "melmonella", "Kairami", "Critical Scribe", "Vincent Archer",
-  "DestroyatronMk8", "ImmovableMage", "Romeru", "Silverteller", "Zach Skye", "Edontigney", "Maradina", "Adventuresse", "WolfShine", "Resigned Dilettante",
-  "MrMander", "wasteawar", "Tony", "zoetewey", "nrsearcy", "irene_addler", "Alfir2", "Ayer12", "SerasStreams", "Mediocre At Best",
-  "ToraAKR", "Delemhach", "Omega_93", "B for Byrja", "GCLopes", "J.Drude", "Frostbird", "DWinchester", "ahoge_bird", "Halosty",
-  "Vihyungrang", "Skarabrae", "R.C. Joshua", "GMSteward", "Foxern", "DWS", "M.Tress", "Kia Leep", "Philippe", "BleedingTears",
-  "Dirk Grey", "Cytotoxin", "Daoist Enigma", "Tribulation", "Taylor Colt", "DarkTechnomancer", "C. M. ANTAL", "DangerDesperado", "Path Liar", "arg3nt",
-  "Aliapanacea", "Sylesth", "Extra26", "A.M. Long", "Halosty"
-];
+  const authors = [
+    "h-goon (현군)", "Chugong (추공)", "Gi So-Ryeong (기소령)", "Fukuda Shinichi", "Sakano Anri", "Aizawa Daisuke", "Fuse", "Takahiro", "Yamada Kanehito", "Kentaro Miura",
+    "Mori Kouji", "Fujimoto Tatsuki", "Oda Tomohito", "Rifujin na Magonote", "ONE", "774 (Nanashi)", "Mishima Yomu", "Sogano Shachi", "Kinojo Miya", "Baba Okina",
+    "Azumi Kei", "Izumi Tomoki", "Ononata Manimani", "Tanabata Satori", "Nagaoka Taichi", "Akutami Gege", "Hyuuga Natsu", "Nanao Itsuki", "Endou Tatsuya", "Nishi Osamu",
+    "Teshima Fuminori", "Hero", "sing N song (싱숑)", "UMI", "Shirakome Ryo", "Oda Eiichiro", "Miku (美紅)", "Akasaka Aka", "Sakurai Norio", "Tsukiyo Rui",
+    "Harawata Saizou", "Mikami Saka", "Kui Ryoko", "Kazuno Fefu", "Myon", "Ishino Yassan", "Shinozaki Kaoru", "Sansan Sun", "Kotoyama", "Yashu",
+    "Usonan (유소난)", "Oono Kousuke", "Hagiu Aki", "Kanamaru Yuki", "Goji Shoji", "Tanaka Yuu", "Ryuyu", "Kazanami Shinogi", "Kurokata", "Take",
+    "Katou Yuuichi", "Eguchi Ren", "Aneko Yusagi", "Berry (열매)", "Soda Ice (뽕따맛스크류바)", "Umemura Shinya", "Fukui Takumi", "Nakamura Rikito", "Arai Sumiko", "Yuuki Karaku",
+    "Miraijin A", "Densuke (デンスケ)", "Kojima Takehiro", "Yukimori Nene", "Miyajima Reiji", "Gwon Gyeoeul (권겨을)", "Okano Yuu", "Akai Matsuri", "Tatsu Yukinobu", "Kaneshiro Muneyuki",
+    "Yukimura Makoto", "Hiiragi Yuuichi", "Sumimori Sai", "Kitagawa Nikita", "Yanagino Kanata", "Ryuto", "Shiraishi Arata", "Maki Keigo", "Isshiki Ichika", "Sawamura Harutarou",
+    "Shinkou Shotou", "Hinoura Takumi", "Mayoi Tofu", "Isayama Hajime", "Horikoshi Kouhei", "Ononaka Akihiro", "Hakari Enki", "Hata Kenjiro", "Zappon", "Ikada Kai",
+    "Tamamaru (たままる)", "Kankitsu Yusura", "Roy", "Inori.", "Yamaguchi Satoru", "Shimesaba (しめさば)", "Niichi", "Kratos5627", "ZebraUnicorn", "Draith",
+    "Mahmoud Schahed", "Nolifeneeded", "l-Ryn-l", "Syphax", "zang", "The First Observer", "marshalcarper", "JimQuill", "Fabled Webs", "PeterRoberts",
+    "J P Koenig", "Buller", "S.C. King", "Urmie", "SavingThrow", "Mangowo", "PlumParrot", "C.H. Mouser", "J.M. Clarke (U Juggernaut)", "Anne Crews",
+    "warden1207", "C. Sebastian Nutt", "itsdirector", "UndyingRevenge", "bor902", "LibrinLatone", "CNBaihaqi", "L.S. Easton", "CPT.Nicomedes", "Capaluchu",
+    "PigLord42", "jerpatch", "Vitaly S Alexius", "nugenttw", "Orthoros", "Tom Writing Quietly", "melmonella", "Kairami", "Critical Scribe", "Vincent Archer",
+    "DestroyatronMk8", "ImmovableMage", "Romeru", "Silverteller", "Zach Skye", "Edontigney", "Maradina", "Adventuresse", "WolfShine", "Resigned Dilettante",
+    "MrMander", "wasteawar", "Tony", "zoetewey", "nrsearcy", "irene_addler", "Alfir2", "Ayer12", "SerasStreams", "Mediocre At Best",
+    "ToraAKR", "Delemhach", "Omega_93", "B for Byrja", "GCLopes", "J.Drude", "Frostbird", "DWinchester", "ahoge_bird", "Halosty",
+    "Vihyungrang", "Skarabrae", "R.C. Joshua", "GMSteward", "Foxern", "DWS", "M.Tress", "Kia Leep", "Philippe", "BleedingTears",
+    "Dirk Grey", "Cytotoxin", "Daoist Enigma", "Tribulation", "Taylor Colt", "DarkTechnomancer", "C. M. ANTAL", "DangerDesperado", "Path Liar", "arg3nt",
+    "Aliapanacea", "Sylesth", "Extra26", "A.M. Long", "Halosty"
+  ];
 
 
   // Update URL query parameters
@@ -150,6 +153,14 @@ function AdvancedSearch() {
       console.error("Data fetch error:", error);
     }
   };
+
+  // Handle upgrade vip
+  const handleUpgradeVip = () => {
+    apiAuth.post('/api/reader/payment/create-payment-link').then(res => {
+      window.location.href = res.data.url;
+    })
+  }
+
   // Effects
   useEffect(() => {
     fetchGenres();
@@ -253,7 +264,22 @@ function AdvancedSearch() {
             </div>
           </div>
 
-          {isVIP ? (
+          {/* Check if user is VIP */}
+          {!user ? (
+            <>
+              <div className={styles.vipSection}>
+                <div>
+                  <p>You need to login to search stories from memory...</p>
+                  <div
+                    className={styles.vipButton}
+                    onClick={() => navigate('/login')}
+                  >
+                    <p className={styles.vipButtonText}>Login</p>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : user.role === 'VIP reader' ? (
             <>
               <div className={styles.vipSection}>
                 <p className={styles.synopsisLabel}>Synopsis:</p>
@@ -273,13 +299,25 @@ function AdvancedSearch() {
           ) : (
             <>
               <div className={styles.vipSection}>
-                <div>
-                  <p>Become VIP to search stories from memory...</p>
-                  <div
-                    className={styles.vipButton}
-                    onClick={() => setIsVIP(true)}
-                  >
-                    <p className={styles.vipButtonText}>To VIP</p>
+                <div className="flex flex-row gap-4">
+                  <div>
+                    <p>Become VIP to search stories from memory...</p>
+                    <div
+                      className={styles.vipButton}
+                      onClick={handleUpgradeVip}
+                    >
+                      <p className={styles.vipButtonText}>Upgrade VIP</p>
+                    </div>
+                  </div>
+
+                  {/* VIP benefits */}
+                  <div className="bg-gray-100 rounded-xl p-3">
+                    <div className="font-bold text-lg">What you get as a VIP (aka the cool kids club):</div>
+                    <div>🕵️ Be the first to read our latest chapter drops — hot and fresh, straight to your eyeballs.</div>
+                    <div>🔍 Use our insanely ultimate powerful blazing-fast slashy search (You type nonsense craps, we dig up gold.)</div>
+                    <div>🎨 Customize your own theme or pick from a bunch of sexy presets — your vibe, your rules.</div>
+                    <div>📖 Let us read chapters for you while you lie down like the majestic lazy legend you are (coming soon, we pinky swear).</div>
+                    <div>🗣️ Voice cloning: Make your voice clone read stuff for you — it’s like audiobook, but with your own glorious voice (yup, also coming soon).</div>
                   </div>
                 </div>
               </div>

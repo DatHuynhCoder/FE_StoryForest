@@ -50,19 +50,19 @@ const OtherProfile = () => {
     fetchFavorite();
   }, [_id])
 
-    //Handle click on continue Reading favorite Book
-    const handleContinueReading = (book) => {
-      try {
-        if (book.type === 'manga') {
-          navigate(`/manga/${book._id}`);
-        }
-        else {
-          navigate(`/novel/${book._id}`);
-        }
-      } catch (error) {
-        toast.error("An error occur during continue reading:", error);
+  //Handle click on continue Reading favorite Book
+  const handleContinueReading = (book) => {
+    try {
+      if (book.type === 'manga') {
+        navigate(`/manga/${book._id}`);
       }
+      else {
+        navigate(`/novel/${book._id}`);
+      }
+    } catch (error) {
+      toast.error("An error occur during continue reading:", error);
     }
+  }
 
   //Spinner to load while fetching data
   if (!user) {
@@ -138,11 +138,17 @@ const OtherProfile = () => {
             </div>
           </div>
 
-          <div className="p-2 sm:p-3 flex flex-row items-center gap-2 sm:gap-3 bg-gray-50 rounded-lg">
-            <img src="/images/role.png" alt="role logo" className="w-6 h-6 sm:w-7 sm:h-7" />
-            <div className="flex-1 text-sm sm:text-base">
+          <div className="p-2 sm:p-3 flex flex-row items-center gap-2 sm:gap-4">
+            <img src="/images/role.png" alt="role logo" className="w-6 h-6 sm:w-8 sm:h-8" />
+            <div className="flex-1 text-sm sm:text-xl">
               <span className="font-bold">Role: </span>
-              {user?.role}
+              {user?.role === 'VIP reader' ? (
+                <span className="inline-flex items-center gap-1 font-bold text-yellow-500 bg-yellow-100 px-2 py-0.5 rounded shadow-sm animate-pulse">
+                  👑 VIP reader
+                </span>
+              ) : (
+                <span className="text-gray-700">{user?.role}</span>
+              )}
             </div>
           </div>
         </div>
