@@ -11,10 +11,10 @@ function AdvancedSearch() {
   const queryParams = new URLSearchParams(location.search);
 
   // State for query parameters
-  const [type, setType] = useState(queryParams.get("type") || "all");
-  const [genre, setGenre] = useState(queryParams.get("genre") || "All");
-  const [author, setAuthor] = useState(queryParams.get("author") || "None");
-  const [search, setSearch] = useState(queryParams.get("search") || "");
+  const [type, setType] = useState('all');
+  const [genre, setGenre] = useState('All');
+  const [author, setAuthor] = useState('None');
+  const [search, setSearch] = useState('');
   const [question, setQuestion] = useState("");
 
   // State for data
@@ -52,23 +52,22 @@ function AdvancedSearch() {
 
 
   // Update URL query parameters
-  const updateQuery = () => {
-    const params = new URLSearchParams();
-    params.set("type", type || "all");
-    params.set("genre", genre || "All");
-    params.set("author", author || "None");
-    params.set("search", search || "");
-
+  const updateQuery = async() => {
+        const params = new URLSearchParams({
+      type,
+      genre,
+      author,
+      search,
+    });
     navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+  
   };
 
   // Fetch genres from API
   const fetchGenres = async () => {
     try {
-      const [resManga, resNovel] = await Promise.all([
-        api.get("/api/manga/genres"),
-        api.get("/api/novel/genres"),
-      ]);
+      const resManga = await api.get('/api/manga/genres')
+      const resNovel = await api.get('/api/novel/genres')
 
       const manga = resManga.data.data || [];
       const novel = resNovel.data.data || [];
@@ -109,12 +108,12 @@ function AdvancedSearch() {
   };
 
   // Main data fetching effect
-  const fetchData = async () => {
+ const fetchData = async () => {
     try {
       let results = [];
 
       // Initial data fetch
-      if (!search && !question) {
+      if (search=='' && question=='') {
         const [mangaRes, novelRes] = await Promise.all([
           api.get("/api/manga"),
           api.get("/api/novel"),
@@ -123,12 +122,13 @@ function AdvancedSearch() {
       }
 
       // Search by term
-      if (search) {
-        const res = await api.get(`/api/search/${search}`);
+      if (search!='') {
+     
+           const res = await api.get(`/api/search/${search}`);
         results = res.data.data;
       }
 
-      if (question) {
+      if (question!='') {
         results = listResultAdvanced;
       }
 
@@ -150,16 +150,25 @@ function AdvancedSearch() {
       console.error("Data fetch error:", error);
     }
   };
-
   // Effects
   useEffect(() => {
     fetchGenres();
+    fetchData()
+    
   }, []);
 
+  useEffect(()=>{
+    setSearch(queryParams.get('search')||'')
+  },[queryParams.get('search')])
+
   useEffect(() => {
-    fetchData();
+     
+
     updateQuery();
-  }, [type, genre, author, search, question]);
+    fetchData()
+
+  }, [type, genre, author, question, search]);
+
   return (
     <>
       <div className={styles.container}>

@@ -108,8 +108,8 @@ const Header = () => {
     setToggleMenu(prev => !prev);
   };
 	const handleSearch = () => {
-		if (search) {
-			navigate(`/advanced-search?search=${search}&type=all&genre=All&author=None`)
+		if (search!='') {
+			navigate(`/advanced-search?type=all&genre=All&author=None&search=${search}`)
 		}
 
     setSearch('')
