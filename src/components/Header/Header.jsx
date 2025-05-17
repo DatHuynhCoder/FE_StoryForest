@@ -105,27 +105,26 @@ const Header = () => {
     setPage(pageName);
     setToggleMenu(prev => !prev);
   };
-  const handleSearch = () => {
-    if (search) {
-      navigate(`/advanced-search?search=${search}&type=all&genre=All&author=None`)
-    }
+  
+	const handleSearch = () => {
+		if (search!='') {
+			navigate(`/advanced-search?type=all&genre=All&author=None&search=${search}`)
+		}
 
     setSearch('')
-  }
-  const handleViewResultDetails = (type, id) => {
-    setSearch("")
-    setFocusSearchBox(true)
-    // navigate(`/bookDetail/${_id}/${mangaid}`)
-    navigate(`/${type}/${id}`)
-  }
+	}
+	const handleViewResultDetails = (type, id) => {
+		setSearch("")
+		setFocusSearchBox(true)
+		// navigate(`/bookDetail/${_id}/${mangaid}`)
+		navigate(`/${type}/${id}`)
+	}
 
   return (
     <>
       <div className={styles.headerContainer}>
         <div className={styles.logoContainer}>
-          <NavLink to='/'>
-            <img className={styles.logoImage} src={logo} alt="logo" />
-          </NavLink>
+          <img className={styles.logoImage} src={logo} alt="logo" onClick={()=>{navigate('/')}}/>
         </div>
 
         <>
