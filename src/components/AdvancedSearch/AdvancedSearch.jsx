@@ -11,10 +11,10 @@ function AdvancedSearch() {
   const queryParams = new URLSearchParams(location.search);
 
   // State for query parameters
-  const [type, setType] = useState('all');
-  const [genre, setGenre] = useState('All');
-  const [author, setAuthor] = useState('None');
-  const [search, setSearch] = useState('');
+  const [type, setType] = useState(queryParams.get('type')||'all');
+  const [genre, setGenre] = useState(queryParams.get('genre')||'All');
+  const [author, setAuthor] = useState(queryParams.get('author')||'None');
+  const [search, setSearch] = useState(queryParams.get('search')||'');
   const [question, setQuestion] = useState("");
 
   // State for data

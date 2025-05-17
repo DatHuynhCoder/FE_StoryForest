@@ -125,7 +125,7 @@ const Header = () => {
     <>
       <div className={styles.headerContainer}>
         <div className={styles.logoContainer}>
-          <img className={styles.logoImage} src={logo} alt="logo" />
+          <img className={styles.logoImage} src={logo} alt="logo" onClick={()=>{navigate('/')}}/>
         </div>
 
         <>
