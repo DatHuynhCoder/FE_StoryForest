@@ -59,7 +59,7 @@ const UserManagement = () => {
   if (stats.error) {
     return (
       <div className="p-6 text-red-500">
-        Error: {stats.error} - Using fallback data
+        Error: {stats.error} 
       </div>
     );
   }
