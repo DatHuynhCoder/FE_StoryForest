@@ -32,7 +32,7 @@ const Login = () => {
       }
     } catch (error) {
       console.error("An error occurred during login:", error);
-      toast.error("An error occurred. Please try again later.");
+      toast.error("An error occurred: " + error?.response?.data?.message);
     }
   };
 
@@ -44,7 +44,7 @@ const Login = () => {
           <h1 className="font-bold text-(--secondary-text-color) text-3xl">
             Let Start <span className="sm:block">Reading</span>
           </h1>
-          <RiHome4Fill className="w-8 h-8 text-blue-800 cursor-pointer" onClick={() => navigate('/')}/>
+          <RiHome4Fill className="w-8 h-8 text-blue-800 cursor-pointer" onClick={() => navigate('/')} />
         </div>
         <p className="font-bold text-(--secondary-text-color) text-sm">
           Please login or sign up to continue
@@ -60,6 +60,11 @@ const Login = () => {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleLogin();
+              }
+            }}
           />
         </div>
 
@@ -72,6 +77,11 @@ const Login = () => {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleLogin();
+              }
+            }}
           />
           {/* See password button */}
           <button
