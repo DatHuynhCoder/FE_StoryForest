@@ -33,12 +33,14 @@ import { useSelector, useDispatch } from 'react-redux'
 import { updateUser } from '../../redux/userSlice.js'
 //cookies
 import { useCookies } from 'react-cookie';
+// color picker
+import { HexColorPicker } from "react-colorful";
 
 function MangaReader() {
   const navigate = useNavigate()
   const dispatch = useDispatch();
 
-  const [cookie, setCookie, removeCookie] = useCookies(["theme", "intensity"])
+  const [cookie, setCookie, removeCookie] = useCookies(["theme", "textColor"]);
 
   const { mangaid, chapterid } = useParams()
   const location = useLocation()
@@ -54,14 +56,6 @@ function MangaReader() {
     __v: 0,
     _id: "unknown"
   }
-  // createdAt: "2025-04-25T03:35:51.024Z"
-  // email: "a@a.com"
-  // password: "$2b$10$265OXC4kEdoolKRBBMH2Z.LhTUOZWnLQb6GMoqRkI9rnlhEp/UF7K"
-  // role: "reader"
-  // updatedAt: "2025-04-25T03:35:51.024Z"
-  // username: "a"
-  // __v : 0,
-  // _id : "680b0317446eb05ee1287838"
   const token = useSelector((state) => state.user.token) || ''
 
   const [pics, setPics] = useState([])
@@ -74,18 +68,6 @@ function MangaReader() {
   };
   // handle select theme
   const [openSelectTheme, setOpenSelectTheme] = useState(false);
-  const [theme, setTheme] = useState(cookie?.theme || "white")
-  const listTheme = ['white', 'black', 'red', 'green']
-  const [intensity, setIntensity] = useState(cookie?.intensity || "500")
-  const litsIntensity = ['100', '500']
-  // theme + intensity = finalColor
-  const [finalColor, setFinalColor] = useState((theme !== 'black' && theme !== 'white') ? theme + '-' + intensity : theme)
-  const handleChangeTheme = (event) => {
-    setTheme((event.target.value) || 'white');
-  };
-  const handleChangeIntensity = (event) => {
-    setIntensity((event.target.value) || '500')
-  }
 
   const handleClickOpenSelectTheme = () => {
     if (user._id === 'unknown') alert('Login to use this feature !')
@@ -95,11 +77,8 @@ function MangaReader() {
 
   const handleCloseSelectTheme = (event, reason) => {
     if (reason !== 'backdropClick') {
-      console.log("theme: ", theme)
-      console.log("intensity: ", intensity)
-      setCookie("theme", theme)
-      setCookie("intensity", intensity)
-      setFinalColor((theme !== 'black' && theme !== 'white') ? theme + '-' + intensity : theme)
+      setCookie("theme", colorPicked)
+      setCookie("textColor", textColorPicked)
       setOpenSelectTheme(false);
     }
   };
@@ -109,10 +88,13 @@ function MangaReader() {
     }
   };
   const handleResetTheme = () => {
+    removeCookie("textColor")
     removeCookie("theme")
-    removeCookie("intensity")
     window.location.reload()
   }
+  //
+  const [colorPicked, setColorPicked] = useState(cookie?.theme || '#ffffff')
+  const [textColorPicked, setTextColorPicked] = useState(cookie?.textColor || '#000000')
   //
   const [chaptercomments, setChaptercomments] = useState([
     {
@@ -139,11 +121,20 @@ function MangaReader() {
   ])
   const [comment, setComment] = useState('')
 
+  const [commentReadmoreIndex, setCommentReadmoreIndex] = useState(new Array(chaptercomments.length).fill(false))
+
+  const handleReadMore = (index) => {
+    const updatedReadmoreIndex = [...commentReadmoreIndex]
+    updatedReadmoreIndex[index] = !updatedReadmoreIndex[index]
+    setCommentReadmoreIndex(updatedReadmoreIndex)
+  }
+
   const fetchCommentByChapterId = async () => {
     try {
       const response = await api.get(`/api/reader/review/chapter/${chapterid}`)
       // console.log("check comments: ", response.data.data)
       setChaptercomments(response.data.data)
+      setCommentReadmoreIndex(new Array(response.data.data.length).fill(false))
     } catch (error) {
       console.error("Error fetching comments:", error)
     }
@@ -159,7 +150,8 @@ function MangaReader() {
       return
     }
     apiAuth.post(`/api/reader/review/create`, {
-      content: comment.slice(0, 40),
+      // content: comment.slice(0, 40),
+      content: comment,
       rating: 5, // temp
       chapternumber: chapternumber,
       chaptertitle: chaptertitle,
@@ -236,12 +228,13 @@ function MangaReader() {
 
   return (
     <>
-      <div className={`flex flex-col justify-center items-center md:pl-[200px] md:pr-[200px] mb-20 bg-${finalColor}`}>
-        <div className='flex flex-col'>
-          <p className={`text-3xl md:text-5xl font-bold text-center cursor-pointer ${theme === 'black' ? 'text-white' : 'text-black'}`} onClick={handleBackToDetails}>{mangatitle == undefined ? "" : mangatitle}</p>
+      <div className={`flex flex-col justify-center items-center md:pl-[200px] md:pr-[200px] mb-20`}
+        style={{ backgroundColor: colorPicked }}>
+        <div className='flex flex-col mt-7 mb-2'>
+          <p className={`text-3xl md:text-5xl font-bold text-center cursor-pointer`} onClick={handleBackToDetails} style={{ color: textColorPicked }}>{mangatitle == undefined ? "" : mangatitle}</p>
         </div>
+        <p className={`md:text-lg mt-2`} style={{ color: textColorPicked }}>Chapter {chapternumber}: {chaptertitle}</p>
         {/* This div will contain 2 button */}
-        <p className={`md:text-lg mt-2 ${theme === 'black' ? 'text-white' : ''}`}>Chapter {chapternumber}: {chaptertitle}</p>
         <div className='flex flex-col justify-center'>
           <button onClick={handleNextChapter} className='p-[10px] bg-green-600 text-white font-bold md:w-[500px] w-[200px] rounded mt-3 cursor-pointer hover:bg-green-500'>Next chapter</button>
           <button onClick={handlePreviousChapter} className='p-[10px] font-bold md:w-[500px] w-[200px] rounded border mt-3 cursor-pointer bg-[#fff] hover:bg-[#f1f1f1]'>Previous chapter</button>
@@ -309,39 +302,19 @@ function MangaReader() {
             <DialogContent>
               <Box component="form" sx={{ display: 'flex', flexWrap: 'wrap' }}>
                 <FormControl sx={{ m: 1, minWidth: 120 }}>
-                  <InputLabel htmlFor="demo-dialog-native">Color</InputLabel>
-                  <Select
-                    native
-                    value={theme}
-                    onChange={handleChangeTheme}
-                    input={<OutlinedInput label="Age" id="demo-dialog-native" />}
-                  >
-                    <option aria-label="None" value="" />
-                    {listTheme.map(theme => {
-                      return <option value={theme} key={theme}>{theme}</option>
-                    })}
-                  </Select>
+                  <p className='font-bold text-2xl' style={{ color: textColorPicked }}>Text</p>
+                  <HexColorPicker color={textColorPicked} onChange={setTextColorPicked} />
                 </FormControl>
                 <FormControl sx={{ m: 1, minWidth: 120 }}>
-                  <InputLabel htmlFor="demo-dialog-native">Intensity</InputLabel>
-                  <Select
-                    native
-                    value={intensity}
-                    onChange={handleChangeIntensity}
-                    input={<OutlinedInput label="Age" id="demo-dialog-native" />}
-                  >
-                    <option aria-label="None" value="" />
-                    {litsIntensity.map(intensity => {
-                      return <option value={intensity} key={intensity}>{intensity}</option>
-                    })}
-                  </Select>
+                  <p className='font-bold text-2xl' style={{ color: colorPicked }}>Background</p>
+                  <HexColorPicker color={colorPicked} onChange={setColorPicked} />
                 </FormControl>
               </Box>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleResetTheme}>Reset</Button>
-              <Button onClick={handleCancelSelectTheme}>Cancel</Button>
-              <Button onClick={handleCloseSelectTheme}>Ok</Button>
+              <Button onClick={handleResetTheme} className='!bg-gray-500'>Reset</Button>
+              <Button onClick={handleCancelSelectTheme} className='!bg-red-500'>Cancel</Button>
+              <Button onClick={handleCloseSelectTheme} className='!bg-green-500'>Ok</Button>
             </DialogActions>
           </Dialog>
         </div>
@@ -380,7 +353,7 @@ function MangaReader() {
               {user._id !== "unknown" ?
                 <textarea
                   className='border p-2 mt-3 bg-gray-200 rounded-md w-[100%] h-[100px]'
-                  placeholder='Write something ... (max 40 characters)'
+                  placeholder='Write something ...'
                   onChange={(e) => setComment(e.target.value)}
                 ></textarea> : <p className='w-[100%]'>Please <Link to="/login" className='text-green-500'>login </Link>to comment</p>}
               {/* <div>
@@ -402,10 +375,18 @@ function MangaReader() {
                       <p className='ml-1 font-semibold text-black'>{comment.userid.username}</p>
                     </div>
                     <p className='text-gray-500'>{comment.createdAt.slice(0, 10)}</p>
-                    <p className='text-black w-[100%]'>{comment.content}</p>
+                    <p className='text-black w-[100%] text-justify'
+                      style={commentReadmoreIndex[index] ? {} : {
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        display: '-webkit-box',
+                      }}
+                    >{comment.content}
+                    </p>
+                    <p><span className='underline hover:text-blue-500 cursor-pointer' onClick={() => handleReadMore(index)}>{commentReadmoreIndex[index] ? 'read less' : 'read more'}</span></p>
                   </div>
                 </div>
-
               )) : <div className='mt-3'>
                 <div className='w-[100%] border p-2 rounded-md mt-2'>
                   <div className='flex'>
