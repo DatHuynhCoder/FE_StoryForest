@@ -1,21 +1,10 @@
 import React from 'react';
 import { FiMenu } from 'react-icons/fi';
 import defaultAvatar from "../../assets/default_avatar.jpg";
-
-const Staff = {
-  username: "Minh Minh",
-  role: "Staff",
-  avatar: {
-    url: "https://i.pravatar.cc/300" 
-  }
-};
+import { useSelector } from 'react-redux';
 
 const StaffHeader = ({ onToggleSidebar }) => {
-  const userDisplay = {
-    name: Staff.username || "Chưa có tên",
-    role: Staff.role || "Vai trò",
-    avatar: Staff.avatar?.url || defaultAvatar,
-  };
+  const user = useSelector((state) => state.user.user);
 
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
@@ -33,12 +22,12 @@ const StaffHeader = ({ onToggleSidebar }) => {
       {/* Thông tin người dùng */}
       <div className="flex items-center space-x-3">
         <div className="flex flex-col items-end">
-          <span className="text-sm font-medium text-gray-700">{userDisplay.name}</span>
-          <span className="text-xs text-gray-500">{userDisplay.role}</span>
+          <span className="text-sm font-medium text-gray-700">{user.username}</span>
+          <span className="text-xs text-gray-500">{user.role}</span>
         </div>
         <div className="w-8 h-8 rounded-full bg-teal-500 overflow-hidden">
           <img
-            src={userDisplay.avatar}
+            src={user?.avatar?.url || defaultAvatar}
             alt="avatar"
             className="w-full h-full object-cover"
           />

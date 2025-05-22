@@ -1,21 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { FiMenu } from 'react-icons/fi'; // Nút mở sidebar
-
-const fetchUserData = () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        name: 'Thomas Anree',
-        role: 'Admin',
-        initials: 'TA',
-        avatarColor: 'bg-teal-500'
-      });
-    }, 1000);
-  });
-};
+import { useSelector } from 'react-redux';
+import DefaultAvt from "../../assets/default_avatar.jpg";
 
 const AdminHeader = ({ onToggleSidebar }) => {
-  const [userData, setUserData] = useState(null);
+  const user = useSelector((state) => state.user.user);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -23,8 +12,6 @@ const AdminHeader = ({ onToggleSidebar }) => {
     const getUserData = async () => {
       try {
         setLoading(true);
-        const data = await fetchUserData();
-        setUserData(data);
       } catch (err) {
         setError('Failed to load user data');
         console.error(err);
@@ -63,13 +50,11 @@ const AdminHeader = ({ onToggleSidebar }) => {
         <div className="flex items-center space-x-3">
           <div className="flex flex-col items-end">
             <span className="text-sm font-medium text-gray-700">
-              {userData.name}
+              {user.username}
             </span>
-            <span className="text-xs text-gray-500">{userData.role}</span>
+            <span className="text-xs text-gray-500">{user.role}</span>
           </div>
-          <div className={`w-8 h-8 rounded-full ${userData.avatarColor} flex items-center justify-center text-white text-sm font-medium`}>
-            {userData.initials}
-          </div>
+          <img src={user?.avatar?.url || DefaultAvt} alt="admin avartar" className='w-8 h-8 rounded-full'/>
         </div>
       )}
     </header>
