@@ -327,22 +327,26 @@ const Header = () => {
                         My Profile
                       </NavLink>
                     </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      >
-                        Settings
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      >
-                        Earnings
-                      </a>
-                    </li>
+                    {user.role === 'admin' && (
+                      <li>
+                        <NavLink
+                          to="/admin/dashboard"
+                          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                        >
+                          Admin Dashboard
+                        </NavLink>
+                      </li>
+                    )}
+                    {(user.role === 'admin' || user.role === 'staff') && (
+                      <li>
+                        <NavLink
+                          to="/staff/story-management"
+                          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                        >
+                          Staff Dashboard
+                        </NavLink>
+                      </li>
+                    )}
                   </ul>
                   <div className="py-2">
                     <div

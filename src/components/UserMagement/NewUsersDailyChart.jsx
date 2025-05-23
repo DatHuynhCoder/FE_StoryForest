@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { api } from '../../services/api';
+import { apiAuth } from '../../services/api';
 
 const NewUsersDailyChart = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
@@ -15,7 +15,7 @@ const NewUsersDailyChart = () => {
       const year = month.getFullYear();
       const monthNumber = month.getMonth() + 1; 
       
-      const response = await api.get(`/api/admin/users/daily-stats?year=${year}&month=${monthNumber}`);
+      const response = await apiAuth.get(`/api/admin/users/daily-stats?year=${year}&month=${monthNumber}`);
 
       console.log(`New user year=${year}&month=${monthNumber} `, response.data)
       

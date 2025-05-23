@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { User, Mail, Lock, Check, Loader2} from 'lucide-react';
-import { api } from '../../services/api';
+import { apiAuth } from '../../services/api';
 
 const AddStaffForm = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -39,7 +39,7 @@ const AddStaffForm = ({ onSuccess }) => {
 
     setIsSubmitting(true);
     try {
-      const response = await api.post('/api/admin/staffs', {
+      const response = await apiAuth.post('/api/admin/staffs', {
         username: formData.username,
         email: formData.email,
         password: formData.password,
