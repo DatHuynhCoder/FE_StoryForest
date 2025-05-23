@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '../../services/api';
+import { apiAuth } from '../../services/api';
 import Spinner from '../../components/Spinner';
 import MonthlyTarget from '../../components/WebManagement/MonthlyTarget';
 import MonthlySales from '../../components/WebManagement/MonthlySales';
@@ -18,7 +18,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchDashboardStats = async () => {
       try {
-        const response = await api.get('/api/admin/users/summary');
+        const response = await apiAuth.get('/api/admin/users/summary');
         if (response.data?.success && response.data.data) {
           setStats({
             loading: false,

@@ -5,7 +5,7 @@ import {
   User, Mail, Phone, Award, BarChart2, Calendar,
   Star, Shield, Hash, Info, Heart
 } from 'lucide-react';
-import { api } from '../../services/api';
+import { apiAuth } from '../../services/api';
 import { FaUserCircle } from 'react-icons/fa';
 
 
@@ -19,7 +19,7 @@ const UserInformations = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await api.get(`/api/admin/users/${id}`);
+        const response = await apiAuth.get(`/api/admin/users/${id}`);
         setUser(response.data.data);
       } catch (err) {
         setError(err.message || 'Failed to fetch user data');

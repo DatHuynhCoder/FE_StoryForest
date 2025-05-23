@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Pencil, Trash2, Search, Plus, X, Loader2 } from 'lucide-react';
+import { Eye, Trash2, Search, Plus, X, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import AddStaffForm from './AddStaffForm';
 import { FaUserCircle } from 'react-icons/fa';
-import { api } from '../../services/api';
+import { apiAuth } from '../../services/api';
 
 const StaffTable = () => {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -21,7 +21,7 @@ const StaffTable = () => {
 
   const fetchStaff = async () => {
     try {
-      const response = await api.get('/api/admin/accounts?accountType=staff');
+      const response = await apiAuth.get('/api/admin/accounts?accountType=staff');
       console.log('Staffs list', response.data);
       const result = response.data;
       if (result.success) {
@@ -57,7 +57,7 @@ const StaffTable = () => {
 
     try {
       setLoadingStates(prev => ({ ...prev, [id]: true }));
-      await api.delete(`/api/admin/staffs/${id}`);
+      await apiAuth.delete(`/api/admin/staffs/${id}`);
       
       setStaff(prev => prev.filter(staff => staff.id !== id));
       setFilteredStaff(prev => prev.filter(staff => staff.id !== id));
@@ -183,9 +183,9 @@ const StaffTable = () => {
                         <button
                           onClick={() => handleEdit(person.id)}
                           className="text-teal-600 hover:text-teal-900"
-                          title="Edit"
+                          title="See"
                         >
-                          <Pencil size={16} />
+                          <Eye size={16} />
                         </button>
                         <button
                           onClick={() => handleDelete(person.id)}

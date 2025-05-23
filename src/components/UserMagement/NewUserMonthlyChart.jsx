@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
-import { api } from '../../services/api';
+import { apiAuth } from '../../services/api';
 
 const NewUserMonthlyChart = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -18,7 +18,7 @@ const NewUserMonthlyChart = () => {
     const fetchMonthlyStats = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`/api/admin/users/monthly-stats?year=${selectedYear}`);
+        const response = await apiAuth.get(`/api/admin/users/monthly-stats?year=${selectedYear}`);
         console.log(`New user - year=${selectedYear}`,response.data.data)
         const monthlyData = response.data.data;
         

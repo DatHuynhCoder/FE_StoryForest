@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Search, Eye, ChevronUp, ChevronDown, Calendar } from 'lucide-react';
 import { parse } from 'date-fns';
 import { useNavigate } from 'react-router';
-import { api } from '../../services/api';
+import { apiAuth } from '../../services/api';
 import { FaUserCircle } from 'react-icons/fa';
 
 const UserTable = () => {
@@ -44,7 +44,7 @@ const UserTable = () => {
                 sortOrder: sortConfig.direction === 'ascending' ? 'asc' : 'desc'
             };
 
-            const response = await api.get('/api/admin/accounts', { params });
+            const response = await apiAuth.get('/api/admin/accounts', { params });
             console.log('Users list',response.data);
             const { data, pagination: paginationData } = response.data;
 
