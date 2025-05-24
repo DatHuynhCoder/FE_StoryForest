@@ -1,4 +1,4 @@
-import { FiPlus, FiTrash2, FiSave, FiX, FiUpload, FiEdit2 } from "react-icons/fi";
+import { FiPlus, FiTrash2, FiSave, FiX, FiUpload, FiEdit2, FiArrowLeft } from "react-icons/fi";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -58,7 +58,7 @@ const AddNewStory = () => {
       file,
       preview: URL.createObjectURL(file)
     }));
-    
+
     setNewChapter(prev => ({
       ...prev,
       pages: [...prev.pages, ...newPages]
@@ -98,7 +98,7 @@ const AddNewStory = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
       await new Promise(resolve => setTimeout(resolve, 1500));
       console.log("Story data submitted:", storyData);
@@ -114,13 +114,24 @@ const AddNewStory = () => {
 
   const handleCancel = () => {
     if (window.confirm("Bạn có chắc muốn hủy bỏ thao tác thêm truyện?")) {
-      navigate("/staff/story-management");
+      navigate(-1);
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 py-6">
       <main className="container mx-auto px-4">
+        {/* Header with back button */}
+        <div className="px-4 py-3 md:px-6 md:py-4 border-b border-gray-200">
+          <button
+            onClick={handleCancel}
+            className="flex items-center text-teal-600 hover:text-teal-800"
+          >
+            <FiArrowLeft className="mr-1" />
+            <span>Back</span>
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-6 mb-8">
           {/* Form Section */}
           <div className="flex flex-col md:flex-row gap-6 mb-8">
@@ -128,9 +139,9 @@ const AddNewStory = () => {
             <div className="w-full md:w-1/4">
               <div className="border-2 border-dashed border-gray-300 rounded-md p-4 flex flex-col items-center justify-center aspect-[3/4]">
                 {storyData.coverImage ? (
-                  <img 
-                    src={storyData.coverImage} 
-                    alt="Ảnh bìa truyện" 
+                  <img
+                    src={storyData.coverImage}
+                    alt="Ảnh bìa truyện"
                     className="w-full h-full object-cover rounded-md"
                   />
                 ) : (
@@ -220,13 +231,13 @@ const AddNewStory = () => {
             {/* Sort & Add */}
             <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mb-4">
               <div className="text-sm text-gray-600">
-                Sắp xếp: 
+                Sắp xếp:
                 <select className="border border-gray-300 rounded px-2 py-1 ml-1 focus:outline-none focus:ring-2 focus:ring-teal-500">
                   <option>Mới nhất</option>
                   <option>Cũ nhất</option>
                 </select>
               </div>
-              <button 
+              <button
                 type="button"
                 onClick={handleAddChapter}
                 className="bg-teal-600 hover:bg-teal-700 text-white px-3 py-2 rounded-md flex items-center text-sm transition-colors"
@@ -239,7 +250,7 @@ const AddNewStory = () => {
             {storyData.chapters.length === 0 ? (
               <div className="text-center py-10 text-gray-500 border-2 border-dashed rounded-lg">
                 <p className="mb-4">Bạn chưa thêm chương truyện nào!!!</p>
-                <button 
+                <button
                   type="button"
                   onClick={handleAddChapter}
                   className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md flex items-center mx-auto"
@@ -268,7 +279,7 @@ const AddNewStory = () => {
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex justify-end space-x-3">
-                            <button 
+                            <button
                               type="button"
                               className="text-teal-600 hover:text-teal-800 transition-colors"
                               onClick={() => {
@@ -281,7 +292,7 @@ const AddNewStory = () => {
                             >
                               <FiEdit2 size={16} />
                             </button>
-                            <button 
+                            <button
                               type="button"
                               className="text-red-600 hover:text-red-800 transition-colors"
                               onClick={() => handleDeleteChapter(chapter.id)}
@@ -310,9 +321,8 @@ const AddNewStory = () => {
             <button
               type="submit"
               disabled={isSubmitting || storyData.chapters.length === 0}
-              className={`bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md flex items-center transition-colors ${
-                isSubmitting || storyData.chapters.length === 0 ? 'opacity-70 cursor-not-allowed' : ''
-              }`}
+              className={`bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md flex items-center transition-colors ${isSubmitting || storyData.chapters.length === 0 ? 'opacity-70 cursor-not-allowed' : ''
+                }`}
             >
               {isSubmitting ? (
                 <>
@@ -337,7 +347,7 @@ const AddNewStory = () => {
               <h3 className="text-xl font-semibold mb-4">
                 {newChapter.title ? "Chỉnh sửa chương" : "Thêm chương mới"}
               </h3>
-              
+
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Tên chương</label>
                 <input
@@ -348,7 +358,7 @@ const AddNewStory = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
-              
+
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Tải lên trang</label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
@@ -372,7 +382,7 @@ const AddNewStory = () => {
                   </div>
                 </div>
               </div>
-              
+
               {newChapter.pages.length > 0 && (
                 <div className="mb-4">
                   <div className="flex justify-between items-center mb-3">
@@ -387,7 +397,7 @@ const AddNewStory = () => {
                       <FiTrash2 className="mr-1" /> Xóa tất cả
                     </button>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     {newChapter.pages.map((page, index) => (
                       <div key={index} className="relative border rounded-md overflow-hidden">
@@ -404,7 +414,7 @@ const AddNewStory = () => {
                   </div>
                 </div>
               )}
-              
+
               <div className="flex justify-end gap-3 pt-4 border-t">
                 <button
                   type="button"
