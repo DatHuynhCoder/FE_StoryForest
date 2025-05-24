@@ -52,7 +52,6 @@ function BookDetails() {
       mangaid: "32d76d19-8a05-4db0-9fc2-e0b0648fe9d0"
     }
   ])
-  const tags = ['Action', 'Adventure', 'Comedy', 'Drama', 'Fantasy', 'Mystery', 'Psychological', 'Romance', 'Sci-fi', 'Slice of Life', 'Supernatural']
 
   const [bookcomments, setBookComments] = useState([{
     _id: "67f9e19f83c490c21b7a8958",
@@ -68,12 +67,7 @@ function BookDetails() {
     updateAt: "2025-04-12T02:00:00.436Z",
     __v: 0
   }])
-  const comments = [
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User1', content: 'This is a comment' },
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User2', content: 'This is a comment' },
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User3', content: 'This is a comment' },
-    { avatar: 'https://static.ybox.vn/2022/7/4/1658994867129-Spy.x.Family.full.3493446.jpg', user: 'User4', content: 'This is a comment' },
-  ]
+
   // handle click on a chapter => navigate to MangaReader
   const handleClickedChapter = (chapterid, mangatitle, chapternumber, chaptertitle) => {
     // to MangaReader.jsx
