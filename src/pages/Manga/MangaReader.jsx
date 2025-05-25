@@ -259,7 +259,7 @@ function MangaReader() {
           )}
         </div>
         {/* Bottom nav */}
-        <div className='flex justify-center fixed bottom-0 bg-white w-[100%] py-2 gap-3'>
+        <div className='flex justify-center fixed bottom-0 bg-white w-[100%] py-2 gap-3' style={{ backgroundColor: colorPicked, color: textColorPicked }}>
           <div className='flex items-center justify-center border-2 border-gray-300 px-2 rounded cursor-pointer' onClick={() => {
             fetchCommentByChapterId()
             setOpenCommentDrawer(true)
