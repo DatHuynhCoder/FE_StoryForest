@@ -111,7 +111,9 @@ const EditStory = () => {
   };
 
   const handleAddChapter = () => {
-    navigate(`/staff/story-management/add-chapter/${id_story}`);
+    if(story.type === 'manga'){
+      navigate(`/staff/story-management/add-chapter/${story.mangaid}`);
+    }
   };
 
   const handleSubmit = async (e) => {
