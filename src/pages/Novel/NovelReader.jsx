@@ -16,13 +16,32 @@ import DragCloseDrawer from '../../components/DragCloseDrawer';
 //
 import { Rating, RatingStar } from "flowbite-react";
 import { Button, Drawer, DrawerHeader, DrawerItems } from "flowbite-react";
+import Switch from '@mui/material/Switch';
+import Box from '@mui/material/Box';
+import MaterialUIButton from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import InputLabel from '@mui/material/InputLabel';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 //user Redux to update user
 import { useSelector, useDispatch } from 'react-redux'
 import { updateUser } from '../../redux/userSlice.js'
+//cookies
+import { useCookies } from 'react-cookie';
+// color picker
+import { HexColorPicker } from "react-colorful";
 
 function NovelReader() {
   const navigate = useNavigate()
   const dispatch = useDispatch();
+
+  const [cookie, setCookie, removeCookie] = useCookies(["theme", "textColor"]);
+
   const { _id, chapterid } = useParams()
   const location = useLocation()
   const { chapters, noveltitle, chapternumber, chaptertitle } = location.state || {}
@@ -348,6 +367,37 @@ function NovelReader() {
     };
   }, []);
 
+  // handle select theme
+  const [openSelectTheme, setOpenSelectTheme] = useState(false);
+
+  const handleClickOpenSelectTheme = () => {
+    if (user._id === 'unknown') alert('Login to use this feature !')
+    else
+      setOpenSelectTheme(true);
+  };
+
+  const handleCloseSelectTheme = (event, reason) => {
+    if (reason !== 'backdropClick') {
+      setCookie("theme", colorPicked)
+      setCookie("textColor", textColorPicked)
+      setOpenSelectTheme(false);
+    }
+  };
+  const handleCancelSelectTheme = (event, reason) => {
+    if (reason !== 'backdropClick') {
+      setOpenSelectTheme(false);
+    }
+  };
+  const handleResetTheme = () => {
+    removeCookie("textColor")
+    removeCookie("theme")
+    window.location.reload()
+  }
+  //
+  const [colorPicked, setColorPicked] = useState(cookie?.theme || '#ffffff')
+  const [textColorPicked, setTextColorPicked] = useState(cookie?.textColor || '#000000')
+  //
+
   const handleBackToDetails = () => {
     navigate(`/novel/${_id}`)
   }
@@ -365,9 +415,9 @@ function NovelReader() {
 
   return (
     <>
-      <div className='flex flex-col justify-center items-center md:pl-[200px] md:pr-[200px] bg-[#f0ffdb]'>
+      <div className='flex flex-col justify-center items-center md:pl-[200px] md:pr-[200px] bg-[#f0ffdb]' style={{ backgroundColor: colorPicked }}>
         <div className='flex flex-col'>
-          <p onClick={() => handleBackToDetails()} className='text-xl md:text-3xl font-semibold text-black text-center hover:underline cursor-pointer'>{noveltitle}</p>
+          <p style={{ color: textColorPicked }} onClick={() => handleBackToDetails()} className={`text-xl md:text-3xl font-semibold text-center hover:underline cursor-pointer`}>{noveltitle}</p>
         </div>
         {/* This div will contain 2 button */}
         <div className='flex flex-col justify-center headifo'>
@@ -392,7 +442,7 @@ function NovelReader() {
           {novelContent.chapter_content.map((content, index) => (
             <div className='mt-3' key={index}>
               {typeof content === 'string' ? (
-                <p className='md:text-xl text-justify'>{content}</p>
+                <p className='md:text-xl text-justify' style={{ color: textColorPicked }}>{content}</p>
               ) : (
                 <div className='flex justify-center'>
                   <img src={content.url}
@@ -406,7 +456,7 @@ function NovelReader() {
           ))}
         </div>
         {/* Bottom nav */}
-        <div className='flex justify-center fixed bottom-0 bg-white w-[100%] py-2 gap-3'>
+        <div className='flex justify-center fixed bottom-0 bg-white w-[100%] py-2 gap-3' style={{ backgroundColor: colorPicked, color: textColorPicked }}>
           <div className='flex items-center justify-center border-2 border-gray-300 px-2 rounded cursor-pointer' onClick={() => {
             fetchCommentByChapterId()
             setOpenCommentDrawer(true)
@@ -426,6 +476,44 @@ function NovelReader() {
             onClick={scrollToTop}>
             <FaArrowUp />
           </div>
+          {/* only VIP can choose theme */}
+          {user && user.role === 'VIP reader' ? (
+            <div
+              className="flex items-center justify-center px-2 rounded cursor-pointer hover:bg-[#f1f1f1]"
+              onClick={scrollToTop}
+            >
+              <Button onClick={handleClickOpenSelectTheme} className="!bg-green-500 cursor-pointer">
+                Theme
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center px-2 rounded">
+              <Button className="bg-gray-400 cursor-not-allowed" disabled>
+                🔒 Theme
+              </Button>
+            </div>
+          )}
+          {/* Theme choosing section */}
+          <Dialog disableEscapeKeyDown open={openSelectTheme} onClose={handleCloseSelectTheme}>
+            <DialogTitle>Select theme</DialogTitle>
+            <DialogContent>
+              <Box component="form" sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                <FormControl sx={{ m: 1, minWidth: 120 }}>
+                  <p className='font-bold text-2xl' style={{ color: textColorPicked }}>Text</p>
+                  <HexColorPicker color={textColorPicked} onChange={setTextColorPicked} />
+                </FormControl>
+                <FormControl sx={{ m: 1, minWidth: 120 }}>
+                  <p className='font-bold text-2xl' style={{ color: colorPicked }}>Background</p>
+                  <HexColorPicker color={colorPicked} onChange={setColorPicked} />
+                </FormControl>
+              </Box>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleResetTheme} className='!bg-gray-500'>Reset</Button>
+              <Button onClick={handleCancelSelectTheme} className='!bg-red-500'>Cancel</Button>
+              <Button onClick={handleCloseSelectTheme} className='!bg-green-500'>Ok</Button>
+            </DialogActions>
+          </Dialog>
         </div>
         {/* This div is for comment */}
         <Drawer open={openCommentDrawer} onClose={() => setOpenCommentDrawer(false)}>
