@@ -11,7 +11,7 @@ const AddNewStory = () => {
     author: "",
     artist: "",
     synopsis: "",
-    status: "",
+    status: "ongoing",
     coverImage: null,
     coverFile: null,
     type: "manga",
@@ -46,28 +46,6 @@ const AddNewStory = () => {
       };
       reader.readAsDataURL(file);
     }
-  };
-
-
-
-  // Xử lý xác nhận thêm chapter
-  const handleConfirmAddChapter = () => {
-    if (!newChapter.title || newChapter.pages.length === 0) {
-      alert("Vui lòng nhập tên chapter và tải lên ít nhất một trang");
-      return;
-    }
-
-    setStoryData(prev => ({
-      ...prev,
-      chapters: [...prev.chapters, {
-        id: Date.now(), // Tạo ID tạm thời
-        title: newChapter.title,
-        pages: newChapter.pages,
-        createdAt: new Date().toISOString()
-      }]
-    }));
-
-    setShowAddChapterModal(false);
   };
 
 
