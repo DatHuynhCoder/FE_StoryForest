@@ -174,13 +174,9 @@ function MangaReader() {
   }
 
   const handleNextChapter = () => {
-    console.log("check chapters: ", chapters)
-    console.log("check chapterId: ", chapterid)
     const currentIndex = chapters.findIndex((chapter) => chapter.chapterid === chapterid)
-    console.log("check currentIndex: ", currentIndex)
     if (currentIndex !== -1 && currentIndex < chapters.length - 1) {
       const nextChapter = chapters[currentIndex + 1]
-      console.log("check nextChapter: ", nextChapter)
       setLoading(true)
       let chapternumber = nextChapter.chapter
       let chaptertitle = nextChapter.title
@@ -190,13 +186,9 @@ function MangaReader() {
   }
 
   const handlePreviousChapter = () => {
-    console.log("check chapters: ", chapters)
-    console.log("check chapterId: ", chapterid)
     const currentIndex = chapters.findIndex((chapter) => chapter.chapterid === chapterid)
-    console.log("check currentIndex: ", currentIndex)
     if (currentIndex > 0) {
       const previousChapter = chapters[currentIndex - 1]
-      console.log("check previousChapter: ", previousChapter)
       setLoading(true)
       let chapternumber = previousChapter.chapter
       let chaptertitle = previousChapter.title
@@ -212,11 +204,9 @@ function MangaReader() {
   const [openCommentDrawer, setOpenCommentDrawer] = useState(false);
 
   useEffect(() => {
-    // console.log("check chapterid: ", chapterid)
     fetchCommentByChapterId()
     api.get(`/api/manga/${chapterid}/images`)
       .then((res) => {
-        // console.log("check res: ", res.data.data)
         setPics(res.data.data[0].images)
       }).catch((err) => {
         console.log(err)
