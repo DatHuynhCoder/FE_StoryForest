@@ -176,7 +176,7 @@ const EditChapter = () => {
                       <div className={`w-5 h-5 border-2 rounded ${selectedPages.includes(index) ? 'bg-teal-500 border-teal-500' : 'bg-white border-white'}`}></div>
                     </div>
                     <img
-                      src={imageUrl}
+                      src={imageUrl.url ? imageUrl.url : imageUrl}
                       alt={`Page ${index + 1}`}
                       className="w-full h-auto object-contain"
                       onError={(e) => {
