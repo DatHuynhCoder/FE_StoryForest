@@ -197,13 +197,13 @@ function NovelDetails() {
   return (
     <>
       <div className='border w-full h-64 absolute z-10 bg-cover bg-center filter blur-md'
-        style={{ backgroundImage: 'url(' + infoNovel.cover_url + ')' }}>
+        style={{ backgroundImage: 'url(' + infoNovel.bookImg.url + ')' }}>
       </div>
 
       <div className='flex flex-col md:flex-row relative z-20'>
         <div className='pt-8 md:pt-20 px-4 md:pl-20 flex justify-center md:justify-start'>
           <img
-            src={infoNovel.cover_url}
+            src={infoNovel.bookImg.url || processingGif}
             alt={infoNovel.title}
             loading='lazy'
             className='w-48 h-64 md:w-60 md:h-72 object-cover shadow-lg'
