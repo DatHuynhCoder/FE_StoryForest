@@ -33,7 +33,7 @@ const Login = () => {
       }
     } catch (error) {
       console.error("An error occurred during login:", error);
-      toast.error("An error occurred: " + error?.response?.data?.message);
+      toast.error("An error occurred: " + error?.response?.data?.message + " or email already used");
     }
   };
   const handleGGLoginSuccess = async (credentialResponse) => {
