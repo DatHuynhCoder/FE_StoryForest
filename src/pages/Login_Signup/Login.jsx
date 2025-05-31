@@ -38,7 +38,7 @@ const Login = () => {
   };
   const handleGGLoginSuccess = async (credentialResponse) => {
     try {
-      api.post('/auth/google-auth', { token: credentialResponse.credential })
+      api.post('/api/reader/account/auth/google-auth', { token: credentialResponse.credential })
         .then(res => {
           if (res.data.success === true) {
             console.log("check response when login with google: ", res?.data)
