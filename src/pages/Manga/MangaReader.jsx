@@ -239,7 +239,7 @@ function MangaReader() {
             pics.map((pic, index) => (
               <div className='mt-3 flex' key={index}>
                 <FaPlayCircle />
-                <img src={pic}
+                <img src={pic.url ? pic.url : pic}
                   alt='manga'
                   loading='lazy'
                   className='max-w-xs md:max-w-lg max-h-xs object-cover'
