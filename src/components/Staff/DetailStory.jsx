@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FiEdit, FiTrash2, FiPlus, FiChevronLeft, FiChevronRight, FiStar } from 'react-icons/fi';
 import { useNavigate, useParams } from 'react-router';
-import { api } from '../../services/api';
+import { api, apiAuth } from '../../services/api';
 
 const StoryDetail = () => {
   const navigate = useNavigate();
@@ -33,14 +33,27 @@ const StoryDetail = () => {
   }, [id]);
 
   useEffect(() => {
-    if (story && story.mangaid) {
-      fetchChapters(story.mangaid, currentPage);
+    if (story) {
+      if (story.type === "manga") fetchChapters(story.mangaid, currentPage);
+      else fetchNovelChapters(story._id, currentPage);
     }
   }, [story, currentPage]);
-      
+
   const fetchChapters = async (mangaid, page = 1) => {
     try {
       const response = await api.get(`/api/staff/chapter/${mangaid}/chapters`);
+      setChapters(response.data.data);
+      setTotalChapters(response.data.total || 0);
+      console.log(response.data.data);
+    } catch (err) {
+      console.error('Error fetching chapters:', err);
+      setChapters([]);
+    }
+  };
+
+  const fetchNovelChapters = async (novelid, page = 1) => {
+    try {
+      const response = await api.get(`/api/staff/chapter/${novelid}/novelchapters`);
       setChapters(response.data.data);
       setTotalChapters(response.data.total || 0);
     } catch (err) {
@@ -58,10 +71,17 @@ const StoryDetail = () => {
     navigate(`/staff/story-management/edit-story/${story._id}`);
   };
 
-  const handleDeleteStory = () => {
+  const handleDeleteStory = async () => {
     if (window.confirm('Are you sure you want to delete this story?')) {
       console.log('Delete story', story._id);
-      // Gọi API xóa ở đây
+      if (window.confirm(`Bạn có chắc muốn xóa truyện này?`)) {
+        try {
+          await apiAuth.delete(`/api/staff/book/${story._id}`);
+          navigate(-1);
+        } catch (error) {
+          console.error('Lỗi khi xóa truyện:', error);
+        }
+      }
     }
   };
 
@@ -91,7 +111,7 @@ const StoryDetail = () => {
             onClick={handleBack}
             className="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700"
           >
-            Back 
+            Back
           </button>
         </div>
       </div>
@@ -108,7 +128,7 @@ const StoryDetail = () => {
             onClick={handleBack}
             className="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700"
           >
-            Back 
+            Back
           </button>
         </div>
       </div>
@@ -120,7 +140,7 @@ const StoryDetail = () => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         {/* Header with back button */}
         <div className="px-4 py-3 md:px-6 md:py-4 border-b border-gray-200">
-          <button 
+          <button
             onClick={handleBack}
             className="flex items-center text-teal-600 hover:text-teal-800"
           >
@@ -134,8 +154,8 @@ const StoryDetail = () => {
           <div className="flex flex-col md:flex-row gap-6">
             {/* Cover image */}
             <div className="flex-shrink-0 w-full md:w-48 lg:w-56">
-              <img 
-                src={story.cover_url || story.bookImg?.url || '/placeholder.jpg'} 
+              <img
+                src={story.bookImg?.url || story.cover_url || '/placeholder.jpg'}
                 alt={`${story.title} cover`}
                 className="w-full h-auto rounded shadow-md"
                 onError={(e) => {
@@ -149,7 +169,7 @@ const StoryDetail = () => {
             <div className="flex-1">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{story.title}</h1>
-                
+
                 <div className="flex items-center bg-yellow-100 px-3 py-1 rounded-full">
                   <FiStar className="text-yellow-500 mr-1" />
                   <span className="font-medium">{story.rate}/5</span>
@@ -173,15 +193,14 @@ const StoryDetail = () => {
                     <span className="font-medium">Tags:</span> {story.tags?.join(', ') || 'N/A'}
                   </p>
                   <p className="text-gray-700">
-                    <span className="font-medium">Status:</span> 
-                    <span className={`ml-1 px-2 py-1 text-xs rounded-full ${
-                      story.status === 'completed' ? 'bg-green-100 text-green-800' :
+                    <span className="font-medium">Status:</span>
+                    <span className={`ml-1 px-2 py-1 text-xs rounded-full ${story.status === 'completed' ? 'bg-green-100 text-green-800' :
                       story.status === 'ongoing' ? 'bg-teal-100 text-teal-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {story.status === 'completed' ? 'Completed' : 
-                       story.status === 'ongoing' ? 'Ongoing' : 
-                       story.status}
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                      {story.status === 'completed' ? 'Completed' :
+                        story.status === 'ongoing' ? 'Ongoing' :
+                          story.status}
                     </span>
                   </p>
                 </div>
@@ -217,14 +236,14 @@ const StoryDetail = () => {
 
           {/* Action buttons */}
           <div className="mt-6 flex flex-wrap gap-3">
-            <button 
+            <button
               onClick={handleEditStory}
               className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 flex items-center"
             >
               <FiEdit className="mr-2" />
               <span>Edit story</span>
             </button>
-            <button 
+            <button
               onClick={handleDeleteStory}
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center"
             >
@@ -242,7 +261,7 @@ const StoryDetail = () => {
               <span className="text-sm text-gray-500">
                 Total: {totalChapters} chapters
               </span>
-             
+
             </div>
           </div>
 
@@ -254,32 +273,52 @@ const StoryDetail = () => {
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chapter</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pages</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Content</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Published</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {chapters.length > 0 ? (
+                  {chapters?.length > 0 ? (
                     chapters.map((chapter) => (
                       <tr key={chapter._id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {renderChapterTitle(chapter)}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                          {chapter.volume || '-'}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                          {chapter.pages || 0}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(chapter.publishDate).toLocaleDateString()}
-                        </td>
-                      
+                        {chapter.order ? (
+                          <>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                              {chapter.chapter_title || 'No Title'}
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                              {chapter.order || '-'}
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                              {chapter.chapter_content.length || '-'} paragraphs
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                              {'-'}
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                              {renderChapterTitle(chapter)}
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                              {chapter.volume || '-'}
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                              {chapter.pages || 0} pages
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                              {chapter.publishDate
+                                ? new Date(chapter.publishDate).toLocaleDateString()
+                                : '-'}
+                            </td>
+                          </>
+                        )}
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="5" className="px-4 py-6 text-center text-gray-500">
+                      <td colSpan="4" className="px-4 py-6 text-center text-gray-500">
                         No chapters found
                       </td>
                     </tr>
@@ -289,7 +328,7 @@ const StoryDetail = () => {
             </div>
           </div>
 
-          
+
         </div>
       </div>
     </div>

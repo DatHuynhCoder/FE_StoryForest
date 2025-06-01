@@ -34,7 +34,7 @@ const Profile = () => {
   const [activeSection, setActiveSection] = useState('profile');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const [cookie, setCookie, removeCookie] = useCookies(["theme", "intensity"])
+  const [cookie, setCookie, removeCookie] = useCookies(["theme", "textColor"])
 
   useEffect(() => {
     const fetchFavorite = async () => {
@@ -94,13 +94,17 @@ const Profile = () => {
   }
 
   //Handle logout
+  const handleResetTheme = () => {
+    removeCookie("textColor")
+    removeCookie("theme")
+    window.location.reload()
+  }
   const handleLogout = async () => {
     try {
       const response = await api.post("/api/reader/account/logout");
       if (response.data.success) {
+        handleResetTheme();
         dispatch(logout());
-        removeCookie("theme")
-        removeCookie("intensity")
         navigate("/login")
       }
     } catch (error) {

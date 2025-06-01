@@ -21,7 +21,7 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [cookie, setCookie, removeCookie] = useCookies(["theme", "intensity"])
+  const [cookie, setCookie, removeCookie] = useCookies(["theme", "textColor"]);
   const [focusSearchBox, setFocusSearchBox] = useState(false)
   const [focusResults, setFocusResults] = useState(false)
 
@@ -51,7 +51,7 @@ const Header = () => {
       if (response.data.success) {
         dispatch(logout());
         removeCookie("theme")
-        removeCookie("intensity")
+        removeCookie("textColor")
         navigate("/login")
       }
     } catch (error) {
@@ -105,26 +105,26 @@ const Header = () => {
     setPage(pageName);
     setToggleMenu(prev => !prev);
   };
-  
-	const handleSearch = () => {
-		if (search!='') {
-			navigate(`/advanced-search?type=all&genre=All&author=None&search=${search}`)
-		}
+
+  const handleSearch = () => {
+    if (search != '') {
+      navigate(`/advanced-search?type=all&genre=All&author=None&search=${search}`)
+    }
 
     setSearch('')
-	}
-	const handleViewResultDetails = (type, id) => {
-		setSearch("")
-		setFocusSearchBox(true)
-		// navigate(`/bookDetail/${_id}/${mangaid}`)
-		navigate(`/${type}/${id}`)
-	}
+  }
+  const handleViewResultDetails = (type, id) => {
+    setSearch("")
+    setFocusSearchBox(true)
+    // navigate(`/bookDetail/${_id}/${mangaid}`)
+    navigate(`/${type}/${id}`)
+  }
 
   return (
     <>
       <div className={styles.headerContainer}>
         <div className={styles.logoContainer}>
-          <img className={styles.logoImage} src={logo} alt="logo" onClick={()=>{navigate('/')}}/>
+          <img className={styles.logoImage} src={logo} alt="logo" onClick={() => { navigate('/') }} />
         </div>
 
         <>
@@ -327,22 +327,26 @@ const Header = () => {
                         My Profile
                       </NavLink>
                     </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      >
-                        Settings
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      >
-                        Earnings
-                      </a>
-                    </li>
+                    {user.role === 'admin' && (
+                      <li>
+                        <NavLink
+                          to="/admin/dashboard"
+                          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                        >
+                          Admin Dashboard
+                        </NavLink>
+                      </li>
+                    )}
+                    {(user.role === 'admin' || user.role === 'staff') && (
+                      <li>
+                        <NavLink
+                          to="/staff/story-management"
+                          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                        >
+                          Staff Dashboard
+                        </NavLink>
+                      </li>
+                    )}
                   </ul>
                   <div className="py-2">
                     <div

@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { FiEdit2, FiTrash2, FiPlus, FiChevronRight, FiArrowLeft, FiStar } from 'react-icons/fi';
 import { useNavigate, useParams } from 'react-router';
-import { api } from '../../services/api';
+import { apiAuth, api } from '../../services/api';
 
 const EditStory = () => {
   const { id_story } = useParams();
   const navigate = useNavigate();
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [story, setStory] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,7 +14,6 @@ const EditStory = () => {
   const [chapters, setChapters] = useState([]);
   const [totalChapters, setTotalChapters] = useState(0);
   const [coverPreview, setCoverPreview] = useState('');
-  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchStoryData = async () => {
@@ -22,7 +21,7 @@ const EditStory = () => {
         setLoading(true);
         const storyResponse = await api.get(`/api/staff/book/${id_story}`);
         setStory(storyResponse.data.data);
-        setCoverPreview(storyResponse.data.data.cover_url || '');
+        setCoverPreview(storyResponse.data.data.bookImg.url || '');
         setChapters([]);
       } catch (err) {
         setError(err.message || 'An error occurred while loading data.');
@@ -36,14 +35,26 @@ const EditStory = () => {
   }, [id_story]);
 
   useEffect(() => {
-    if (story && story.mangaid) {
-      fetchChapters(story.mangaid, currentPage);
+    if (story) {
+      if (story.type === "manga") fetchChapters(story.mangaid, currentPage);
+      else fetchNovelChapters(story._id, currentPage);
     }
   }, [story, currentPage]);
-      
+
   const fetchChapters = async (mangaid, page = 1) => {
     try {
       const response = await api.get(`/api/staff/chapter/${mangaid}/chapters`);
+      setChapters(response.data.data);
+      setTotalChapters(response.data.total || 0);
+    } catch (err) {
+      console.error('Error fetching chapters:', err);
+      setChapters([]);
+    }
+  };
+
+  const fetchNovelChapters = async (novelid, page = 1) => {
+    try {
+      const response = await api.get(`/api/staff/chapter/${novelid}/novelchapters`);
       setChapters(response.data.data);
       setTotalChapters(response.data.total || 0);
     } catch (err) {
@@ -60,14 +71,6 @@ const EditStory = () => {
     }));
   };
 
-  const handleArrayInputChange = (e) => {
-    const { name, value } = e.target;
-    setStory(prev => ({
-      ...prev,
-      [name]: value.split(',').map(item => item.trim())
-    }));
-  };
-
   const handleCoverChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -76,7 +79,7 @@ const EditStory = () => {
         setCoverPreview(reader.result);
       };
       reader.readAsDataURL(file);
-      
+
       setStory(prev => ({
         ...prev,
         coverFile: file
@@ -98,7 +101,7 @@ const EditStory = () => {
   const handleDeleteChapter = async (chapterId) => {
     if (window.confirm("Are you sure you want to delete this chapter?")) {
       try {
-        await api.delete(`/api/staff/chapter/${chapterId}`);
+        await apiAuth.delete(`/api/staff/chapter/${chapterId}`);
         // Refresh chapters list after deletion
         fetchChapters(story.mangaid, currentPage);
       } catch (err) {
@@ -108,7 +111,9 @@ const EditStory = () => {
   };
 
   const handleAddChapter = () => {
-    navigate(`/staff/story-management/add-chapter/${id_story}`);
+    if(story.type === 'manga'){
+      navigate(`/staff/story-management/add-chapter/${story.mangaid}`);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -116,26 +121,38 @@ const EditStory = () => {
     try {
       const formData = new FormData();
       formData.append('title', story.title);
-      formData.append('author', story.author.join(','));
-      formData.append('artist', story.artist.join(','));
+      // Convert strings to arrays before sending
+      const authorArray = typeof story.author === 'string'
+        ? story.author.split(',').map(item => item.trim()).filter(item => item.length > 0)
+        : story.author || [];
+
+      const artistArray = typeof story.artist === 'string'
+        ? story.artist.split(',').map(item => item.trim()).filter(item => item.length > 0)
+        : story.artist || [];
+
+      const tagsArray = typeof story.tags === 'string'
+        ? story.tags.split(',').map(item => item.trim()).filter(item => item.length > 0)
+        : story.tags || [];
+
+      formData.append('author', JSON.stringify(authorArray));
+      formData.append('artist', JSON.stringify(artistArray));
+      formData.append('tags', JSON.stringify(tagsArray));
       formData.append('type', story.type);
-      formData.append('tags', story.tags.join(','));
       formData.append('status', story.status);
       formData.append('synopsis', story.synopsis);
-      formData.append('mangaid', story.mangaid);
-      
+
       if (story.coverFile) {
-        formData.append('cover', story.coverFile);
+        formData.append('bookImg', story.coverFile);
       }
-      
-      await api.put(`/api/staff/book/${id_story}`, formData, {
+
+      await apiAuth.patch(`/api/staff/book/${id_story}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-      
+
       alert('Story updated successfully!');
-      navigate(`/staff/story-management/story/${id_story}`);
+      navigate(`/staff/story-management`);
     } catch (err) {
       console.error('Error while updating story:', err);
       alert('An error occurred while updating the story.');
@@ -169,7 +186,7 @@ const EditStory = () => {
             onClick={handleCancel}
             className="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700"
           >
-            Back 
+            Back
           </button>
         </div>
       </div>
@@ -186,7 +203,7 @@ const EditStory = () => {
             onClick={handleCancel}
             className="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700"
           >
-            Back 
+            Back
           </button>
         </div>
       </div>
@@ -198,7 +215,7 @@ const EditStory = () => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         {/* Header with back button */}
         <div className="px-4 py-3 md:px-6 md:py-4 border-b border-gray-200">
-          <button 
+          <button
             onClick={handleCancel}
             className="flex items-center text-teal-600 hover:text-teal-800"
           >
@@ -212,8 +229,8 @@ const EditStory = () => {
           <div className="flex flex-col md:flex-row gap-6">
             {/* Cover image */}
             <div className="flex-shrink-0 w-full md:w-48 lg:w-56">
-              <img 
-                src={coverPreview || '/placeholder.jpg'} 
+              <img
+                src={coverPreview || '/placeholder.jpg'}
                 alt={`${story.title} cover`}
                 className="w-full h-auto rounded shadow-md mb-2 aspect-[3/4] object-cover"
               />
@@ -224,7 +241,7 @@ const EditStory = () => {
                 onChange={handleCoverChange}
                 className="hidden"
               />
-              <label 
+              <label
                 htmlFor="cover-upload"
                 className="block w-full px-3 py-2 bg-teal-600 text-white text-center rounded hover:bg-teal-700 cursor-pointer"
               >
@@ -245,7 +262,7 @@ const EditStory = () => {
                     required
                   />
                 </div>
-                
+
                 <div className="flex items-center bg-yellow-100 px-3 py-1 rounded-full">
                   <FiStar className="text-yellow-500 mr-1" />
                   <span className="font-medium">{story.rate}/5</span>
@@ -257,22 +274,22 @@ const EditStory = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Authors (comma separated)</label>
                   <input
                     name="author"
-                    value={story.author?.join(', ') || ''}
-                    onChange={handleArrayInputChange}
+                    value={typeof story.author === 'string' ? story.author : story.author?.join(', ') || ''}
+                    onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Artists (comma separated)</label>
                   <input
                     name="artist"
-                    value={story.artist?.join(', ') || ''}
-                    onChange={handleArrayInputChange}
+                    value={typeof story.artist === 'string' ? story.artist : story.artist?.join(', ') || ''}
+                    onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
                   <select
@@ -282,22 +299,20 @@ const EditStory = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
                   >
                     <option value="manga">Manga</option>
-                    <option value="manhwa">Manhwa</option>
-                    <option value="manhua">Manhua</option>
-                    <option value="comic">Comic</option>
+                    <option value="novel">Novel</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma separated)</label>
                   <input
                     name="tags"
-                    value={story.tags?.join(', ') || ''}
-                    onChange={handleArrayInputChange}
+                    value={typeof story.tags === 'string' ? story.tags : story.tags?.join(', ') || ''}
+                    onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                   <select
@@ -312,7 +327,7 @@ const EditStory = () => {
                     <option value="cancelled">Cancelled</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Manga ID</label>
                   <input
@@ -320,7 +335,7 @@ const EditStory = () => {
                     value={story.mangaid}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    required
+                    disabled
                   />
                 </div>
               </div>
@@ -357,8 +372,8 @@ const EditStory = () => {
           <div className="mt-8 border-t border-gray-200 pt-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
               <h2 className="text-xl font-semibold">Chapter List</h2>
-              
-              <button 
+
+              <button
                 type="button"
                 onClick={handleAddChapter}
                 className="px-3 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 flex items-center text-sm"
@@ -382,45 +397,84 @@ const EditStory = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {chapters.length > 0 ? (
+                    {chapters?.length > 0 ? (
                       chapters.map((chapter) => (
                         <tr key={chapter._id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {chapter.title || `Chapter ${chapter.chapter}${chapter.volume ? ` (Vol. ${chapter.volume})` : ''}`}
+                          {chapter.order ? (
+                            <>
+                              <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {chapter.chapter_title || 'No Title'}
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                {chapter.order || '-'}
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                {chapter.chapter_content.length || '-'} paragraphs
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                {'-'}
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                <div className="flex space-x-3">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleEditChapter(chapter)}
+                                    className="text-teal-600 hover:text-teal-800"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteChapter(chapter.chapterid)}
+                                    className="text-red-600 hover:text-red-800"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </td>
+                            </>
+                          ) : (
+                            <>
+                              <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {renderChapterTitle(chapter)}
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                {chapter.volume || '-'}
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                {chapter.pages || 0} pages
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                {chapter.publishDate
+                                  ? new Date(chapter.publishDate).toLocaleDateString()
+                                  : '-'}
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                <div className="flex space-x-3">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleEditChapter(chapter)}
+                                    className="text-teal-600 hover:text-teal-800"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteChapter(chapter.chapterid)}
+                                    className="text-red-600 hover:text-red-800"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </td>
+                            </>
+                          )}
 
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                            {chapter.volume || '-'}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                            {chapter.pages || 0}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                            {new Date(chapter.publishDate).toLocaleDateString()}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                            <div className="flex space-x-3">
-                              <button 
-                                type="button"
-                                onClick={() => handleEditChapter(chapter)}
-                                className="text-teal-600 hover:text-teal-800"
-                              >
-                                Edit
-                              </button>
-                              <button 
-                                type="button"
-                                onClick={() => handleDeleteChapter(chapter.chapterid)}
-                                className="text-red-600 hover:text-red-800"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="5" className="px-4 py-6 text-center text-gray-500">
+                        <td colSpan="4" className="px-4 py-6 text-center text-gray-500">
                           No chapters found
                         </td>
                       </tr>
@@ -430,19 +484,19 @@ const EditStory = () => {
               </div>
             </div>
 
-           
+
           </div>
 
           {/* Action buttons */}
           <div className="mt-8 flex justify-end gap-3">
-            <button 
+            <button
               type="button"
               onClick={handleCancel}
               className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
             >
               Cancel
             </button>
-            <button 
+            <button
               type="submit"
               className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
             >
@@ -456,3 +510,22 @@ const EditStory = () => {
 };
 
 export default EditStory;
+
+<td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+  <div className="flex space-x-3">
+    <button
+      type="button"
+      onClick={() => handleEditChapter(chapter)}
+      className="text-teal-600 hover:text-teal-800"
+    >
+      Edit
+    </button>
+    <button
+      type="button"
+      onClick={() => handleDeleteChapter(chapter.chapterid)}
+      className="text-red-600 hover:text-red-800"
+    >
+      Delete
+    </button>
+  </div>
+</td>

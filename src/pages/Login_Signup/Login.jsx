@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { api } from "../../services/api";
+import { GoogleLogin } from "@react-oauth/google";
 // icon
 import { MdEmail } from "react-icons/md";
 import { RiLockPasswordFill, RiEyeCloseFill, RiEyeFill, RiHome4Fill } from "react-icons/ri";
@@ -20,7 +21,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async () => {
+  const handleLogin = async (email, password) => {
     try {
       const response = await api.post("/api/reader/account/login", { email, password });
       if (response.data.success) {
@@ -32,9 +33,31 @@ const Login = () => {
       }
     } catch (error) {
       console.error("An error occurred during login:", error);
-      toast.error("An error occurred. Please try again later.");
+      toast.error("An error occurred: " + error?.response?.data?.message + " or email already used");
     }
   };
+  const handleGGLoginSuccess = async (credentialResponse) => {
+    try {
+      api.post('/api/reader/account/auth/google-auth', { token: credentialResponse.credential })
+        .then(res => {
+          if (res.data.success === true) {
+            console.log("check response when login with google: ", res?.data)
+            handleLogin(res.data.data, "******")
+          } else {
+            alert(res?.data?.message)
+          }
+        }).catch(err => console.log(err)).finally(() => {
+          // login if email already exist
+        })
+    }
+    catch (err) {
+      alert(err)
+    }
+  }
+
+  const handleGGLoginError = () => {
+    alert("Login failed")
+  }
 
   return (
     <div className="w-full h-screen bg-cover sm:bg-[url(/images/bg_login_lap.jpg)] bg-[url(/images/bg_login_phone.jpg)] bg-center flex justify-center items-center">
@@ -44,7 +67,7 @@ const Login = () => {
           <h1 className="font-bold text-(--secondary-text-color) text-3xl">
             Let Start <span className="sm:block">Reading</span>
           </h1>
-          <RiHome4Fill className="w-8 h-8 text-blue-800 cursor-pointer" onClick={() => navigate('/')}/>
+          <RiHome4Fill className="w-8 h-8 text-blue-800 cursor-pointer" onClick={() => navigate('/')} />
         </div>
         <p className="font-bold text-(--secondary-text-color) text-sm">
           Please login or sign up to continue
@@ -60,6 +83,11 @@ const Login = () => {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleLogin(email, password);
+              }
+            }}
           />
         </div>
 
@@ -72,6 +100,11 @@ const Login = () => {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleLogin(email, password);
+              }
+            }}
           />
           {/* See password button */}
           <button
@@ -95,19 +128,25 @@ const Login = () => {
           <button
             type="button"
             className="w-full sm:w-1/2 text-(--secondary-text-color) font-bold cursor-pointer bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 rounded-lg text-sm px-5 py-2.5 text-center transition-transform duration-300 ease-in-out hover:scale-105"
-            onClick={handleLogin}
+            onClick={() => handleLogin(email, password)}
           >
             Đăng nhập
           </button>
         </div>
 
-        <div className="flex justify-center">
-          <button className="w-full sm:w-1/2 cursor-pointer relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
+        <div className="flex flex-col justify-center">
+          <GoogleLogin
+            onSuccess={handleGGLoginSuccess}
+            onError={handleGGLoginError}
+          />
+          {/* <button className="w-full sm:w-1/2 cursor-pointer relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+            onClick={() => { }}
+          >
             <span className="w-full relative flex flex-row justify-center items-center gap-2 px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">
               <FcGoogle className="w-5 h-5" />
               <span>Google</span>
             </span>
-          </button>
+          </button> */}
         </div>
 
         {/* sign up option */}

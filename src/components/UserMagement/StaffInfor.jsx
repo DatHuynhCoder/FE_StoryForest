@@ -13,7 +13,7 @@ import {
   Edit,
   Activity
 } from 'lucide-react';
-import { api } from '../../services/api';
+import { apiAuth } from '../../services/api';
 
 const StaffInformations = () => {
   const { id } = useParams();
@@ -25,7 +25,7 @@ const StaffInformations = () => {
   useEffect(() => {
     const fetchStaff = async () => {
       try {
-        const response = await api.get(`/api/admin/staffs/${id}`);
+        const response = await apiAuth.get(`/api/admin/staffs/${id}`);
         setStaff(response.data.data);
       } catch (err) {
         setError(err.message || 'Failed to fetch staff data');

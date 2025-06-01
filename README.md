@@ -11,15 +11,19 @@ A full-stack web application for reading and managing manga/novels, built using 
 - Admin panel for managing content
 - Responsive UI with TailwindCSS
 - AI for searching manga/novel base on description
-- Cloning your voice for reading novel
-- Reading manga when click on image
+- Implemented real payment functionality for premium content using PayOS.
+
+## What we do in the future
+- Cloning your voice, choose custom voices for reading novel
+- Leverage AI technology to extract text from manga images and provide seamless text-to-speech reading
 
 ## Tech Stack
 
 - **Frontend**: React.js, TailwindCSS
 - **Backend**: Express.js, Node.js
 - **Database**: MongoDB
-- **API**: MangaDex API (and custom API)
+- **Data**: MangaDex API and Web scraping using BeautifulSoup4
+- **Resource Management**: Cloudinary
 
 ## Installation
 

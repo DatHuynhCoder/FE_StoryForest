@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FiEdit2, FiTrash2, FiInfo, FiPlus, FiSearch, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useNavigate } from 'react-router';
-import { api } from '../../services/api';
+import { api, apiAuth } from '../../services/api';
 import debounce from 'lodash.debounce';
 
 const StoryManagement = () => {
@@ -27,6 +27,7 @@ const StoryManagement = () => {
         }
       });
       setStories(response.data.data);
+      console.log(response.data.data)
       setTotalItems(response.data.total || response.data.data.length);
     } catch (error) {
       console.error('Lỗi khi lấy dữ liệu truyện:', error);
@@ -163,7 +164,7 @@ const StoryManagement = () => {
   const handleDelete = async (storyId) => {
     if (window.confirm(`Bạn có chắc muốn xóa truyện này?`)) {
       try {
-        await api.delete(`/api/staff/book/${storyId}`);
+        await apiAuth.delete(`/api/staff/book/${storyId}`);
         fetchStories(currentPage, searchQuery, sortOption);
       } catch (error) {
         console.error('Lỗi khi xóa truyện:', error);
@@ -245,7 +246,7 @@ const StoryManagement = () => {
                     <div className="flex items-center space-x-3 md:space-x-4 w-full sm:w-auto">
                       <div className="w-16 h-24 md:w-20 md:h-28 flex-shrink-0">
                         <img 
-                          src={story.cover_url || '/placeholder.jpg'} 
+                          src={story.bookImg?.url || '/placeholder.jpg'} 
                           alt={`${story.title} cover`} 
                           className="w-full h-full object-cover rounded"
                           onError={(e) => {
@@ -265,21 +266,21 @@ const StoryManagement = () => {
 
                     <div className="flex flex-col xs:flex-row space-y-2 xs:space-y-0 xs:space-x-3 md:space-x-4 w-full sm:w-auto">
                       <button 
-                        className="flex items-center text-teal-600 hover:text-teal-800 text-sm" 
+                        className="flex items-center text-teal-600 hover:text-teal-800 text-sm cursor-pointer" 
                         onClick={() => handleSeeDetails(story._id)}
                       >
                         <FiInfo className="mr-1 md:hidden" />
                         <span>Detail</span>
                       </button>
                       <button 
-                        className="flex items-center text-green-600 hover:text-green-800 text-sm" 
+                        className="flex items-center text-green-600 hover:text-green-800 text-sm cursor-pointer" 
                         onClick={() => handleEdit(story._id)}
                       >
                         <FiEdit2 className="mr-1 md:hidden" />
                         <span>Edit</span>
                       </button>
                       <button 
-                        className="flex items-center text-red-600 hover:text-red-800 text-sm" 
+                        className="flex items-center text-red-600 hover:text-red-800 text-sm cursor-pointer" 
                         onClick={() => handleDelete(story._id)}
                       >
                         <FiTrash2 className="mr-1 md:hidden" />

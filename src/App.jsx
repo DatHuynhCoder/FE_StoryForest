@@ -66,7 +66,7 @@ function App() {
         <Route path="/changepass" element={<ChangePassword />} />
 
         <Route element={<Layout />}>
-          <Route element={<ProtectedRoute allowedRoles={['reader','VIP reader','admin','staff']} />}>
+          <Route element={<ProtectedRoute allowedRoles={['reader', 'VIP reader', 'admin', 'staff']} />}>
             <Route path="/profile" element={<Profile />} />
           </Route>
           <Route path="/" element={<Home />} />
@@ -77,31 +77,32 @@ function App() {
           <Route path="/novel/:_id" element={<NovelDetails />} />
           <Route path="/novelReader/:_id/:chapterid" element={<NovelReader />} />
           <Route path='/result/:keyword' element={<ResultPage />} />
-          <Route path='/advanced-search' element={<AdvancedSearch/>}/>
+          <Route path='/advanced-search' element={<AdvancedSearch />} />
           <Route path="/otherprofile/:_id" element={<OtherProfile />} />
         </Route>
 
 
 
         <Route element={<AdminLayout />}>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-
-          <Route path="/admin/user-management" element={<UserManagement />}> </Route>
-          <Route path="/admin/user-management/users/:id" element={<UserInformations />} />
-          <Route path="/admin/user-management/staff/:id" element={<StaffInformations />} />
-          <Route path="/admin/web-management" element={<WebManagement />} />
+          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/user-management" element={<UserManagement />}> </Route>
+            <Route path="/admin/user-management/users/:id" element={<UserInformations />} />
+            <Route path="/admin/user-management/staff/:id" element={<StaffInformations />} />
+            <Route path="/admin/web-management" element={<WebManagement />} />
+          </Route>
         </Route>
 
         <Route element={<StaffLayout />}>
-          <Route path="/staff/story-management" element={<StoryManagement />}> </Route>
-          <Route path="/staff/story-management/edit-story/:id_story" element={<EditStory />}> </Route>
-          <Route path="/staff/story-management/edit-chapter/:chapterTitle/:chapterId" element={<EditChapter />}> </Route>
-          <Route path="/staff/story-management/add-chapter/:id_story" element={<AddChapter />}> </Route>
-          <Route path="/staff/story-management/detail-story/:id" element={<DetailStory />}> </Route>
-          <Route path="/staff/story-management/add-story" element={<AddNewStory />}> </Route>
-
-
-          <Route path="/staff/vip-management" element={<VipManagement />}> </Route>
+          <Route element={<ProtectedRoute allowedRoles={['admin', 'staff']} />}>
+            <Route path="/staff/story-management" element={<StoryManagement />}> </Route>
+            <Route path="/staff/story-management/edit-story/:id_story" element={<EditStory />}> </Route>
+            <Route path="/staff/story-management/edit-chapter/:chapterTitle/:chapterId" element={<EditChapter />}> </Route>
+            <Route path="/staff/story-management/add-chapter/:id_story" element={<AddChapter />}> </Route>
+            <Route path="/staff/story-management/detail-story/:id" element={<DetailStory />}> </Route>
+            <Route path="/staff/story-management/add-story" element={<AddNewStory />}> </Route>
+            <Route path="/staff/vip-management" element={<VipManagement />}> </Route>
+          </Route>
         </Route>
         <Route path="/payment/success" element={<Success />} />
         <Route path="/payment/cancel" element={<Cancel />} />
