@@ -10,8 +10,10 @@ import { PiShootingStarFill } from "react-icons/pi";
 import { FiRefreshCw } from "react-icons/fi";
 import Tags from '../../components/Tags/Tags'
 import { useSelector } from 'react-redux'
+import scrollToTop from '../../utils/ScrollToTop'
 
 function NovelList() {
+  scrollToTop()
   const navigate = useNavigate()
   const [novelList, setNovelList] = useState([
     {
@@ -134,10 +136,6 @@ function NovelList() {
     apiAuth.post('/api/reader/payment/create-payment-link').then(res => {
       window.location.href = res.data.url;
     })
-  }
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   if (loading) return <Spinner />

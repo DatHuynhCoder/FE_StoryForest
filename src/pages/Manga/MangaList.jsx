@@ -15,8 +15,10 @@ import { RiUserFollowLine } from "react-icons/ri";
 import processingGif from '../../assets/processing.gif'
 import Tags from '../../components/Tags/Tags'
 import { useSelector } from 'react-redux'
+import scrollToTop from '../../utils/ScrollToTop'
 
 function MangaList() {
+  scrollToTop()
   const navigate = useNavigate();
   const [listManga, setListManga] = useState([{
     artist: ['REDICE Studio (레드아이스 스튜디오)', 'Jang Sung-Rak (장성락)'],
@@ -167,10 +169,6 @@ function MangaList() {
     })
   }
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
   if (loading) return <Spinner />
 
   return (
@@ -283,13 +281,13 @@ function MangaList() {
                 <div>🗣️ Voice cloning: Make your voice clone read stuff for you — it’s like audiobook, but with your own glorious voice (yup, also coming soon).</div>
 
                 {/* VIP button */}
-                  <button className="p-[3px] mt-2 cursor-pointer rounded-full bg-black relative" onClick={() => handleUpgradeVip()}> {/* Added relative here */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg" />
-                    <div className="flex items-center gap-2 px-4 py-2 font-bold bg-black rounded-[6px] relative group transition duration-200 text-white hover:bg-transparent">
-                      <FaCrown className="text-yellow-400 group-hover:animate-pulse group-hover:text-yellow-300 w-5" />
-                      Upgrade
-                    </div>
-                  </button>
+                <button className="p-[3px] mt-2 cursor-pointer rounded-full bg-black relative" onClick={() => handleUpgradeVip()}> {/* Added relative here */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg" />
+                  <div className="flex items-center gap-2 px-4 py-2 font-bold bg-black rounded-[6px] relative group transition duration-200 text-white hover:bg-transparent">
+                    <FaCrown className="text-yellow-400 group-hover:animate-pulse group-hover:text-yellow-300 w-5" />
+                    Upgrade
+                  </div>
+                </button>
               </div>
             )}
           </div>

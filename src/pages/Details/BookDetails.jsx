@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { updateUser } from '../../redux/userSlice'
 import defaultAvt from '../../assets/default_avatar.jpg'
 import processingGif from '../../assets/processing.gif'
+import scrollToTop from '../../utils/ScrollToTop'
 
 function BookDetails() {
   const navigate = useNavigate()
@@ -141,6 +142,7 @@ function BookDetails() {
 
   // get book details and chapters
   useEffect(() => {
+    scrollToTop()
     api.get(`api/manga/${_id}`)
       .then((res) => {
         console.log("check /api/manga/:id", res.data.data);
@@ -214,7 +216,7 @@ function BookDetails() {
           <div className='pt-4 md:pt-20 px-4 md:pl-10 text-center md:text-left'>
             <p className='text-3xl md:text-5xl font-bold text-black md:text-black md:hidden'>{infoManga.title}</p>
             <p className='text-lg md:text-xl font-bold text-black md:text-black md:hidden cursor-pointer'>{
-              infoManga.author.map((author) => (<span className='hover:text-[#00c853]' onClick={()=>navigate(`/advanced-search?type=all&genre=All&author=${author}`)}>{author} </span>))
+              infoManga.author.map((author) => (<span className='hover:text-[#00c853]' onClick={() => navigate(`/advanced-search?type=all&genre=All&author=${author}`)}>{author} </span>))
             }
             </p>
           </div>
@@ -245,7 +247,7 @@ function BookDetails() {
 
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>
               {infoManga.tags.map((tag) => (
-                <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }} key={tag} onClick={()=>navigate(`/advanced-search?type=manga&genre=${tag}&author=None`)}>
+                <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }} key={tag} onClick={() => navigate(`/advanced-search?type=manga&genre=${tag}&author=None`)}>
                   <span className='text-xs font-black'>{tag}</span>
                 </div>
               ))}
@@ -257,8 +259,8 @@ function BookDetails() {
         <div className='md:block hidden'>
           <p className='text-3xl md:text-5xl font-bold text-black md:text-black'>{infoManga.title}</p>
           <p className='text-lg md:text-xl font-bold text-black md:text-black cursor-pointer'>{
-              infoManga.author.map((author) => (<span className='hover:text-[#00c853]' onClick={()=>navigate(`/advanced-search?type=all&genre=All&author=${author}`)}>{author} </span>))
-            }
+            infoManga.author.map((author) => (<span className='hover:text-[#00c853]' onClick={() => navigate(`/advanced-search?type=all&genre=All&author=${author}`)}>{author} </span>))
+          }
           </p>
         </div>
         {infoManga.synopsis.split('---')[0]}

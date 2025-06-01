@@ -9,11 +9,13 @@ import { updateUser } from '../../redux/userSlice'
 import { toast } from 'react-toastify'
 import defaultAvt from '../../assets/default_avatar.jpg'
 import processingGif from '../../assets/processing.gif'
+import scrollToTop from '../../utils/ScrollToTop'
 
 function NovelDetails() {
   const navigate = useNavigate()
   const dispatch = useDispatch();
   //get user from redux store
+
   const user = useSelector((state) => state.user.user);
   const { _id } = useParams() // from NovelList.jsx
 
@@ -139,6 +141,7 @@ function NovelDetails() {
     }
   }
 
+  scrollToTop()
 
   useEffect(() => {
     api.get(`/api/novel/${_id}`).then(res => {
@@ -197,7 +200,7 @@ function NovelDetails() {
   return (
     <>
       <div className='border w-full h-64 absolute z-10 bg-cover bg-center filter blur-md'
-        style={{ backgroundImage: 'url(' + infoNovel.bookImg.url + ')' }}>
+        style={{ backgroundImage: 'url(' + infoNovel?.bookImg?.url + ')' }}>
       </div>
 
       <div className='flex flex-col md:flex-row relative z-20'>
@@ -216,8 +219,8 @@ function NovelDetails() {
             <p className='text-3xl md:text-5xl font-bold text-black md:text-black md:hidden'>{infoNovel.title}</p>
             <p className='text-lg md:text-xl font-bold text-black md:text-black md:hidden hover:text-[#00c853]'>
               {
-              infoNovel.author.map((author) => (<span className='hover:text-[#00c853]' onClick={()=>navigate(`/advanced-search?type=novel&genre=All&author=${author}`)}>{author} </span>))
-            }
+                infoNovel.author.map((author) => (<span className='hover:text-[#00c853]' onClick={() => navigate(`/advanced-search?type=novel&genre=All&author=${author}`)}>{author} </span>))
+              }
             </p>
           </div>
 
@@ -246,7 +249,7 @@ function NovelDetails() {
 
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>
               {infoNovel.tags.map((tag) => (
-                <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }} key={tag} onClick={()=>navigate(`/advanced-search?type=novel&genre=${tag}&author=None`)}>
+                <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }} key={tag} onClick={() => navigate(`/advanced-search?type=novel&genre=${tag}&author=None`)}>
                   <span className='text-xs font-black'>{tag}</span>
                 </div>
               ))}
@@ -258,8 +261,8 @@ function NovelDetails() {
         <div className='md:block hidden'>
           <p className='text-3xl md:text-5xl font-bold text-black md:text-black'>{infoNovel.title}</p>
           <p className='text-lg md:text-xl font-bold text-black md:text-black cursor-pointer'>{
-              infoNovel.author.map((author) => (<span className='hover:text-[#00c853]' onClick={()=>navigate(`/advanced-search?type=novel&genre=All&author=${author}`)}>{author} </span>))
-            }
+            infoNovel.author.map((author) => (<span className='hover:text-[#00c853]' onClick={() => navigate(`/advanced-search?type=novel&genre=All&author=${author}`)}>{author} </span>))
+          }
           </p>
         </div>
         {infoNovel.synopsis}
