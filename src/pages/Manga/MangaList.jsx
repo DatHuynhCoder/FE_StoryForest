@@ -52,7 +52,7 @@ function MangaList() {
   const itemsPerPage = 10
 
   const fetchMangas = (page) => {
-    console.log("check page: ", page)
+    // console.log("check page: ", page)
     setLoading(true);
     api.get(`/api/manga/v2?page=${page + 1}&limit=${itemsPerPage}`) // Backend expects 1-based page index
       .then((res) => {
@@ -69,7 +69,7 @@ function MangaList() {
       });
   };
   const fetchMangasWithSortType = (page, type) => {
-    console.log("check page: ", page)
+    // console.log("check page: ", page)
     setLoading(true);
     api.get(`/api/manga/v2?page=${page + 1}&limit=${itemsPerPage}&sort=${type}&order=desc`) // Backend expects 1-based page index
       .then((res) => {
@@ -86,7 +86,7 @@ function MangaList() {
       });
   };
   const fetchMangasByStatus = (page, status) => {
-    console.log("check page: ", page)
+    // console.log("check page: ", page)
     setLoading(true);
     api.get(`/api/manga/status?page=${page + 1}&limit=${itemsPerPage}&status=${status}`) // Backend expects 1-based page index
       .then(res => {

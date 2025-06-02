@@ -145,7 +145,7 @@ function BookDetails() {
     scrollToTop()
     api.get(`api/manga/${_id}`)
       .then((res) => {
-        console.log("check /api/manga/:id", res.data.data);
+        // console.log("check /api/manga/:id", res.data.data);
         setInfoManga(res.data.data.manga);
         setChapters(res.data.data.chapters.filter((chapter) => chapter.title !== null).filter((chapter) => chapter.pages !== 0).sort((a, b) => parseInt(a.chapter) - parseInt(b.chapter)));
       })
@@ -160,7 +160,7 @@ function BookDetails() {
   useEffect(() => {
     api.get(`api/reader/review/book/${_id}`)
       .then((res) => {
-        console.log("check /api/reader/review/book/:id", res.data.data);
+        // console.log("check /api/reader/review/book/:id", res.data.data);
         setBookComments(res.data.data);
       })
       .catch((err) => {
@@ -216,7 +216,7 @@ function BookDetails() {
           <div className='pt-4 md:pt-20 px-4 md:pl-10 text-center md:text-left'>
             <p className='text-3xl md:text-5xl font-bold text-black md:text-black md:hidden'>{infoManga.title}</p>
             <p className='text-lg md:text-xl font-bold text-black md:text-black md:hidden cursor-pointer'>{
-              infoManga.author.map((author) => (<span className='hover:text-[#00c853]' onClick={() => navigate(`/advanced-search?type=all&genre=All&author=${author}`)}>{author} </span>))
+              infoManga.author.map((author, index) => (<span key={index} className='hover:text-[#00c853]' onClick={() => navigate(`/advanced-search?type=all&genre=All&author=${author}`)}>{author} </span>))
             }
             </p>
           </div>

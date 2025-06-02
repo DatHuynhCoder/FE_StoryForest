@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { api, apiAuth } from '../../services/api'
 import Spinner from '../../components/Spinner'
+import processing2 from '../../assets/processing2.gif'
 //use redux to update user
 import { useSelector, useDispatch } from 'react-redux'
 import { updateUser } from '../../redux/userSlice'
@@ -144,13 +145,14 @@ function NovelDetails() {
   scrollToTop()
 
   useEffect(() => {
+    setLoading(true)
     api.get(`/api/novel/${_id}`).then(res => {
-      console.log(res.data)
+      //console.log(res.data)
       setInfoNovel(res.data.data)
       api.get(`/api/novel/${_id}/chapters`).then(res => {
-        console.log(res.data)
+        //console.log(res.data)
         setChapters(res.data.data.sort((a, b) => a.order - b.order))
-      })
+      }).catch(err => console.log(err)).finally(() => setLoading(false))
     }).catch(err => console.log(err)).finally(() => {
       setLoading(false)
     })
@@ -160,7 +162,7 @@ function NovelDetails() {
   useEffect(() => {
     api.get(`api/reader/review/book/${_id}`)
       .then((res) => {
-        console.log("check /api/reader/review/book/:id", res.data.data);
+        //console.log("check /api/reader/review/book/:id", res.data.data);
         setBookComments(res.data.data);
       })
       .catch((err) => {

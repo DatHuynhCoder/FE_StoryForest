@@ -35,8 +35,46 @@ import { updateUser } from '../../redux/userSlice.js'
 import { useCookies } from 'react-cookie';
 // color picker
 import { HexColorPicker } from "react-colorful";
+import scrollToTop from '../../utils/ScrollToTop'
 
-function NovelReader() {
+// Hook for detecting when scrolled to specific position using Intersection Observer
+const useScrollPosition = (onReach = null) => {
+  const [hasReached, setHasReached] = useState(false);
+  const sentinelRef = useRef(null);
+  const hasCalledCallback = useRef(false);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const isIntersecting = entry.isIntersecting;
+        setHasReached(isIntersecting);
+
+        // Call the callback function only once when first reached
+        if (isIntersecting && onReach && !hasCalledCallback.current) {
+          onReach();
+          hasCalledCallback.current = true;
+        }
+      },
+      {
+        rootMargin: '0px',
+        threshold: 0
+      }
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      observer.unobserve(sentinel);
+    };
+  }, [onReach]);
+
+  return { hasReached, sentinelRef };
+};
+
+const NovelReader = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
 
@@ -155,10 +193,6 @@ function NovelReader() {
   const [openChapterDrawer, setOpenChapterDrawer] = useState(false)
 
   const [loading, setLoading] = useState(true)
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
 
   const handleNextChapter = () => {
     const currentIndex = chapters.findIndex((chapter) => chapter._id === chapterid)
@@ -366,7 +400,21 @@ function NovelReader() {
       }
     };
   }, []);
-
+  //
+  // handle increase view
+  const handleIncreaseView = () => {
+    console.log(_id);
+    api.patch(`/api/novel/increaseview/${_id}`)
+      .then(res => {
+        if (res.data.success === true) {
+          console.log("view increased")
+        } else {
+          console.log("error in increase view")
+        }
+      })
+      .catch(err => console.log(err))
+  };
+  const { hasReached: reachedSection2, sentinelRef: sentinel2 } = useScrollPosition(handleIncreaseView);
   // handle select theme
   const [openSelectTheme, setOpenSelectTheme] = useState(false);
 
@@ -403,6 +451,7 @@ function NovelReader() {
   }
   // get chapter content from api
   useEffect(() => {
+    scrollToTop()
     fetchCommentByChapterId()
     api.get(`/api/novel/${_id}/${chapterid}`).then(res => {
       setNovelContent(res.data.data[0])
@@ -454,6 +503,9 @@ function NovelReader() {
               )}
             </div>
           ))}
+        </div>
+        <div ref={sentinel2}>
+
         </div>
         {/* Bottom nav */}
         <div className='flex justify-center fixed bottom-0 bg-white w-[100%] py-2 gap-3' style={{ backgroundColor: colorPicked, color: textColorPicked }}>
