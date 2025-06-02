@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useParams, useLocation, useNavigate, Link } from 'react-router'
 import axios from 'axios'
 import loadingGif from '../../assets/loading.gif'
@@ -36,7 +36,44 @@ import { useCookies } from 'react-cookie';
 // color picker
 import { HexColorPicker } from "react-colorful";
 
-function MangaReader() {
+// Hook for detecting when scrolled to specific position using Intersection Observer
+const useScrollPosition = (onReach = null) => {
+  const [hasReached, setHasReached] = useState(false);
+  const sentinelRef = useRef(null);
+  const hasCalledCallback = useRef(false);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const isIntersecting = entry.isIntersecting;
+        setHasReached(isIntersecting);
+
+        // Call the callback function only once when first reached
+        if (isIntersecting && onReach && !hasCalledCallback.current) {
+          onReach();
+          hasCalledCallback.current = true;
+        }
+      },
+      {
+        rootMargin: '0px',
+        threshold: 0
+      }
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      observer.unobserve(sentinel);
+    };
+  }, [onReach]);
+
+  return { hasReached, sentinelRef };
+};
+
+const MangaReader = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
 
@@ -44,7 +81,7 @@ function MangaReader() {
 
   const { mangaid, chapterid } = useParams()
   const location = useLocation()
-  const { _id, chapters, mangatitle, chapternumber, chaptertitle } = location.state || {}
+  const { _id, chapters, mangatitle, chapternumber, chaptertitle } = location.state || {} // _id is the id of book
   // const chapters = location.state.chapters || []
   const user = useSelector((state) => state.user.user) || {
     createdAt: "unknown",
@@ -66,15 +103,28 @@ function MangaReader() {
   const handleSwitchChange = (event) => {
     setChecked(event.target.checked);
   };
+  // handle increase view
+  const handleIncreaseView = () => {
+    console.log(_id);
+    api.patch(`/api/manga/increaseview/${_id}`)
+      .then(res => {
+        if (res.data.success === true) {
+          console.log("view increased")
+        } else {
+          console.log("error in increase view")
+        }
+      })
+      .catch(err => console.log(err))
+  };
+  const { hasReached: reachedSection2, sentinelRef: sentinel2 } = useScrollPosition(handleIncreaseView);
+  //
   // handle select theme
   const [openSelectTheme, setOpenSelectTheme] = useState(false);
-
   const handleClickOpenSelectTheme = () => {
     if (user._id === 'unknown') alert('Login to use this feature !')
     else
       setOpenSelectTheme(true);
   };
-
   const handleCloseSelectTheme = (event, reason) => {
     if (reason !== 'backdropClick') {
       setCookie("theme", colorPicked)
@@ -246,6 +296,9 @@ function MangaReader() {
               </div>
             ))
           )}
+        </div>
+        <div ref={sentinel2}>
+
         </div>
         {/* Bottom nav */}
         <div className='flex justify-center fixed bottom-0 bg-white w-[100%] py-2 gap-3' style={{ backgroundColor: colorPicked, color: textColorPicked }}>
