@@ -151,7 +151,7 @@ function NovelList() {
             {novelList.length !== 0 ? novelList.map(novel => (
               <div className='flex md:flex-row flex-col p-5 border-b' key={novel._id}>
                 <div className='flex-1'>
-                  <img src={novel.cover_url} alt="" className='w-30 m-auto' />
+                  <img src={novel.bookImg.url ? novel.bookImg.url : novel.cover_url} alt="" className='w-30 m-auto' />
                 </div>
                 <div className='flex-4'>
                   <p onClick={() => handleClickOnNovel(novel._id)} className='text-lg md:text-xl font-bold text-green-500 text-center hover:underline cursor-pointer'>{novel.title}</p>
