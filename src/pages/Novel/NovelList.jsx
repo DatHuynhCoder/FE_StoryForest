@@ -44,12 +44,12 @@ function NovelList() {
   const [toggle, setToggle] = useState(false)
 
   const fetchNovels = (page) => {
-    console.log("check page: ", page)
+    //console.log("check page: ", page)
     setLoading(true);
     api.get(`/api/novel/v2?page=${page + 1}&limit=${itemsPerPage}`) // Backend expects 1-based page index
       .then((res) => {
         const { data, pagination } = res.data;
-        console.log("check list novel: ", data)
+        //console.log("check list novel: ", data)
         setNovelList(data);
         setCurrentPage(pagination.currentPage - 1); // Convert to 0-based index
         setTotalPages(pagination.totalPages);

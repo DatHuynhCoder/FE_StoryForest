@@ -287,7 +287,6 @@ const MangaReader = () => {
           ) : (
             pics.map((pic, index) => (
               <div className='mt-3 flex' key={index}>
-                <FaPlayCircle />
                 <img src={pic.split('@')[0]}
                   alt='manga'
                   loading='lazy'
