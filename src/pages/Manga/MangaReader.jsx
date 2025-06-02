@@ -182,7 +182,6 @@ const MangaReader = () => {
   const fetchCommentByChapterId = async () => {
     try {
       const response = await api.get(`/api/reader/review/chapter/${chapterid}`)
-      // console.log("check comments: ", response.data.data)
       setChaptercomments(response.data.data)
       setCommentReadmoreIndex(new Array(response.data.data.length).fill(false))
     } catch (error) {
@@ -288,7 +287,8 @@ const MangaReader = () => {
           ) : (
             pics.map((pic, index) => (
               <div className='mt-3 flex' key={index}>
-                <img src={pic.url ? pic.url : pic}
+                <FaPlayCircle />
+                <img src={pic.split('@')[0]}
                   alt='manga'
                   loading='lazy'
                   className='max-w-xs md:max-w-lg max-h-xs object-cover'

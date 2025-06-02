@@ -94,14 +94,14 @@ const EditStory = () => {
 
   const handleEditChapter = (chapter) => {
     const chapterId = chapter.chapterid;
-    const chapterTitle = chapter.title;
+    const chapterTitle = chapter.title ? chapter.title : "No Title";
     navigate(`/staff/story-management/edit-chapter/${chapterTitle}/${chapterId}`);
   };
 
   const handleDeleteChapter = async (chapterId) => {
     if (window.confirm("Are you sure you want to delete this chapter?")) {
       try {
-        await apiAuth.delete(`/api/staff/chapter/${chapterId}`);
+        await apiAuth.delete(`/api/staff/chapter/manga/${chapterId}`);
         // Refresh chapters list after deletion
         fetchChapters(story.mangaid, currentPage);
       } catch (err) {
