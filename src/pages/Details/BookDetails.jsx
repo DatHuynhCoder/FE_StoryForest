@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router'
 import { api, apiAuth } from '../../services/api'
 import Spinner from '../../components/Spinner'
 import { toast } from 'react-toastify'
+import { RiEyeFill, RiHome4Fill } from "react-icons/ri";
+import { FaHeart, FaStar } from "react-icons/fa6";
 //use redux to update user
 import { useSelector, useDispatch } from 'react-redux';
 import { updateUser } from '../../redux/userSlice'
@@ -142,7 +144,6 @@ function BookDetails() {
 
   // get book details and chapters
   useEffect(() => {
-    scrollToTop()
     api.get(`api/manga/${_id}`)
       .then((res) => {
         // console.log("check /api/manga/:id", res.data.data);
@@ -158,6 +159,7 @@ function BookDetails() {
   }, [_id])
   // get book comments
   useEffect(() => {
+    scrollToTop()
     api.get(`api/reader/review/book/${_id}`)
       .then((res) => {
         // console.log("check /api/reader/review/book/:id", res.data.data);
@@ -241,8 +243,13 @@ function BookDetails() {
                 Start reading
               </div>
             </div>
-            <div>
-              <p className='font-semibold'> &nbsp;{infoManga.followers} followed</p>
+            <div className='flex flex-row gap-3 items-center'>
+              <p className='font-semibold text-2xl'> &nbsp;{infoManga.followers} </p>
+              <FaHeart className="w-6 h-6" color='#e03c3c'/>
+              <p className='font-semibold text-2xl'> &nbsp;{infoManga.views} </p>
+              <RiEyeFill className="w-6 h-6" color='blue'/>
+              <p className='font-semibold text-2xl'> &nbsp;{infoManga.rate} </p>
+              <FaStar className="w-6 h-6" color='#dbb004'/>
             </div>
 
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>

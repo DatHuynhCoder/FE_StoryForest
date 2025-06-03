@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router'
 import { api, apiAuth } from '../../services/api'
 import Spinner from '../../components/Spinner'
 import processing2 from '../../assets/processing2.gif'
+import { RiEyeFill, RiHome4Fill } from "react-icons/ri";
+import { FaHeart, FaStar } from "react-icons/fa6";
 //use redux to update user
 import { useSelector, useDispatch } from 'react-redux'
 import { updateUser } from '../../redux/userSlice'
@@ -142,9 +144,9 @@ function NovelDetails() {
     }
   }
 
-  scrollToTop()
-
+  
   useEffect(() => {
+    scrollToTop()
     setLoading(true)
     api.get(`/api/novel/${_id}`).then(res => {
       //console.log(res.data)
@@ -245,8 +247,13 @@ function NovelDetails() {
               <div onClick={() => handleStartReading(infoNovel.title, chapters[0]._id, 1, chapters[0].chapter_title)} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }}>Start reading</div>
             </div>
 
-            <div>
-              <p className='font-semibold'> &nbsp;{infoNovel.followers} followed</p>
+            <div className='flex flex-row gap-3 items-center'>
+              <p className='font-semibold text-2xl'> &nbsp;{infoNovel.followers} </p>
+              <FaHeart className="w-6 h-6" color='e03c3c' />
+              <p className='font-semibold text-2xl'> &nbsp;{infoNovel.views} </p>
+              <RiEyeFill className="w-6 h-6" color='blue' />
+              <p className='font-semibold text-2xl'> &nbsp;{infoNovel.rate} </p>
+              <FaStar className="w-6 h-6" color='#dbb004' />
             </div>
 
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>
