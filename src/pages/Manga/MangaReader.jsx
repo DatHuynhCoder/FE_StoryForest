@@ -275,8 +275,8 @@ const MangaReader = () => {
         <p className={`md:text-lg mt-2`} style={{ color: textColorPicked }}>Chapter {chapternumber}: {chaptertitle}</p>
         {/* This div will contain 2 button */}
         <div className='flex flex-col justify-center'>
-          <button onClick={handleNextChapter} className='p-[10px] bg-green-600 text-white font-bold md:w-[500px] w-[200px] rounded mt-3 cursor-pointer hover:bg-green-500'>Next chapter</button>
-          <button onClick={handlePreviousChapter} className='p-[10px] font-bold md:w-[500px] w-[200px] rounded border mt-3 cursor-pointer bg-[#fff] hover:bg-[#f1f1f1]'>Previous chapter</button>
+          <button onClick={handleNextChapter} className='p-[10px] bg-green-600 text-white font-bold md:w-[600px] w-[300px] rounded mt-3 cursor-pointer hover:bg-green-500'>Next chapter</button>
+          <button onClick={handlePreviousChapter} className='p-[10px] font-bold md:w-[600px] w-[300px] rounded border mt-3 cursor-pointer bg-[#fff] hover:bg-[#f1f1f1]'>Previous chapter</button>
         </div>
         {/* This div will contain the manga images */}
         <div>
@@ -290,7 +290,7 @@ const MangaReader = () => {
                 <img src={pic.split('@')[0]}
                   alt='manga'
                   loading='lazy'
-                  className='max-w-xs md:max-w-lg max-h-xs object-cover'
+                  className='md:w-[600px] w-[300px] object-cover'
                 />
               </div>
             ))
