@@ -166,7 +166,7 @@ function NovelList() {
                     <div className='flex-2'>
                       <p className='text-right'><span className='font-[1000]'>{novel.followers}</span> <b>FOLLOWERS</b></p>
                       <p className='text-right'><span className='font-[1000]'>{novel.views}</span> <b>VIEWS</b></p>
-                      <p className='text-right'><b>RATE:</b> <span className='font-[1000]'>{novel.rate}</span></p>
+                      <p className='text-right'><b>RATE:</b> <span className='font-[1000]'>{novel.rate.toFixed(2)}</span></p>
                     </div>
                   </div>
                 </div>

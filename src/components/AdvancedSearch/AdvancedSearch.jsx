@@ -376,7 +376,7 @@ function AdvancedSearch() {
                   </p>
                   <p className="text-right">
                     <b>RATE:</b>
-                    <span className="font-[1000]"> {result.rate}</span>
+                    <span className="font-[1000]"> {result.rate.toFixed(2)}</span>
                   </p>
                   <p className="text-right">
                     <b></b>

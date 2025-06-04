@@ -172,7 +172,7 @@ const StoryDetail = () => {
 
                 <div className="flex items-center bg-yellow-100 px-3 py-1 rounded-full">
                   <FiStar className="text-yellow-500 mr-1" />
-                  <span className="font-medium">{story.rate}/5</span>
+                  <span className="font-medium">{story.rate.toFixed(2)}/5</span>
                 </div>
               </div>
 
