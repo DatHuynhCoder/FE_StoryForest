@@ -14,7 +14,7 @@ import { FaPlayCircle } from "react-icons/fa";
 // drawer
 import DragCloseDrawer from '../../components/DragCloseDrawer.jsx'
 // select dialog
-import { Rating, RatingStar } from "flowbite-react";
+import Rating from '@mui/material/Rating';
 import { Button, Drawer, DrawerHeader, DrawerItems } from "flowbite-react";
 import Switch from '@mui/material/Switch';
 import Box from '@mui/material/Box';
@@ -188,7 +188,9 @@ const MangaReader = () => {
       console.error("Error fetching comments:", error)
     }
   }
-
+  // Rating
+  const [yourRate, setYourRate] = useState(5);
+  //
   const handleSendComment = () => {
     if (comment === '') {
       alert('Please enter a comment')
@@ -198,10 +200,11 @@ const MangaReader = () => {
       alert('Please login to comment')
       return
     }
+    console.log("rate: ", yourRate)
     apiAuth.post(`/api/reader/review/create`, {
       // content: comment.slice(0, 40),
       content: comment,
-      rating: 5, // temp
+      rating: yourRate, // temp
       chapternumber: chapternumber,
       chaptertitle: chaptertitle,
       chapterid: chapterid,
@@ -217,6 +220,7 @@ const MangaReader = () => {
       }
     })
   }
+  //
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -392,11 +396,22 @@ const MangaReader = () => {
             </div>
             <div>
               {user._id !== "unknown" ?
-                <textarea
-                  className='border p-2 mt-3 bg-gray-200 rounded-md w-[100%] h-[100px]'
-                  placeholder='Write something ...'
-                  onChange={(e) => setComment(e.target.value)}
-                ></textarea> : <p className='w-[100%]'>Please <Link to="/login" className='text-green-500'>login </Link>to comment</p>}
+                <>
+                  <textarea
+                    className='border p-2 mt-3 bg-gray-200 rounded-md w-[100%] h-[100px]'
+                    placeholder='Write something ...'
+                    onChange={(e) => setComment(e.target.value)}
+                  ></textarea>
+                  <Rating
+                    name="half-rating"
+                    precision={0.5}
+                    value={yourRate}
+                    onChange={(event, newValue) => {
+                      setYourRate(newValue);
+                    }}
+                  />
+                </>
+                : <p className='w-[100%]'>Please <Link to="/login" className='text-green-500'>login </Link>to comment</p>}
               {/* <div>
                 <Rating>
                   <RatingStar />
@@ -416,6 +431,12 @@ const MangaReader = () => {
                       <p className='ml-1 font-semibold text-black'>{comment.userid.username}</p>
                     </div>
                     <p className='text-gray-500'>{comment.createdAt.slice(0, 10)}</p>
+                    <Rating
+                      name="read-only"
+                      precision={0.5}
+                      value={comment.rating}
+                      readOnly
+                    />
                     <p className='text-black w-[100%] text-justify'
                       style={commentReadmoreIndex[index] ? {} : {
                         WebkitLineClamp: 2,
