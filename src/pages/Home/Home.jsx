@@ -308,12 +308,12 @@ function Home() {
 			</div>
 
 			{/* Contact Button */}
-			<button
+			{/* <button
 				className="fixed bottom-5 right-5 p-3 bg-[#095533] text-white font-bold rounded-full shadow-lg flex items-center"
 				onClick={() => setShowContact(true)}
 			>
 				<IoIosContacts className="mr-2 text-2xl" /> Contact
-			</button>
+			</button> */}
 			{/* Contact Form */}
 			{showContact && (
 				<div className="fixed inset-0 flex items-center justify-center">

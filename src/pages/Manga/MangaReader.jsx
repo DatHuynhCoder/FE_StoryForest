@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useParams, useLocation, useNavigate, Link } from 'react-router'
 import axios from 'axios'
 import loadingGif from '../../assets/loading.gif'
@@ -36,7 +36,44 @@ import { useCookies } from 'react-cookie';
 // color picker
 import { HexColorPicker } from "react-colorful";
 
-function MangaReader() {
+// Hook for detecting when scrolled to specific position using Intersection Observer
+const useScrollPosition = (onReach = null) => {
+  const [hasReached, setHasReached] = useState(false);
+  const sentinelRef = useRef(null);
+  const hasCalledCallback = useRef(false);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const isIntersecting = entry.isIntersecting;
+        setHasReached(isIntersecting);
+
+        // Call the callback function only once when first reached
+        if (isIntersecting && onReach && !hasCalledCallback.current) {
+          onReach();
+          hasCalledCallback.current = true;
+        }
+      },
+      {
+        rootMargin: '0px',
+        threshold: 0
+      }
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      observer.unobserve(sentinel);
+    };
+  }, [onReach]);
+
+  return { hasReached, sentinelRef };
+};
+
+const MangaReader = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
 
@@ -44,7 +81,7 @@ function MangaReader() {
 
   const { mangaid, chapterid } = useParams()
   const location = useLocation()
-  const { _id, chapters, mangatitle, chapternumber, chaptertitle } = location.state || {}
+  const { _id, chapters, mangatitle, chapternumber, chaptertitle } = location.state || {} // _id is the id of book
   // const chapters = location.state.chapters || []
   const user = useSelector((state) => state.user.user) || {
     createdAt: "unknown",
@@ -66,15 +103,28 @@ function MangaReader() {
   const handleSwitchChange = (event) => {
     setChecked(event.target.checked);
   };
+  // handle increase view
+  const handleIncreaseView = () => {
+    console.log(_id);
+    api.patch(`/api/manga/increaseview/${_id}`)
+      .then(res => {
+        if (res.data.success === true) {
+          console.log("view increased")
+        } else {
+          console.log("error in increase view")
+        }
+      })
+      .catch(err => console.log(err))
+  };
+  const { hasReached: reachedSection2, sentinelRef: sentinel2 } = useScrollPosition(handleIncreaseView);
+  //
   // handle select theme
   const [openSelectTheme, setOpenSelectTheme] = useState(false);
-
   const handleClickOpenSelectTheme = () => {
     if (user._id === 'unknown') alert('Login to use this feature !')
     else
       setOpenSelectTheme(true);
   };
-
   const handleCloseSelectTheme = (event, reason) => {
     if (reason !== 'backdropClick') {
       setCookie("theme", colorPicked)
@@ -132,7 +182,6 @@ function MangaReader() {
   const fetchCommentByChapterId = async () => {
     try {
       const response = await api.get(`/api/reader/review/chapter/${chapterid}`)
-      // console.log("check comments: ", response.data.data)
       setChaptercomments(response.data.data)
       setCommentReadmoreIndex(new Array(response.data.data.length).fill(false))
     } catch (error) {
@@ -226,8 +275,8 @@ function MangaReader() {
         <p className={`md:text-lg mt-2`} style={{ color: textColorPicked }}>Chapter {chapternumber}: {chaptertitle}</p>
         {/* This div will contain 2 button */}
         <div className='flex flex-col justify-center'>
-          <button onClick={handleNextChapter} className='p-[10px] bg-green-600 text-white font-bold md:w-[500px] w-[200px] rounded mt-3 cursor-pointer hover:bg-green-500'>Next chapter</button>
-          <button onClick={handlePreviousChapter} className='p-[10px] font-bold md:w-[500px] w-[200px] rounded border mt-3 cursor-pointer bg-[#fff] hover:bg-[#f1f1f1]'>Previous chapter</button>
+          <button onClick={handleNextChapter} className='p-[10px] bg-green-600 text-white font-bold md:w-[600px] w-[300px] rounded mt-3 cursor-pointer hover:bg-green-500'>Next chapter</button>
+          <button onClick={handlePreviousChapter} className='p-[10px] font-bold md:w-[600px] w-[300px] rounded border mt-3 cursor-pointer bg-[#fff] hover:bg-[#f1f1f1]'>Previous chapter</button>
         </div>
         {/* This div will contain the manga images */}
         <div>
@@ -238,15 +287,17 @@ function MangaReader() {
           ) : (
             pics.map((pic, index) => (
               <div className='mt-3 flex' key={index}>
-                <FaPlayCircle />
-                <img src={pic.url ? pic.url : pic}
+                <img src={pic.split('@')[0]}
                   alt='manga'
                   loading='lazy'
-                  className='max-w-xs md:max-w-lg max-h-xs object-cover'
+                  className='md:w-[600px] w-[300px] object-cover'
                 />
               </div>
             ))
           )}
+        </div>
+        <div ref={sentinel2}>
+
         </div>
         {/* Bottom nav */}
         <div className='flex justify-center fixed bottom-0 bg-white w-[100%] py-2 gap-3' style={{ backgroundColor: colorPicked, color: textColorPicked }}>

@@ -20,6 +20,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/userSlice";
+import scrollToTop from "../../utils/ScrollToTop";
 
 // cookie
 import { useCookies } from "react-cookie";
@@ -37,6 +38,7 @@ const Profile = () => {
   const [cookie, setCookie, removeCookie] = useCookies(["theme", "textColor"])
 
   useEffect(() => {
+    scrollToTop();
     const fetchFavorite = async () => {
       try {
         const response = await apiAuth.get('/api/reader/favorite/getFavorite');

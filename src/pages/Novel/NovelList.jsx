@@ -10,8 +10,10 @@ import { PiShootingStarFill } from "react-icons/pi";
 import { FiRefreshCw } from "react-icons/fi";
 import Tags from '../../components/Tags/Tags'
 import { useSelector } from 'react-redux'
+import scrollToTop from '../../utils/ScrollToTop'
 
 function NovelList() {
+  scrollToTop()
   const navigate = useNavigate()
   const [novelList, setNovelList] = useState([
     {
@@ -42,12 +44,12 @@ function NovelList() {
   const [toggle, setToggle] = useState(false)
 
   const fetchNovels = (page) => {
-    console.log("check page: ", page)
+    //console.log("check page: ", page)
     setLoading(true);
     api.get(`/api/novel/v2?page=${page + 1}&limit=${itemsPerPage}`) // Backend expects 1-based page index
       .then((res) => {
         const { data, pagination } = res.data;
-        console.log("check list novel: ", data)
+        //console.log("check list novel: ", data)
         setNovelList(data);
         setCurrentPage(pagination.currentPage - 1); // Convert to 0-based index
         setTotalPages(pagination.totalPages);
@@ -136,10 +138,6 @@ function NovelList() {
     })
   }
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
   if (loading) return <Spinner />
 
   return (
@@ -151,7 +149,7 @@ function NovelList() {
             {novelList.length !== 0 ? novelList.map(novel => (
               <div className='flex md:flex-row flex-col p-5 border-b' key={novel._id}>
                 <div className='flex-1'>
-                  <img src={novel.cover_url} alt="" className='w-30 m-auto' />
+                  <img src={novel.bookImg.url ? novel.bookImg.url : novel.cover_url} alt="" className='w-30 m-auto' />
                 </div>
                 <div className='flex-4'>
                   <p onClick={() => handleClickOnNovel(novel._id)} className='text-lg md:text-xl font-bold text-green-500 text-center hover:underline cursor-pointer'>{novel.title}</p>

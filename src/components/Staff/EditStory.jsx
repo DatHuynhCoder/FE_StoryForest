@@ -93,26 +93,44 @@ const EditStory = () => {
   };
 
   const handleEditChapter = (chapter) => {
-    const chapterId = chapter.chapterid;
-    const chapterTitle = chapter.title;
-    navigate(`/staff/story-management/edit-chapter/${chapterTitle}/${chapterId}`);
+    if (story.type === 'manga') {
+      const chapterId = chapter.chapterid;
+      const chapterTitle = chapter.title ? chapter.title : "No Title";
+      navigate(`/staff/story-management/edit-chapter/${chapterTitle}/${chapterId}`);
+    }
+    else if (story.type === 'novel') {
+      const chapterId = chapter._id;
+      navigate(`/staff/story-management/edit-novel-chapter/${chapterId}`);
+    }
   };
 
   const handleDeleteChapter = async (chapterId) => {
     if (window.confirm("Are you sure you want to delete this chapter?")) {
-      try {
-        await apiAuth.delete(`/api/staff/chapter/${chapterId}`);
-        // Refresh chapters list after deletion
-        fetchChapters(story.mangaid, currentPage);
-      } catch (err) {
-        console.error('Error deleting chapter:', err);
+      if (story.type === 'manga') {
+        try {
+          await apiAuth.delete(`/api/staff/chapter/manga/${chapterId}`);
+          // Refresh chapters list after deletion
+          fetchChapters(story.mangaid, currentPage);
+        } catch (err) {
+          console.error('Error deleting chapter:', err);
+        }
+      } else if (story.type === 'novel') {
+        try {
+          await apiAuth.delete(`/api/staff/chapter/novel/${chapterId}`);
+          // Refresh chapters list after deletion
+          fetchNovelChapters(story._id, currentPage);
+        } catch (err) {
+          console.error('Error deleting chapter:', err);
+        }
       }
     }
   };
 
   const handleAddChapter = () => {
-    if(story.type === 'manga'){
+    if (story.type === 'manga') {
       navigate(`/staff/story-management/add-chapter/${story.mangaid}`);
+    } else if (story.type === 'novel') {
+      navigate(`/staff/story-management/add-novel-chapter/${story._id}`);
     }
   };
 
@@ -329,7 +347,7 @@ const EditStory = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Manga ID</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Manga/Novel ID</label>
                   <input
                     name="mangaid"
                     value={story.mangaid}
@@ -419,14 +437,14 @@ const EditStory = () => {
                                   <button
                                     type="button"
                                     onClick={() => handleEditChapter(chapter)}
-                                    className="text-teal-600 hover:text-teal-800"
+                                    className="text-teal-600 hover:text-teal-800 cursor-pointer"
                                   >
                                     Edit
                                   </button>
                                   <button
                                     type="button"
-                                    onClick={() => handleDeleteChapter(chapter.chapterid)}
-                                    className="text-red-600 hover:text-red-800"
+                                    onClick={() => handleDeleteChapter(chapter._id)}
+                                    className="text-red-600 hover:text-red-800 cursor-pointer"
                                   >
                                     Delete
                                   </button>
