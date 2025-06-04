@@ -14,7 +14,7 @@ import { FaArrowUp } from "react-icons/fa";
 // drawer
 import DragCloseDrawer from '../../components/DragCloseDrawer';
 //
-import { Rating, RatingStar } from "flowbite-react";
+import Rating from '@mui/material/Rating';
 import { Button, Drawer, DrawerHeader, DrawerItems } from "flowbite-react";
 import Switch from '@mui/material/Switch';
 import Box from '@mui/material/Box';
@@ -161,7 +161,15 @@ const NovelReader = () => {
       console.error("Error fetching comments:", error)
     }
   }
-
+  const [commentReadmoreIndex, setCommentReadmoreIndex] = useState(new Array(chaptercomments.length).fill(false))
+  const handleReadMore = (index) => {
+    const updatedReadmoreIndex = [...commentReadmoreIndex]
+    updatedReadmoreIndex[index] = !updatedReadmoreIndex[index]
+    setCommentReadmoreIndex(updatedReadmoreIndex)
+  }
+  // Rating
+  const [yourRate, setYourRate] = useState(5);
+  //
   const handleSendComment = () => {
     if (comment === '') {
       alert('Please enter a comment')
@@ -172,8 +180,8 @@ const NovelReader = () => {
       return
     }
     apiAuth.post(`/api/reader/review/create`, {
-      content: comment.slice(0, 40),
-      rating: 5, // temp
+      content: comment,
+      rating: yourRate, // temp
       chapternumber: chapternumber,
       chaptertitle: chaptertitle,
       chapterid: chapterid,
@@ -603,6 +611,14 @@ const NovelReader = () => {
                 placeholder='Write something ... (max 40 characters)'
                 onChange={(e) => setComment(e.target.value)}
               ></textarea>
+              <Rating
+                name="half-rating"
+                precision={0.5}
+                value={yourRate}
+                onChange={(event, newValue) => {
+                  setYourRate(newValue);
+                }}
+              />
               {/* <div>
                     <Rating>
                       <RatingStar />
@@ -614,18 +630,46 @@ const NovelReader = () => {
                   </div> */}
             </div>
             <div>
-              {chaptercomments.map((comment, index) => (
+              {chaptercomments.length > 0 ? chaptercomments.map((comment, index) => (
                 <div className='mt-3' key={index}>
                   <div className='w-[100%] border p-2 rounded-md mt-2'>
                     <div className='flex'>
                       <img src={comment.userid?.avatar?.url || defaultAvt} alt="avatar" className='w-10 h-10 rounded-full' />
                       <p className='ml-1 font-semibold text-black'>{comment.userid.username}</p>
                     </div>
-                    <p className='text-black w-[100%]'>{comment.content}</p>
+                    <p className='text-gray-500'>{comment.createdAt.slice(0, 10)}</p>
+                    <Rating
+                      name="read-only"
+                      precision={0.5}
+                      value={comment.rating}
+                      readOnly
+                    />
+                    <p className='text-black w-[100%]'
+                      style={commentReadmoreIndex[index] ? {} : {
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        display: '-webkit-box',
+                      }}
+                    >
+                      {comment.content}
+                    </p>
+                    <p><span className='underline hover:text-blue-500 cursor-pointer' onClick={() => handleReadMore(index)}>{commentReadmoreIndex[index] ? 'read less' : 'read more'}</span></p>
                   </div>
                 </div>
 
-              ))}
+              ))
+                :
+                <div className='mt-3'>
+                  <div className='w-[100%] border p-2 rounded-md mt-2'>
+                    <div className='flex'>
+                      <p className='ml-1 font-semibold text-black'></p>
+                    </div>
+                    <p className='text-gray-500'></p>
+                    <p className='text-black w-[100%]'>No comment in this chapter &#128534;. Will you be the first one ?</p>
+                  </div>
+                </div>
+              }
             </div>
           </DrawerItems>
         </Drawer>

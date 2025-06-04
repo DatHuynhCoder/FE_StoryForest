@@ -144,7 +144,7 @@ function NovelDetails() {
     }
   }
 
-  
+
   useEffect(() => {
     scrollToTop()
     setLoading(true)
@@ -252,7 +252,7 @@ function NovelDetails() {
               <FaHeart className="w-6 h-6" color='e03c3c' />
               <p className='font-semibold text-2xl'> &nbsp;{infoNovel.views} </p>
               <RiEyeFill className="w-6 h-6" color='blue' />
-              <p className='font-semibold text-2xl'> &nbsp;{infoNovel.rate} </p>
+              <p className='font-semibold text-2xl'> &nbsp;{infoNovel.rate.toFixed(2)} </p>
               <FaStar className="w-6 h-6" color='#dbb004' />
             </div>
 
