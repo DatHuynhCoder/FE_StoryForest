@@ -247,9 +247,9 @@ function BookDetails() {
               <p className='font-semibold text-2xl'> &nbsp;{infoManga.followers} </p>
               <FaHeart className="w-6 h-6" color='#e03c3c' />
               <p className='font-semibold text-2xl'> &nbsp;{infoManga.views} </p>
-              <RiEyeFill className="w-6 h-6" color='blue' />
+              <RiEyeFill className="w-6 h-6" color='blue'/>
               <p className='font-semibold text-2xl'> &nbsp;{infoManga.rate.toFixed(2)} </p>
-              <FaStar className="w-6 h-6" color='#dbb004' />
+              <FaStar className="w-6 h-6" color='#dbb004'/>
             </div>
 
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>

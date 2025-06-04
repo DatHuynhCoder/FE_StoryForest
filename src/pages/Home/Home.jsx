@@ -192,7 +192,7 @@ function Home() {
 											<div className="absolute inset-0 bg-gray-800 bg-opacity-70 rounded-md opacity-0 group-hover:opacity-80 transition-opacity duration-300 flex flex-col justify-center p-3 text-white">
 												<h3 className="font-bold text-sm mb-1">{item.title}</h3>
 												<p className="text-xs mb-1">Views: {item.views || "N/A"}</p>
-												<p className="text-xs mb-1">Rate: {item.rate || "N/A"} / 5</p>
+												<p className="text-xs mb-1">Rate: {item.rate.toFixed(2) || "N/A"} / 5</p>
 												<p className="text-xs line-clamp-3">{item.synopsis || "No description available"}</p>
 											</div>
 										</div>

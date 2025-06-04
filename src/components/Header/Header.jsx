@@ -236,7 +236,7 @@ const Header = () => {
                                     <b>RATE:</b>
                                     <span className="font-[1000]">
                                       {" "}
-                                      {result.rate}
+                                      {result.rate.toFixed(2)}
                                     </span>
                                   </p>
                                   <p className="text-right">

@@ -204,7 +204,7 @@ const ResultPage = () => {
                     <div className='flex-2'>
                       <p className='text-right'><span className='font-[1000]'>{manga.followers} </span><b>FOLLOWERS</b></p>
                       <p className='text-right'><span className='font-[1000]'>{manga.views} </span><b>VIEWS</b></p>
-                      <p className='text-right'><b>RATE:</b><span className='font-[1000]'> {manga.rate}</span></p>
+                      <p className='text-right'><b>RATE:</b><span className='font-[1000]'> {manga.rate.toFixed(2)}</span></p>
                     </div>
                   </div>
                 </div>
