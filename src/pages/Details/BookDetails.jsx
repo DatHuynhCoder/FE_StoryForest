@@ -245,7 +245,7 @@ function BookDetails() {
             </div>
             <div className='flex flex-row gap-3 items-center'>
               <p className='font-semibold text-2xl'> &nbsp;{infoManga.followers} </p>
-              <FaHeart className="w-6 h-6" color='#e03c3c'/>
+              <FaHeart className="w-6 h-6" color='#e03c3c' />
               <p className='font-semibold text-2xl'> &nbsp;{infoManga.views} </p>
               <RiEyeFill className="w-6 h-6" color='blue'/>
               <p className='font-semibold text-2xl'> &nbsp;{infoManga.rate.toFixed(2)} </p>

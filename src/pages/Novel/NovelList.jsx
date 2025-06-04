@@ -3,11 +3,15 @@ import { api, apiAuth } from '../../services/api'
 import Spinner from '../../components/Spinner'
 import { useNavigate } from 'react-router'
 import ReactPaginate from 'react-paginate'
+//icons
 import { RxRocket } from "react-icons/rx";
 import { MdSmartDisplay } from "react-icons/md";
 import { FaFlagCheckered, FaCrown } from "react-icons/fa";
 import { PiShootingStarFill } from "react-icons/pi";
 import { FiRefreshCw } from "react-icons/fi";
+import { FaHeart, FaStar } from "react-icons/fa6";
+import { RiEyeFill, RiHome4Fill } from "react-icons/ri";
+//
 import Tags from '../../components/Tags/Tags'
 import { useSelector } from 'react-redux'
 import scrollToTop from '../../utils/ScrollToTop'
@@ -164,9 +168,21 @@ function NovelList() {
                       ))}
                     </div>
                     <div className='flex-2'>
-                      <p className='text-right'><span className='font-[1000]'>{novel.followers}</span> <b>FOLLOWERS</b></p>
-                      <p className='text-right'><span className='font-[1000]'>{novel.views}</span> <b>VIEWS</b></p>
-                      <p className='text-right'><b>RATE:</b> <span className='font-[1000]'>{novel.rate.toFixed(2)}</span></p>
+                      <p className='text-right flex items-center justify-end'>
+                        <span className='font-[1000]'>{novel.followers} <b>FOLLOWERS</b></span>
+                        &nbsp;
+                        <span><FaHeart className="w-3 h-3 text-right" color='#e03c3c' /></span>
+                      </p>
+                      <p className='text-right flex items-center justify-end'>
+                        <span className='font-[1000]'>{novel.views} <b>VIEWS</b></span>
+                        &nbsp;
+                        <span><RiEyeFill className="w-3 h-3 text-right" color='blue' /></span>
+                      </p>
+                      <p className='text-right flex items-center justify-end'>
+                        <span className='font-[1000]'><b>RATE:</b> {novel.rate.toFixed(2)}</span>
+                        &nbsp;
+                        <span><FaStar className="w-3 h-3" color='#dbb004' /></span>
+                      </p>
                     </div>
                   </div>
                 </div>

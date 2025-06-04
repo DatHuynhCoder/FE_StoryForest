@@ -144,7 +144,7 @@ function NovelDetails() {
     }
   }
 
-  
+
   useEffect(() => {
     scrollToTop()
     setLoading(true)
