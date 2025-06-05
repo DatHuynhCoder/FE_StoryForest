@@ -13,21 +13,15 @@ import { FaCommentAlt } from "react-icons/fa";
 import { FaArrowUp } from "react-icons/fa";
 // drawer
 import DragCloseDrawer from '../../components/DragCloseDrawer';
-//
+// components
 import Rating from '@mui/material/Rating';
 import { Button, Drawer, DrawerHeader, DrawerItems } from "flowbite-react";
-import Switch from '@mui/material/Switch';
 import Box from '@mui/material/Box';
-import MaterialUIButton from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
 //user Redux to update user
 import { useSelector, useDispatch } from 'react-redux'
 import { updateUser } from '../../redux/userSlice.js'
@@ -36,6 +30,8 @@ import { useCookies } from 'react-cookie';
 // color picker
 import { HexColorPicker } from "react-colorful";
 import scrollToTop from '../../utils/ScrollToTop'
+// utils
+import { labels } from '../../utils/CommentLabels.js';
 
 // Hook for detecting when scrolled to specific position using Intersection Observer
 const useScrollPosition = (onReach = null) => {
@@ -73,6 +69,10 @@ const useScrollPosition = (onReach = null) => {
 
   return { hasReached, sentinelRef };
 };
+
+const getLabelText = (value) => {
+  return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
+}
 
 const NovelReader = () => {
   const navigate = useNavigate()

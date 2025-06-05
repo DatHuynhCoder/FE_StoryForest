@@ -13,7 +13,7 @@ import { FaArrowUp } from "react-icons/fa";
 import { FaPlayCircle } from "react-icons/fa";
 // drawer
 import DragCloseDrawer from '../../components/DragCloseDrawer.jsx'
-// select dialog
+// components
 import Rating from '@mui/material/Rating';
 import { Button, Drawer, DrawerHeader, DrawerItems } from "flowbite-react";
 import Switch from '@mui/material/Switch';
@@ -35,6 +35,9 @@ import { updateUser } from '../../redux/userSlice.js'
 import { useCookies } from 'react-cookie';
 // color picker
 import { HexColorPicker } from "react-colorful";
+// utils
+import scrollToTop from '../../utils/ScrollToTop.js'
+import { labels } from '../../utils/CommentLabels.js'
 
 // Hook for detecting when scrolled to specific position using Intersection Observer
 const useScrollPosition = (onReach = null) => {
@@ -72,6 +75,10 @@ const useScrollPosition = (onReach = null) => {
 
   return { hasReached, sentinelRef };
 };
+
+const getLabelText = (value) => {
+  return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
+}
 
 const MangaReader = () => {
   const navigate = useNavigate()
@@ -221,10 +228,6 @@ const MangaReader = () => {
     })
   }
   //
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
 
   const handleNextChapter = () => {
     const currentIndex = chapters.findIndex((chapter) => chapter.chapterid === chapterid)
@@ -409,6 +412,7 @@ const MangaReader = () => {
                     onChange={(event, newValue) => {
                       setYourRate(newValue);
                     }}
+                    size='large'
                   />
                 </>
                 : <p className='w-[100%]'>Please <Link to="/login" className='text-green-500'>login </Link>to comment</p>}
@@ -435,6 +439,7 @@ const MangaReader = () => {
                       name="read-only"
                       precision={0.5}
                       value={comment.rating}
+                      size='small'
                       readOnly
                     />
                     <p className='text-black w-[100%] text-justify'
