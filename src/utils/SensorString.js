@@ -2,7 +2,16 @@ export const badWords = [
   "fuck",
   "nigga",
   "shit",
-  "bitch"
+  "bitch",
+  "cunk",
+  "cunt",
+  "whore",
+  "nigger",
+  "ass",
+  "pussy",
+  "dick",
+  "slut",
+  "cock"
 ]
 export const censorString = (input, badWords) => {
   const regex = new RegExp(`(${badWords.join('|')})`, 'gi');
