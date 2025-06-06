@@ -1,8 +1,8 @@
 export const labels = {
-  0.5: 'Useless',
-  1: 'Useless+',
-  1.5: 'Poor',
-  2: 'Poor+',
+  0.5: 'Verybad',
+  1: 'Verybad+',
+  1.5: 'Bad',
+  2: 'Bad+',
   2.5: 'Ok',
   3: 'Ok+',
   3.5: 'Good',
