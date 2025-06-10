@@ -54,6 +54,7 @@ import Result from "./pages/SearchResult/Result.jsx";
 // Payment
 import Success from "./pages/Payment/Success.jsx";
 import Cancel from "./pages/Payment/Cancel.jsx";
+import PaymentOption from "./pages/Payment/PaymentOption.jsx";
 import AdvancedSearch from "./components/AdvancedSearch/AdvancedSearch.jsx";
 
 function App() {
@@ -108,6 +109,7 @@ function App() {
         </Route>
         <Route path="/payment/success" element={<Success />} />
         <Route path="/payment/cancel" element={<Cancel />} />
+        <Route path="/paymentoption" element={<PaymentOption />} />
 
       </Routes>
 
