@@ -36,7 +36,7 @@ const DailyCheckIn = ({ streak = 0, isCheckin = true, handleCheckin, role = 'use
           {/* Status message when check in */}
           {isCheckin && (
             <div className="mb-4 text-center py-2 px-4 bg-indigo-800/30 rounded-lg text-indigo-100">
-              Check-in complete! See you tomorrow!
+              Check-in completed! See you tomorrow!
             </div>
           )}
 

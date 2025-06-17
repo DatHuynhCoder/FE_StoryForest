@@ -1,66 +1,75 @@
 import { FiEdit, FiChevronDown, FiSearch, FiChevronLeft, FiChevronRight, FiCheck, FiX } from "react-icons/fi";
-import { useState } from "react";
-
-// More realistic mock data with varied statuses
-const generateMockApplications = () => {
-  const names = [
-    "Nguyễn Văn A", "Trần Thị B", "Lê Văn C", "Phạm Thị D", 
-    "Hoàng Văn E", "Vũ Thị F", "Đặng Văn G", "Bùi Thị H",
-    "Ngô Văn I", "Dương Thị K", "Mai Văn L", "Lý Thị M", "Chu Văn N"
-  ];
-  
-  const statuses = ["Chờ duyệt", "Đã duyệt", "Từ chối"];
-  
-  return names.map((name, index) => ({
-    id: index + 1,
-    name: name,
-    email: name.toLowerCase().replace(/\s/g, '') + "@example.com",
-    date: `2025-0${Math.floor(Math.random() * 3) + 4}-${Math.floor(Math.random() * 28) + 1}`.padStart(2, '0'),
-    status: statuses[Math.floor(Math.random() * statuses.length)],
-    avatar: `https://i.pravatar.cc/40?img=${index + 10}`,
-    phone: `09${Math.floor(Math.random() * 90000000) + 10000000}`,
-    package: ["VIP 1 tháng", "VIP 3 tháng", "VIP 6 tháng"][Math.floor(Math.random() * 3)]
-  }));
-};
-
-const applications = generateMockApplications();
+import { useEffect, useState } from "react";
+import { set } from "date-fns";
+import axios from "axios";
+import { apiAuth } from "../../services/api";
 
 const getStatusColor = (status) => {
   switch (status) {
-    case "Chờ duyệt":
-      return "bg-yellow-100 text-yellow-800";
-    case "Đã duyệt":
+    case true:
       return "bg-green-100 text-green-800";
-    case "Từ chối":
+    case false:
       return "bg-red-100 text-red-800";
     default:
       return "";
   }
 };
 
+// Format date
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
 const VipManagement = () => {
+  const [vipReaders, setVipReaders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-  const [selectedStatus, setSelectedStatus] = useState("Tất cả");
+  const [selectedStatus, setSelectedStatus] = useState("All");
   const [editingId, setEditingId] = useState(null);
   const itemsPerPage = 10;
-  
+
+  //fetchVipReaders
+  const fetchVipReaders = async () => {
+    try {
+      const response = await apiAuth.get("/api/staff/vipcontrol");
+      console.log(response.data.data);
+      setVipReaders(response.data.data);
+    } catch (error) {
+      console.error("Error fetching VIP readers:", error);
+    }
+  }
+
+  // Call fetchVipReaders
+  useEffect(() => {
+    fetchVipReaders();
+  }, []);
+
   // Filter and sort logic
-  const filteredApps = applications.filter(app => {
-    const matchesSearch = app.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         app.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         app.phone.includes(searchTerm);
-    const matchesStatus = selectedStatus === "Tất cả" || app.status === selectedStatus;
+  const filteredApps = vipReaders.filter(reader => {
+    const matchesSearch = reader.userid.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reader.userid.email.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesStatus = selectedStatus === "All" ||
+      (selectedStatus === "Active" && reader.isActive === true) ||
+      (selectedStatus === "InActived" && reader.isActive === false);
+
     return matchesSearch && matchesStatus;
   });
-  
+
   const sortedApps = [...filteredApps].sort((a, b) => {
-    if (sortBy === "newest") return new Date(b.date) - new Date(a.date);
-    if (sortBy === "oldest") return new Date(a.date) - new Date(b.date);
+    if (sortBy === "newest") return new Date(b.startDate) - new Date(a.startDate);
+    if (sortBy === "oldest") return new Date(a.startDate) - new Date(b.startDate);
     return 0;
   });
-  
+
+
   const totalPages = Math.ceil(sortedApps.length / itemsPerPage);
   const displayedApps = sortedApps.slice(
     (currentPage - 1) * itemsPerPage,
@@ -68,7 +77,7 @@ const VipManagement = () => {
   );
 
   // Status options for filter
-  const statusOptions = ["Tất cả", "Chờ duyệt", "Đã duyệt", "Từ chối"];
+  const statusOptions = ["All", "InActived", "Active"];
 
   // Handle status change
   const handleStatusChange = (id, newStatus) => {
@@ -85,19 +94,19 @@ const VipManagement = () => {
       {/* Header with title and controls */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-gray-800">Quản lý đăng ký VIP</h1>
+          <h1 className="text-xl font-semibold text-gray-800">VIP Management</h1>
           <p className="text-sm text-gray-600 mt-1">
-            Tổng số đơn đăng ký: <span className="font-medium text-teal-700">{filteredApps.length}</span>
+            All VIP subcriptions: <span className="font-medium text-teal-700">{filteredApps.length}</span>
           </p>
         </div>
-        
+
         <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
           {/* Search */}
           <div className="relative">
             <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Tìm kiếm..."
+              placeholder="Search..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -106,7 +115,7 @@ const VipManagement = () => {
               className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 w-full"
             />
           </div>
-          
+
           {/* Status filter */}
           <div className="relative">
             <select
@@ -132,75 +141,71 @@ const VipManagement = () => {
           <thead className="bg-gray-50">
             <tr>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Người dùng
+                VIP Reader
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
-                Thông tin
+                Infomation
               </th>
               <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Gói VIP
+                VIP Package
               </th>
               <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Trạng thái
+                Status
               </th>
               <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Thao tác
+                Action
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {displayedApps.length > 0 ? (
               displayedApps.map((app) => (
-                <tr key={app.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={app._id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10">
-                        <img className="h-10 w-10 rounded-full" src={app.avatar} alt={app.name} />
+                        {/* If there 's an avatar, show it, otherwise show a first letter of the name */}
+                        {app.userid.avatar ?
+                          <img className="h-10 w-10 rounded-full" src={app.userid.avatar?.url} alt={app.userid.username} />
+                          : <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">{app.userid.username[0]} </div>
+                        }
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{app.name}</div>
-                        <div className="text-sm text-gray-500 sm:hidden">{app.email}</div>
+                        <div className="text-sm font-medium text-gray-900">{app.userid.name}</div>
+                        <div className="text-sm text-gray-500">{app.userid.username}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
-                    <div className="text-sm text-gray-900">{app.email}</div>
-                    <div className="text-sm text-gray-500">{app.phone}</div>
+                    <div className="text-sm text-gray-900">{app.userid.email}</div>
+                    <div className="text-sm text-gray-500">{app.userid?.phone}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
-                    {app.package}
+                    <div className="text-sm text-gray-900">{app.name}</div>
+                    <div className="text-sm text-gray-500">Start: {formatDate(app.startDate)}</div>
+                    <div className="text-sm text-gray-500">End: {formatDate(app.endDate)}</div>
+                    <div className="text-md font-bold text-amber-700">Price: {app.price} VND</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    {editingId === app.id ? (
+                    {editingId === app._id ? (
                       <div className="flex justify-center space-x-2">
                         <button
-                          onClick={() => handleStatusChange(app.id, "Đã duyệt")}
+                          onClick={() => handleStatusChange(app._id, true)}
                           className="px-2 py-1 bg-green-100 text-green-800 rounded-md hover:bg-green-200 transition-colors"
                         >
-                          <FiCheck className="inline mr-1" /> Duyệt
+                          <FiCheck className="inline mr-1" /> Active
                         </button>
                         <button
-                          onClick={() => handleStatusChange(app.id, "Từ chối")}
+                          onClick={() => handleStatusChange(app._id, false)}
                           className="px-2 py-1 bg-red-100 text-red-800 rounded-md hover:bg-red-200 transition-colors"
                         >
-                          <FiX className="inline mr-1" /> Từ chối
+                          <FiX className="inline mr-1" /> InActived
                         </button>
                       </div>
                     ) : (
-                      <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(app.status)}`}>
-                        {app.status}
+                      <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(app.isActive)}`}>
+                        {app.isActive ? "Active" : "InActived"}
                       </span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                    {app.status === "Chờ duyệt" && (
-                      <button 
-                        onClick={() => setEditingId(app.id)}
-                        className="text-teal-600 hover:text-teal-900 mr-3"
-                        disabled={editingId !== null && editingId !== app.id}
-                      >
-                        <FiEdit className="w-5 h-5" />
-                      </button>
                     )}
                   </td>
                 </tr>
@@ -208,7 +213,7 @@ const VipManagement = () => {
             ) : (
               <tr>
                 <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
-                  Không tìm thấy kết quả phù hợp
+                  Cannot find any VIP Reader with this search term.
                 </td>
               </tr>
             )}
@@ -220,11 +225,11 @@ const VipManagement = () => {
       {filteredApps.length > 0 && (
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-sm text-gray-700">
-            Hiển thị <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> đến{' '}
-            <span className="font-medium">{Math.min(currentPage * itemsPerPage, filteredApps.length)}</span> trong số{' '}
-            <span className="font-medium">{filteredApps.length}</span> kết quả
+            Show <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> to{' '}
+            <span className="font-medium">{Math.min(currentPage * itemsPerPage, filteredApps.length)}</span> in{' '}
+            <span className="font-medium">{filteredApps.length}</span> Result
           </div>
-          
+
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
@@ -233,7 +238,7 @@ const VipManagement = () => {
             >
               <FiChevronLeft className="w-5 h-5" />
             </button>
-            
+
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               // Show first pages, current page with neighbors, or last pages
               let pageNum;
@@ -246,7 +251,7 @@ const VipManagement = () => {
               } else {
                 pageNum = currentPage - 2 + i;
               }
-              
+
               return (
                 <button
                   key={pageNum}
@@ -257,11 +262,11 @@ const VipManagement = () => {
                 </button>
               );
             })}
-            
+
             {totalPages > 5 && currentPage < totalPages - 2 && (
               <span className="px-2 text-gray-500">...</span>
             )}
-            
+
             {totalPages > 5 && currentPage < totalPages - 2 && (
               <button
                 onClick={() => setCurrentPage(totalPages)}
@@ -270,7 +275,7 @@ const VipManagement = () => {
                 {totalPages}
               </button>
             )}
-            
+
             <button
               onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
               disabled={currentPage === totalPages}
