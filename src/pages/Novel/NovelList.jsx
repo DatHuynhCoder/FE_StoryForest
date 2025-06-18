@@ -137,9 +137,10 @@ function NovelList() {
 
   // Handle upgrade vip
   const handleUpgradeVip = () => {
-    apiAuth.post('/api/reader/payment/create-payment-link').then(res => {
-      window.location.href = res.data.url;
-    })
+    navigate('/paymentoption')
+    // apiAuth.post('/api/reader/payment/create-payment-link').then(res => {
+    //   window.location.href = res.data.url;
+    // })
   }
 
   if (loading) return <Spinner />

@@ -1,16 +1,61 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router';
+import { xorDecrypt } from '../../utils/XORDecrypt.js';
+import { apiAuth } from '../../services/api.js';
+import moment from 'moment/moment.js';
 
-function Cancel() {
+const Cancel = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
+
+  // const userid = xorDecrypt(queryParams.get('userid'), "__storyforest__");
+  // const name = queryParams.get('name');
+  // const duration = queryParams.get('duration');
+  // const price = queryParams.get('price');
 
   const code = queryParams.get('code');
   const id = queryParams.get('id');
   const cancel = queryParams.get('cancel');
   const status = queryParams.get('status');
   const orderCode = queryParams.get('orderCode');
+  // const onUpgradeVip = () => {
+  //   apiAuth.patch('/api/reader/account/upgrade').then(res => {
+  //     if (res.data.success === true) {
+  //       //update user role in redux
+  //       dispatch(updateUser(res.data.data))
+  //       alert('Now, you are a VIP !')
+  //     }
+  //     else {
+  //       alert('Some errors occur :(')
+  //     }
+  //   })
+  // }
+  // const onCreateVIPSubscription = () => {
+  //   apiAuth.post('/api/vipreader/vipmanagement', {
+  //     userid: userid,
+  //     name: name,
+  //     price: Number(price),
+  //     endDate: moment().add(duration, 'months').valueOf(),
+  //     duration: Number(duration) * 30
+  //   }).then(res => {
 
+  //   })
+  // }
+  // useEffect(() => {
+  //   // onCreateVIPSubscription()
+  //   console.log("userid: ", userid)
+  //   console.log("code: ", code)
+  //   console.log("id: ", id)
+  //   console.log("cancel: ", cancel)
+  //   console.log("status: ", status)
+  //   console.log("orderCode: ", orderCode)
+
+  //   console.log("name: ", name)
+  //   console.log("duration: ", Number(duration) * 30)
+  //   console.log("price: ", Number(price))
+
+  //   console.log("enddate: ", moment().add(3, 'months').valueOf())
+  // }, [])
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-red-50 px-4">
       <div className="bg-white shadow-xl rounded-2xl p-8 max-w-lg w-full text-center">
