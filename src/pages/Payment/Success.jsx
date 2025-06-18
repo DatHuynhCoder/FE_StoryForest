@@ -3,19 +3,24 @@ import { useLocation } from 'react-router'
 import { apiAuth } from '../../services/api';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../../redux/userSlice';
+import { xorDecrypt } from '../../utils/XORDecrypt.js';
+import { getNextXMonthDate } from '../../utils/Time.js';
 
-function Success() {
+const Success = () => {
   const dispatch = useDispatch();
   const location = useLocation(); // Get the current location object
   const queryParams = new URLSearchParams(location.search); // Parse the query string
-  // http://localhost:5173/payment/success?userid=680b0317446eb05ee1287838&code=00&id=8d3dd43cdfed45ad991b7fc00f12c523&cancel=false&status=PAID&orderCode=174646546908525
+  // http://localhost:5173/payment/success?userid=680b0317446eb05ee1287838&name=1_month&duration=1&price=50000&code=00&id=8d3dd43cdfed45ad991b7fc00f12c523&cancel=false&status=PAID&orderCode=174646546908525
   const userid = queryParams.get('userid');
+  const name = queryParams.get('name');
+  const duration = queryParams.get('duration');
+  const price = queryParams.get('price');
   const code = queryParams.get('code');
   const id = queryParams.get('id');
   const cancel = queryParams.get('cancel'); // false
   const status = queryParams.get('status'); // PAID
   const orderCode = queryParams.get('orderCode');
-  useEffect(() => {
+  const onUpgradeVip = () => {
     apiAuth.patch('/api/reader/account/upgrade').then(res => {
       if (res.data.success === true) {
         //update user role in redux
@@ -26,6 +31,47 @@ function Success() {
         alert('Some errors occur :(')
       }
     })
+  }
+  const onUpgradeVip2 = () => {
+    apiAuth.post('/api/vipreader/vipmanagement', {
+      userid: userid,
+      name: name,
+      price: Number(price),
+      endDate: "2025-11-06T00:00:00.000Z",
+      duration: 90
+    }).then(res => {
+
+    })
+  }
+  useEffect(() => {
+    console.log("userid: ", userid)
+    console.log("code: ", code)
+    console.log("id: ", id)
+    console.log("cancel: ", cancel)
+    console.log("status: ", status)
+    console.log("orderCode: ", orderCode)
+
+    console.log("name: ", name)
+    console.log("duration: ", Number(duration) * 30)
+    console.log("price: ", Number(price))
+
+    // onUpgradeVip()
+    // call api for vip subscription
+    /**const { userid, name, price, endDate, duration } = req.body;
+     * 
+     * {
+        "userid":"680e3b6e1a678f70c566b964", => ok
+        "name":"Gói 3 tháng", => not ok
+        "price": 5000, => not ok
+        "endDate":"2025-11-06T00:00:00.000Z", => not ok
+        "duration":90 => not ok
+        }
+     * apiAuth.post('/api/vipreader/vipmanagement', {
+     * userid, name, price, endDate, duration
+     * }).then(res => {
+     * 
+     * })
+     */
   }, [])
   return (
     <>
