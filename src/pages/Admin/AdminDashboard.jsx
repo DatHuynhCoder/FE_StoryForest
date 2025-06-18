@@ -90,7 +90,7 @@ const AdminDashboard = () => {
           <h3 className="text-3xl font-bold mb-2">
             {stats.data.totalIncome}
           </h3>
-          <p className="text-gray-500">Total income</p>
+          <p className="text-gray-500">Total income (VND)</p>
         </div>
       </div>
 
