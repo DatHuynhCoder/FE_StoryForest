@@ -1,4 +1,5 @@
 import { FiEdit, FiChevronDown, FiSearch, FiChevronLeft, FiChevronRight, FiCheck, FiX } from "react-icons/fi";
+import { FaExchangeAlt } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { set } from "date-fns";
 import axios from "axios";
@@ -80,13 +81,21 @@ const VipManagement = () => {
   const statusOptions = ["All", "InActived", "Active"];
 
   // Handle status change
-  const handleStatusChange = (id, newStatus) => {
-    const appIndex = applications.findIndex(app => app.id === id);
-    if (appIndex !== -1) {
-      applications[appIndex].status = newStatus;
+  const handleStatusChange = async (userid) => {
+    try {
+      //call API to update status
+      const response = await apiAuth.patch(`/api/staff/vipcontrol/${userid}`);
+      if (response.data.success) {
+        // Update local state
+        setVipReaders(prevReaders => 
+          prevReaders.map(reader => 
+            reader.userid._id === userid ? { ...reader, isActive: !reader.isActive } : reader
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
     }
-    setEditingId(null);
-    // In a real app, you would also update the backend here
   };
 
   return (
@@ -207,6 +216,15 @@ const VipManagement = () => {
                         {app.isActive ? "Active" : "InActived"}
                       </span>
                     )}
+                  </td>
+
+                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <button
+                      onClick={() => handleStatusChange(app.userid._id)}
+                      className="text-teal-600 hover:text-teal-900 focus:outline-none cursor-pointer"
+                    >
+                      <FaExchangeAlt className="w-5 h-5" />
+                    </button>
                   </td>
                 </tr>
               ))
