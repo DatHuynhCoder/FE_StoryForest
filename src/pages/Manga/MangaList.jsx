@@ -19,7 +19,7 @@ import Tags from '../../components/Tags/Tags'
 import { useSelector } from 'react-redux'
 import scrollToTop from '../../utils/ScrollToTop'
 
-function MangaList() {
+const MangaList = () => {
   scrollToTop()
   const navigate = useNavigate();
   const [listManga, setListManga] = useState([{
@@ -166,9 +166,10 @@ function MangaList() {
 
   // Handle upgrade vip
   const handleUpgradeVip = () => {
-    apiAuth.post('/api/reader/payment/create-payment-link').then(res => {
-      window.location.href = res.data.url;
-    })
+    navigate('/paymentoption')
+    // apiAuth.post('/api/reader/payment/create-payment-link').then(res => {
+    //   window.location.href = res.data.url;
+    // })
   }
 
   if (loading) return <Spinner />
