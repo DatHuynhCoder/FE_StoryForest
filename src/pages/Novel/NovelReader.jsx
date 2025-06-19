@@ -11,23 +11,18 @@ import { MdNavigateNext } from "react-icons/md";
 import { MdNavigateBefore } from "react-icons/md";
 import { FaCommentAlt } from "react-icons/fa";
 import { FaArrowUp } from "react-icons/fa";
+import StarIcon from '@mui/icons-material/Star';
 // drawer
 import DragCloseDrawer from '../../components/DragCloseDrawer';
-//
-import { Rating, RatingStar } from "flowbite-react";
+// components
+import Rating from '@mui/material/Rating';
 import { Button, Drawer, DrawerHeader, DrawerItems } from "flowbite-react";
-import Switch from '@mui/material/Switch';
 import Box from '@mui/material/Box';
-import MaterialUIButton from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
 //user Redux to update user
 import { useSelector, useDispatch } from 'react-redux'
 import { updateUser } from '../../redux/userSlice.js'
@@ -36,6 +31,8 @@ import { useCookies } from 'react-cookie';
 // color picker
 import { HexColorPicker } from "react-colorful";
 import scrollToTop from '../../utils/ScrollToTop'
+// utils
+import { labels } from '../../utils/CommentLabels.js';
 
 // Hook for detecting when scrolled to specific position using Intersection Observer
 const useScrollPosition = (onReach = null) => {
@@ -73,6 +70,10 @@ const useScrollPosition = (onReach = null) => {
 
   return { hasReached, sentinelRef };
 };
+
+const getLabelText = (value) => {
+  return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
+}
 
 const NovelReader = () => {
   const navigate = useNavigate()
@@ -156,12 +157,21 @@ const NovelReader = () => {
     try {
       const response = await api.get(`/api/reader/review/chapter/${chapterid}`)
       // console.log("check comments: ", response.data.data)
-      setChaptercomments(response.data.data)
+      setChaptercomments(response.data.data.reverse())
     } catch (error) {
       console.error("Error fetching comments:", error)
     }
   }
-
+  const [commentReadmoreIndex, setCommentReadmoreIndex] = useState(new Array(chaptercomments.length).fill(false))
+  const handleReadMore = (index) => {
+    const updatedReadmoreIndex = [...commentReadmoreIndex]
+    updatedReadmoreIndex[index] = !updatedReadmoreIndex[index]
+    setCommentReadmoreIndex(updatedReadmoreIndex)
+  }
+  // Rating
+  const [yourRate, setYourRate] = useState(5);
+  const [rateHover, setRateHover] = useState(-1);
+  //
   const handleSendComment = () => {
     if (comment === '') {
       alert('Please enter a comment')
@@ -171,9 +181,10 @@ const NovelReader = () => {
       alert('Please login to comment')
       return
     }
+    setLoading(true)
     apiAuth.post(`/api/reader/review/create`, {
-      content: comment.slice(0, 40),
-      rating: 5, // temp
+      content: comment,
+      rating: yourRate, // temp
       chapternumber: chapternumber,
       chaptertitle: chaptertitle,
       chapterid: chapterid,
@@ -187,9 +198,30 @@ const NovelReader = () => {
         dispatch(updateUser(res.data.user));
         fetchCommentByChapterId()
       }
+    }).catch(err => {
+      console.log(err)
+    }).finally(() => {
+      setLoading(false)
     })
   }
-
+  const handleDeleteReview = (reviewid) => {
+    setLoading(true)
+    apiAuth.delete(`/api/reader/review/${reviewid}`)
+      .then(res => {
+        if (res.data.success === true) {
+          alert(res.data.message)
+        }
+        else {
+          alert("Error: " + res.data.message)
+        }
+      })
+      .catch(err => console.log(err))
+      .finally(() => {
+        fetchCommentByChapterId()
+        setLoading(false)
+      })
+  }
+  //
   const [openChapterDrawer, setOpenChapterDrawer] = useState(false)
 
   const [loading, setLoading] = useState(true)
@@ -603,29 +635,86 @@ const NovelReader = () => {
                 placeholder='Write something ... (max 40 characters)'
                 onChange={(e) => setComment(e.target.value)}
               ></textarea>
-              {/* <div>
-                    <Rating>
-                      <RatingStar />
-                      <RatingStar />
-                      <RatingStar />
-                      <RatingStar />
-                      <RatingStar filled={false} />
-                    </Rating>
-                  </div> */}
+              <Box sx={{ width: 200, display: 'flex', alignItems: 'center' }}>
+                <Rating
+                  name="half-rating"
+                  precision={0.5}
+                  value={yourRate}
+                  onChange={(event, newValue) => {
+                    setYourRate(newValue);
+                  }}
+                  onChangeActive={(event, newHover) => {
+                    setRateHover(newHover);
+                  }}
+                  size='large'
+                  emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+                />
+                {yourRate !== null && (
+                  <Box sx={{ ml: 2 }}>{labels[rateHover !== -1 ? rateHover : yourRate]}</Box>
+                )}
+              </Box>
             </div>
             <div>
-              {chaptercomments.map((comment, index) => (
+              {chaptercomments.length > 0 ? chaptercomments.map((comment, index) => (
                 <div className='mt-3' key={index}>
                   <div className='w-[100%] border p-2 rounded-md mt-2'>
-                    <div className='flex'>
+                    <div className='flex items-center'>
                       <img src={comment.userid?.avatar?.url || defaultAvt} alt="avatar" className='w-10 h-10 rounded-full' />
-                      <p className='ml-1 font-semibold text-black'>{comment.userid.username}</p>
+                      <p className='ml-1 font-semibold text-black flex-5 items-center'>
+                        <span>{comment.userid.username}</span>
+                        <span className='border border-[#b3b304] rounded-md px-3 text-[10px] ml-2'>
+                          <span>Level </span>
+                          &nbsp;
+                          <span>{comment.userid?.level}</span>
+                        </span>
+                      </p>
                     </div>
-                    <p className='text-black w-[100%]'>{comment.content}</p>
+                    <p className='text-gray-500'>{comment.createdAt.slice(0, 10)}</p>
+                    <div className='flex items-center'>
+                      <Rating
+                        name="read-only"
+                        precision={0.5}
+                        value={comment.rating}
+                        size='small'
+                        readOnly
+                      />
+                      {comment.rating !== null && (
+                        <Box sx={{ ml: 2 }}>{labels[comment.rating]}</Box>
+                      )}
+                    </div>
+                    <p className='text-black w-[100%]'
+                      style={commentReadmoreIndex[index] ? {} : {
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        display: '-webkit-box',
+                      }}
+                    >
+                      {comment.content}
+                    </p>
+                    <p><span className='underline hover:text-blue-500 cursor-pointer' onClick={() => handleReadMore(index)}>{commentReadmoreIndex[index] ? 'read less' : 'read more'}</span></p>
+                    <p className='flex justify-end'>
+                      {user._id === comment.userid?._id &&
+                        <Button onClick={() => handleDeleteReview(comment._id)} className="!w-20 !h-10 !bg-red-500 cursor-pointer">
+                          Delete
+                        </Button>
+                      }
+                    </p>
                   </div>
                 </div>
 
-              ))}
+              ))
+                :
+                <div className='mt-3'>
+                  <div className='w-[100%] border p-2 rounded-md mt-2'>
+                    <div className='flex'>
+                      <p className='ml-1 font-semibold text-black'></p>
+                    </div>
+                    <p className='text-gray-500'></p>
+                    <p className='text-black w-[100%]'>No comment in this chapter &#128534;. Will you be the first one ?</p>
+                  </div>
+                </div>
+              }
             </div>
           </DrawerItems>
         </Drawer>

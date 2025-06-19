@@ -48,19 +48,16 @@ In Frontend directory:
 npm install
 npm run dev
 ```
+## ENV file
+Please Download ENV file Here:
+- [ENV Files](https://drive.google.com/file/d/11FY3iYbG9YoOETUFgxyUYYYFIjjY_mse/view?usp=sharing)
 
 ## Environment Variables
 Create a `.env` file in the backend directory with the following variables:
 ```
-PORT=
-MONGO_URI=
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
-JWT_SECRET=
-JWT_REFRESH_SECRET=
-JWT_EXPIRES_IN=
-JWT_REFRESH_EXPIRES_IN=
+VITE_API_URL=
+REACT_GG_CLIENT_ID=
+REACT_GG_CLIENT_SECRET=
 ```
 
 ## Usage

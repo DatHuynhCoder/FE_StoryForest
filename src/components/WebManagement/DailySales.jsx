@@ -2,25 +2,22 @@ import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { api } from '../../services/api';
+import { api, apiAuth } from '../../services/api';
 
 const DailySales = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   const [chartData, setChartData] = useState({ days: [], values: [] });
   const [loading, setLoading] = useState(true);
 
-  /*
   const fetchSalesDataForMonth = async (month) => {
     try {
       setLoading(true);
       const year = month.getFullYear();
       const monthNumber = month.getMonth() + 1;
-      
-      
-      const response = await api.get(`/api/admin/sales/daily-stats?year=${year}&month=${monthNumber}`);
-      
-      console.log(`Sales data year=${year}&month=${monthNumber}`, response.data);
-      
+    
+      const response = await apiAuth.get(`/api/admin/dashboard/daily-stats?year=${year}&month=${monthNumber}`);
+    
+      console.log(`Daily sales year=${year}&month=${monthNumber} `, response.data)
       if (!response.data.success || !Array.isArray(response.data.data)) {
         throw new Error('Invalid data format');
       }
@@ -29,10 +26,10 @@ const DailySales = () => {
       const dailySales = Array(daysInMonth).fill(0);
 
       response.data.data.forEach(item => {
-        if (item && typeof item.day === 'number' && typeof item.amount === 'number') {
+        if (item && typeof item.day === 'number' && typeof item.totalIncome === 'number') {
           const dayIndex = item.day - 1;
           if (dayIndex >= 0 && dayIndex < daysInMonth) {
-            dailySales[dayIndex] = item.amount;
+            dailySales[dayIndex] = item.totalIncome;
           }
         }
       });
@@ -52,7 +49,6 @@ const DailySales = () => {
       setLoading(false);
     }
   };
-  */
  
   useEffect(() => {
     const loadData = async () => {
@@ -151,7 +147,7 @@ const DailySales = () => {
         }
       },
       y: {
-        formatter: (val) => `$${val.toFixed(2)}`,
+        formatter: (val) => `${val} VND`,
       },
     },
   };

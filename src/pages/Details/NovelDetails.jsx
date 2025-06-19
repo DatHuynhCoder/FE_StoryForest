@@ -3,18 +3,22 @@ import { useParams, useNavigate } from 'react-router'
 import { api, apiAuth } from '../../services/api'
 import Spinner from '../../components/Spinner'
 import processing2 from '../../assets/processing2.gif'
+// icons
 import { RiEyeFill, RiHome4Fill } from "react-icons/ri";
 import { FaHeart, FaStar } from "react-icons/fa6";
+import ImportContactsIcon from '@mui/icons-material/ImportContacts';
 //use redux to update user
 import { useSelector, useDispatch } from 'react-redux'
 import { updateUser } from '../../redux/userSlice'
-
+// components
 import { toast } from 'react-toastify'
+import Rating from '@mui/material/Rating';
+// assets
 import defaultAvt from '../../assets/default_avatar.jpg'
 import processingGif from '../../assets/processing.gif'
 import scrollToTop from '../../utils/ScrollToTop'
 
-function NovelDetails() {
+const NovelDetails = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
   //get user from redux store
@@ -101,6 +105,7 @@ function NovelDetails() {
     // Check if user is logged in
     if (!user) {
       toast.error("Login to be able to add favorite")
+      setButtonLoading(false)
       return
     }
 
@@ -144,7 +149,7 @@ function NovelDetails() {
     }
   }
 
-  
+
   useEffect(() => {
     scrollToTop()
     setLoading(true)
@@ -203,15 +208,22 @@ function NovelDetails() {
 
   return (
     <>
-      <div className='border w-full h-64 absolute z-10 bg-cover bg-center filter blur-md'
-        style={{ backgroundImage: 'url(' + infoNovel?.bookImg?.url + ')' }}>
+      <div className="absolute w-full md:h-84 h-64 overflow-hidden z-10">
+        <div
+          className="absolute inset-0 bg-cover bg-center blur-xs scale-110"
+          style={{
+            backgroundImage: `url(${infoNovel?.bookImg.url})`,
+            backgroundPosition: 'center 25%',
+            zIndex: -1
+          }}
+        ></div>
       </div>
 
       <div className='flex flex-col md:flex-row relative z-20'>
         <div className='pt-8 md:pt-20 px-4 md:pl-20 flex justify-center md:justify-start'>
           <img
-            src={infoNovel.bookImg.url || processingGif}
-            alt={infoNovel.title}
+            src={infoNovel?.bookImg.url || processingGif}
+            alt={infoNovel?.title}
             loading='lazy'
             className='w-48 h-64 md:w-60 md:h-72 object-cover shadow-lg'
             style={{ boxShadow: '3px 3px' }}
@@ -220,10 +232,10 @@ function NovelDetails() {
 
         <div className='flex flex-col justify-between w-full'>
           <div className='pt-4 md:pt-20 px-4 md:pl-10 text-center md:text-left'>
-            <p className='text-3xl md:text-5xl font-bold text-black md:text-black md:hidden'>{infoNovel.title}</p>
+            <p className='text-3xl md:text-5xl font-bold text-black md:text-black md:hidden'>{infoNovel?.title}</p>
             <p className='text-lg md:text-xl font-bold text-black md:text-black md:hidden hover:text-[#00c853]'>
               {
-                infoNovel.author.map((author) => (<span className='hover:text-[#00c853]' onClick={() => navigate(`/advanced-search?type=novel&genre=All&author=${author}`)}>{author} </span>))
+                infoNovel?.author.map((author) => (<span className='hover:text-[#00c853]' onClick={() => navigate(`/advanced-search?type=novel&genre=All&author=${author}`)}>{author} </span>))
               }
             </p>
           </div>
@@ -239,25 +251,31 @@ function NovelDetails() {
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                   boxShadow: '3px 3px'
-                } : { boxShadow: '3px 3px' }}
+                } : {
+                  boxShadow: '3px 3px',
+                  background: 'linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 97%)'
+                }}
               >
                 <span className='text-white'>{isFavorite ? 'Remove from favorite' : 'Add to favorite'}</span>
               </div>
 
-              <div onClick={() => handleStartReading(infoNovel.title, chapters[0]._id, 1, chapters[0].chapter_title)} className='rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }}>Start reading</div>
+              <div onClick={() => handleStartReading(infoNovel.title, chapters[0]._id, 1, chapters[0].chapter_title)} className='flex items-center gap-2 justify-center rounded border bg-white p-2 md:p-3 text-center cursor-pointer font-bold hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }}>
+                <ImportContactsIcon />
+                Start reading
+              </div>
             </div>
 
             <div className='flex flex-row gap-3 items-center'>
-              <p className='font-semibold text-2xl'> &nbsp;{infoNovel.followers} </p>
+              <p className='font-semibold text-2xl'> &nbsp;{infoNovel?.followers} </p>
               <FaHeart className="w-6 h-6" color='e03c3c' />
-              <p className='font-semibold text-2xl'> &nbsp;{infoNovel.views} </p>
+              <p className='font-semibold text-2xl'> &nbsp;{infoNovel?.views} </p>
               <RiEyeFill className="w-6 h-6" color='blue' />
-              <p className='font-semibold text-2xl'> &nbsp;{infoNovel.rate} </p>
+              <p className='font-semibold text-2xl'> &nbsp;{infoNovel?.rate.toFixed(2)} </p>
               <FaStar className="w-6 h-6" color='#dbb004' />
             </div>
 
             <div className='flex flex-wrap justify-center md:justify-start mb-6 md:mb-4'>
-              {infoNovel.tags.map((tag) => (
+              {infoNovel?.tags.map((tag) => (
                 <div className='border rounded-md m-1 p-1 bg-white cursor-pointer hover:bg-[#f1f1f1]' style={{ boxShadow: '3px 3px' }} key={tag} onClick={() => navigate(`/advanced-search?type=novel&genre=${tag}&author=None`)}>
                   <span className='text-xs font-black'>{tag}</span>
                 </div>
@@ -268,22 +286,22 @@ function NovelDetails() {
       </div>
       <div className='pl-10 pr-10 md:pl-20 md:pr-20 md:mt-5 text-justify'>
         <div className='md:block hidden'>
-          <p className='text-3xl md:text-5xl font-bold text-black md:text-black'>{infoNovel.title}</p>
+          <p className='text-3xl md:text-5xl font-bold text-black md:text-black'>{infoNovel?.title}</p>
           <p className='text-lg md:text-xl font-bold text-black md:text-black cursor-pointer'>{
-            infoNovel.author.map((author) => (<span className='hover:text-[#00c853]' onClick={() => navigate(`/advanced-search?type=novel&genre=All&author=${author}`)}>{author} </span>))
+            infoNovel?.author.map((author) => (<span className='hover:text-[#00c853]' onClick={() => navigate(`/advanced-search?type=novel&genre=All&author=${author}`)}>{author} </span>))
           }
           </p>
         </div>
-        {infoNovel.synopsis}
+        {infoNovel?.synopsis}
       </div>
       <div className='flex flex-col md:flex-row justify-center pl-10 pr-10 md:pl-20 md:pr-20'>
         {/* This div is for the chapter list */}
         <div className='md:pt-20 md:flex-2 md:mr-10 mt-3 md:mt-0'>
           <p className='font-bold text-green-700'><u>Chapters</u></p>
-          <ul className='h-64 overflow-y-scroll'>
+          <ul className='md:h-164 h-64 overflow-y-scroll'>
             {chapters.map((chapter, index) => (
               <li key={chapter.chapter_title} onClick={() => handleClickedChapter(infoNovel.title, chapter._id, chapter.order, chapter.chapter_title)}>
-                <div className='p-2 border rounded-md m-1 bg-white cursor-pointer hover:bg-[#f1f1f1]'>
+                <div className='p-2 py-3 border m-1 bg-white cursor-pointer hover:bg-[#f1f1f1]'>
                   <p className='line-clamp-1'>{index}. {chapter.chapter_title}</p>
                 </div>
               </li>
@@ -304,6 +322,15 @@ function NovelDetails() {
                       <p className='ml-1 font-semibold text-black'>{comment.userid.username}</p>
                     </div>
                     <p className='text-gray-500'>Chapter {comment.chapternumber}: {comment.chaptertitle}</p>
+                    <p>
+                      <Rating
+                        name="half-rating"
+                        precision={0.5}
+                        value={comment.rating}
+                        size='small'
+                        readOnly
+                      />
+                    </p>
                     <p>{comment.content}</p>
                   </div>
                 </div>

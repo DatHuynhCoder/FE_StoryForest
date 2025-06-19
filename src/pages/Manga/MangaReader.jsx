@@ -11,10 +11,11 @@ import { MdNavigateBefore } from "react-icons/md";
 import { FaCommentAlt } from "react-icons/fa";
 import { FaArrowUp } from "react-icons/fa";
 import { FaPlayCircle } from "react-icons/fa";
+import StarIcon from '@mui/icons-material/Star';
 // drawer
 import DragCloseDrawer from '../../components/DragCloseDrawer.jsx'
-// select dialog
-import { Rating, RatingStar } from "flowbite-react";
+// components
+import Rating from '@mui/material/Rating';
 import { Button, Drawer, DrawerHeader, DrawerItems } from "flowbite-react";
 import Switch from '@mui/material/Switch';
 import Box from '@mui/material/Box';
@@ -28,6 +29,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import Spinner from '../../components/Spinner.jsx'
 //user Redux to update user
 import { useSelector, useDispatch } from 'react-redux'
 import { updateUser } from '../../redux/userSlice.js'
@@ -35,6 +37,10 @@ import { updateUser } from '../../redux/userSlice.js'
 import { useCookies } from 'react-cookie';
 // color picker
 import { HexColorPicker } from "react-colorful";
+// utils
+import scrollToTop from '../../utils/ScrollToTop.js'
+import { labels } from '../../utils/CommentLabels.js'
+import { badWords, censorString } from '../../utils/SensorString.js'
 
 // Hook for detecting when scrolled to specific position using Intersection Observer
 const useScrollPosition = (onReach = null) => {
@@ -73,6 +79,10 @@ const useScrollPosition = (onReach = null) => {
   return { hasReached, sentinelRef };
 };
 
+const getLabelText = (value) => {
+  return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
+}
+
 const MangaReader = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
@@ -84,10 +94,20 @@ const MangaReader = () => {
   const { _id, chapters, mangatitle, chapternumber, chaptertitle } = location.state || {} // _id is the id of book
   // const chapters = location.state.chapters || []
   const user = useSelector((state) => state.user.user) || {
+    about: [],
+    achivement: "Unknown",
     createdAt: "unknown",
     email: "unknown",
+    exp: 0,
+    gender: "unknown",
+    lastcheckin: "...",
+    level: 1,
+    name: "...",
     password: "unknown",
+    phone: "...",
+    rank: "...",
     role: "unknown",
+    streak: 0,
     updatedAt: "unknown",
     username: "unknown",
     __v: 0,
@@ -98,6 +118,7 @@ const MangaReader = () => {
   const [pics, setPics] = useState([])
   // loading while calling apis
   const [loading, setLoading] = useState(true)
+  const [bigLoading, setBigLoading] = useState(false)
   // switch control
   const [checked, setChecked] = useState(false);
   const handleSwitchChange = (event) => {
@@ -182,13 +203,16 @@ const MangaReader = () => {
   const fetchCommentByChapterId = async () => {
     try {
       const response = await api.get(`/api/reader/review/chapter/${chapterid}`)
-      setChaptercomments(response.data.data)
+      setChaptercomments(response.data.data.reverse())
       setCommentReadmoreIndex(new Array(response.data.data.length).fill(false))
     } catch (error) {
       console.error("Error fetching comments:", error)
     }
   }
-
+  // Rating
+  const [yourRate, setYourRate] = useState(5);
+  const [rateHover, setRateHover] = useState(-1);
+  //
   const handleSendComment = () => {
     if (comment === '') {
       alert('Please enter a comment')
@@ -198,10 +222,11 @@ const MangaReader = () => {
       alert('Please login to comment')
       return
     }
+    setBigLoading(true)
     apiAuth.post(`/api/reader/review/create`, {
       // content: comment.slice(0, 40),
       content: comment,
-      rating: 5, // temp
+      rating: yourRate, // temp
       chapternumber: chapternumber,
       chaptertitle: chaptertitle,
       chapterid: chapterid,
@@ -215,12 +240,26 @@ const MangaReader = () => {
         dispatch(updateUser(res.data.user));
         fetchCommentByChapterId()
       }
+    }).catch(err => alert(err)).finally(() => {
+      setBigLoading(false)
     })
   }
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const handleDeleteReview = (reviewid) => {
+    setBigLoading(true)
+    apiAuth.delete(`/api/reader/review/${reviewid}`)
+      .then(res => {
+        if (res.data.success === true) {
+          alert(res.data.message)
+        }
+        else {
+          alert("Error: " + res.data.message)
+        }
+      }).catch(err => console.log(err)).finally(() => {
+        fetchCommentByChapterId()
+        setBigLoading(false)
+      })
   }
+  //
 
   const handleNextChapter = () => {
     const currentIndex = chapters.findIndex((chapter) => chapter.chapterid === chapterid)
@@ -264,6 +303,10 @@ const MangaReader = () => {
       })
     scrollToTop()
   }, [chapterid])
+
+  if (bigLoading === true) {
+    return <Spinner />
+  }
 
   return (
     <>
@@ -392,30 +435,65 @@ const MangaReader = () => {
             </div>
             <div>
               {user._id !== "unknown" ?
-                <textarea
-                  className='border p-2 mt-3 bg-gray-200 rounded-md w-[100%] h-[100px]'
-                  placeholder='Write something ...'
-                  onChange={(e) => setComment(e.target.value)}
-                ></textarea> : <p className='w-[100%]'>Please <Link to="/login" className='text-green-500'>login </Link>to comment</p>}
-              {/* <div>
-                <Rating>
-                  <RatingStar />
-                  <RatingStar />
-                  <RatingStar />
-                  <RatingStar />
-                  <RatingStar filled={false} />
-                </Rating>
-              </div> */}
+                <>
+                  <textarea
+                    className='border p-2 mt-3 bg-gray-200 rounded-md w-[100%] h-[100px]'
+                    placeholder='Write something ...'
+                    onChange={(e) => setComment(e.target.value)}
+                  ></textarea>
+                  <Box sx={{ width: 200, display: 'flex', alignItems: 'center' }}>
+                    <Rating
+                      name="half-rating"
+                      precision={0.5}
+                      value={yourRate}
+                      onChange={(event, newValue) => {
+                        setYourRate(newValue);
+                      }}
+                      onChangeActive={(event, newHover) => {
+                        setRateHover(newHover);
+                      }}
+                      size='large'
+                      emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+                    />
+                    {yourRate !== null && (
+                      <Box sx={{ ml: 2 }}>{labels[rateHover !== -1 ? rateHover : yourRate]}</Box>
+                    )}
+                  </Box>
+                </>
+                :
+                <p className='w-[100%]'>Please <Link to="/login" className='text-green-500'>login </Link>to comment</p>
+              }
             </div>
             <div>
               {chaptercomments.length > 0 ? chaptercomments.map((comment, index) => (
                 <div className='mt-3' key={comment._id}>
                   <div className='w-[100%] border p-2 rounded-md mt-2'>
-                    <div className='flex'>
-                      <img src={comment.userid?.avatar?.url || defaultAvt} alt="avatar" className='w-10 h-10 rounded-full' />
-                      <p className='ml-1 font-semibold text-black'>{comment.userid.username}</p>
+                    <div className='flex items-center'>
+                      <img src={comment.userid?.avatar?.url || defaultAvt} alt="avatar" className='w-10 h-10 rounded-full flex-1 object-cover' />
+                      <p className='ml-1 font-semibold text-black flex-5 items-center'>
+                        <span>
+                          {comment.userid.username}
+                        </span>
+                        <span className='border border-[#b3b304] rounded-md px-3 text-[10px] ml-2'>
+                          <span>Level </span>
+                          &nbsp;
+                          <span>{comment.userid?.level}</span>
+                        </span>
+                      </p>
                     </div>
                     <p className='text-gray-500'>{comment.createdAt.slice(0, 10)}</p>
+                    <div className='flex items-center'>
+                      <Rating
+                        name="read-only"
+                        precision={0.5}
+                        value={comment.rating}
+                        size='small'
+                        readOnly
+                      />
+                      {comment.rating !== null && (
+                        <Box sx={{ ml: 2 }}>{labels[comment.rating]}</Box>
+                      )}
+                    </div>
                     <p className='text-black w-[100%] text-justify'
                       style={commentReadmoreIndex[index] ? {} : {
                         WebkitLineClamp: 2,
@@ -423,9 +501,16 @@ const MangaReader = () => {
                         overflow: 'hidden',
                         display: '-webkit-box',
                       }}
-                    >{comment.content}
+                    >{censorString(comment.content, badWords)}
                     </p>
                     <p><span className='underline hover:text-blue-500 cursor-pointer' onClick={() => handleReadMore(index)}>{commentReadmoreIndex[index] ? 'read less' : 'read more'}</span></p>
+                    <p className='flex justify-end'>
+                      {user?._id === comment?.userid?._id &&
+                        <Button onClick={() => handleDeleteReview(comment._id)} className="!w-20 !h-10 !bg-red-500 cursor-pointer">
+                          Delete
+                        </Button>
+                      }
+                    </p>
                   </div>
                 </div>
               )) : <div className='mt-3'>

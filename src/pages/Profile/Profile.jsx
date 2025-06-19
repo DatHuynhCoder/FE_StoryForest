@@ -116,9 +116,10 @@ const Profile = () => {
 
   // Handle upgrade vip
   const handleUpgradeVip = () => {
-    apiAuth.post('/api/reader/payment/create-payment-link').then(res => {
-      window.location.href = res.data.url;
-    })
+    navigate('/paymentoption')
+    // apiAuth.post('/api/reader/payment/create-payment-link').then(res => {
+    //   window.location.href = res.data.url;
+    // })
   }
 
   //Spinner to load while fetching data

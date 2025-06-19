@@ -1,77 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
+import { apiAuth } from '../../services/api';
 
 const MonthlySales = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  
+  const [chartSeries, setChartSeries] = useState([{ name: 'Sales', data: Array(12).fill(0) }]);
   // Danh sách năm có thể chọn (số năm có thể chọn dựa vào dữ liệu api trả về)
   const availableYears = Array.from({ length: 4 }, (_, i) => new Date().getFullYear() - i);
-
-  // Dữ liệu giả 
-  const mockData = {
-    2025: [
-      { month: 'Jan', sales: 120 },
-      { month: 'Feb', sales: 250 },
-      { month: 'Mar', sales: 180 },
-      { month: 'Apr', sales: 220 },
-      { month: 'May', sales: 150 },
-      { month: 'Jun', sales: 210 },
-      { month: 'Jul', sales: 270 },
-      { month: 'Aug', sales: 90 },
-      { month: 'Sep', sales: 190 },
-      { month: 'Oct', sales: 350 },
-      { month: 'Nov', sales: 240 },
-      { month: 'Dec', sales: 100 }
-    ],
-    2024: [
-      { month: 'Jan', sales: 168 },
-      { month: 'Feb', sales: 385 },
-      { month: 'Mar', sales: 201 },
-      { month: 'Apr', sales: 298 },
-      { month: 'May', sales: 187 },
-      { month: 'Jun', sales: 195 },
-      { month: 'Jul', sales: 291 },
-      { month: 'Aug', sales: 110 },
-      { month: 'Sep', sales: 215 },
-      { month: 'Oct', sales: 390 },
-      { month: 'Nov', sales: 280 },
-      { month: 'Dec', sales: 112 }
-    ],
-    2023: [
-      { month: 'Jan', sales: 168 },
-      { month: 'Feb', sales: 385 },
-      { month: 'Mar', sales: 201 },
-      { month: 'Apr', sales: 298 },
-      { month: 'May', sales: 187 },
-      { month: 'Jun', sales: 195 },
-      { month: 'Jul', sales: 291 },
-      { month: 'Aug', sales: 110 },
-      { month: 'Sep', sales: 215 },
-      { month: 'Oct', sales: 390 },
-      { month: 'Nov', sales: 280 },
-      { month: 'Dec', sales: 112 }
-    ],
-    2022: [
-      { month: 'Jan', sales: 120 },
-      { month: 'Feb', sales: 250 },
-      { month: 'Mar', sales: 180 },
-      { month: 'Apr', sales: 220 },
-      { month: 'May', sales: 150 },
-      { month: 'Jun', sales: 210 },
-      { month: 'Jul', sales: 270 },
-      { month: 'Aug', sales: 90 },
-      { month: 'Sep', sales: 190 },
-      { month: 'Oct', sales: 350 },
-      { month: 'Nov', sales: 240 },
-      { month: 'Dec', sales: 100 }
-    ],
-    // Thêm dữ liệu cho các năm khác nếu cần
-  };
-
-  // Lấy dữ liệu theo năm được chọn, mặc định là 2023 nếu không có dữ liệu
-  const chartData = mockData[selectedYear] ;
-
-  /*
   // Phần call API 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -81,8 +16,15 @@ const MonthlySales = () => {
     setError(null);
     
     try {
-      const response = await axios.get(`/api/admin/dashboard/monthly-sales?year=${year}`);
-      setChartData(response.data.monthlySales);
+      const response = await apiAuth.get(`/api/admin/dashboard/monthly-stats?year=${year}`);
+      const monthlyData = response.data.data;
+      
+      // Create an array with 12 months, filling in the sales from the API
+      const monthlySales = Array(12).fill(0);
+      monthlyData.forEach(item => {
+        monthlySales[item.month - 1] = item.totalIncome;
+      })
+      setChartSeries([{ name: 'Sales', data: monthlySales }]);
     } catch (err) {
       setError(err.message);
       console.error('Failed to fetch monthly sales:', err);
@@ -94,7 +36,6 @@ const MonthlySales = () => {
   useEffect(() => {
     fetchMonthlySales(selectedYear);
   }, [selectedYear]);
-  */
 
   // Cấu hình biểu đồ
   const chartOptions = {
@@ -124,7 +65,7 @@ const MonthlySales = () => {
       colors: ['transparent'],
     },
     xaxis: {
-      categories: chartData.map(item => item.month),
+      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       axisBorder: {
         show: false,
       },
@@ -152,18 +93,10 @@ const MonthlySales = () => {
         show: false,
       },
       y: {
-        formatter: (val) => `${val}`,
+        formatter: (val) => `${val} VND`,
       },
     },
   };
-
-  // Dữ liệu biểu đồ
-  const chartSeries = [
-    {
-      name: 'Sales',
-      data: chartData.map(item => item.sales),
-    },
-  ];
 
   return (
     <div className="w-full bg-white p-4 rounded-lg shadow-sm">

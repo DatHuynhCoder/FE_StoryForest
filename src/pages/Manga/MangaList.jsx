@@ -11,13 +11,15 @@ import { PiShootingStarFill } from "react-icons/pi";
 import { FiRefreshCw } from "react-icons/fi";
 import { GiBleedingEye } from "react-icons/gi";
 import { RiUserFollowLine } from "react-icons/ri";
+import { FaHeart, FaStar } from "react-icons/fa6";
+import { RiEyeFill, RiHome4Fill } from "react-icons/ri";
 // gifs
 import processingGif from '../../assets/processing.gif'
 import Tags from '../../components/Tags/Tags'
 import { useSelector } from 'react-redux'
 import scrollToTop from '../../utils/ScrollToTop'
 
-function MangaList() {
+const MangaList = () => {
   scrollToTop()
   const navigate = useNavigate();
   const [listManga, setListManga] = useState([{
@@ -164,9 +166,10 @@ function MangaList() {
 
   // Handle upgrade vip
   const handleUpgradeVip = () => {
-    apiAuth.post('/api/reader/payment/create-payment-link').then(res => {
-      window.location.href = res.data.url;
-    })
+    navigate('/paymentoption')
+    // apiAuth.post('/api/reader/payment/create-payment-link').then(res => {
+    //   window.location.href = res.data.url;
+    // })
   }
 
   if (loading) return <Spinner />
@@ -198,9 +201,21 @@ function MangaList() {
                       ))}
                     </div>
                     <div className='flex-2'>
-                      <p className='text-right'><span className='font-[1000]'>{manga.followers} </span><b>FOLLOWERS</b></p>
-                      <p className='text-right'><span className='font-[1000]'>{manga.views} </span><b>VIEWS</b></p>
-                      <p className='text-right'><b>RATE:</b><span className='font-[1000]'> {manga.rate}</span></p>
+                      <p className='text-right flex items-center justify-end'>
+                        <span className='font-[1000]'>{manga.followers} <b>FOLLOWERS</b></span>
+                        &nbsp;
+                        <span><FaHeart className="w-3 h-3 text-right" color='#e03c3c' /></span>
+                      </p>
+                      <p className='text-right flex items-center justify-end'>
+                        <span className='font-[1000]'>{manga.views} <b>VIEWS</b></span>
+                        &nbsp;
+                        <span><RiEyeFill className="w-3 h-3 text-right" color='blue' /></span>
+                      </p>
+                      <p className='text-right flex items-center justify-end'>
+                        <span className='font-[1000]'><b>RATE:</b> {manga.rate.toFixed(2)}</span>
+                        &nbsp;
+                        <span><FaStar className="w-3 h-3" color='#dbb004' /></span>
+                      </p>
                     </div>
                   </div>
                 </div>
