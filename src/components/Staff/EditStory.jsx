@@ -44,7 +44,8 @@ const EditStory = () => {
   const fetchChapters = async (mangaid, page = 1) => {
     try {
       const response = await api.get(`/api/staff/chapter/${mangaid}/chapters`);
-      setChapters(response.data.data);
+      setChapters(response.data.data.sort((a, b) => parseInt(a.chapter) - parseInt(b.chapter)));
+      console.log(response.data.data);
       setTotalChapters(response.data.total || 0);
     } catch (err) {
       console.error('Error fetching chapters:', err);
@@ -55,7 +56,7 @@ const EditStory = () => {
   const fetchNovelChapters = async (novelid, page = 1) => {
     try {
       const response = await api.get(`/api/staff/chapter/${novelid}/novelchapters`);
-      setChapters(response.data.data);
+      setChapters(response.data.data.sort((a, b) => a.order - b.order));
       setTotalChapters(response.data.total || 0);
     } catch (err) {
       console.error('Error fetching chapters:', err);
