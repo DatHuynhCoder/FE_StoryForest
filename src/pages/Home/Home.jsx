@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
-import banner from "/src/assets/banner.png";
+import banner from "../../assets/banner.png"
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import { IoIosContacts } from "react-icons/io";
-import ContactForm from "/src/components/Contact/Contact";
-import "/src/pages/Home/Home.css";
+import ContactForm from "../../components/Contact/Contact";
+import "./Home.css"
 import { useNavigate } from 'react-router';
 import { api, apiAuth } from "../../services/api";
 import { toast } from "react-toastify";
