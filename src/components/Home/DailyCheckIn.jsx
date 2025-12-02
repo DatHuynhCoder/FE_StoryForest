@@ -1,5 +1,5 @@
 import { FaCheck } from "react-icons/fa";
-import CountdownToMidnight from "./CountDownToMidNight";
+import CountdownToMidnight from "./CountDownToMidnight";
 
 const DailyCheckIn = ({ streak = 0, isCheckin = true, handleCheckin, role = 'user' }) => {
   return (
